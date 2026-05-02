@@ -10,7 +10,7 @@ import java.util.Random;
  * @author Daniella Birungi
  * @version 1.0
  */
-public class Bomb implements Item{
+public class Bomb implements Item {
 
     /**
      * Minimum damage a bomb can deal.
@@ -45,7 +45,7 @@ public class Bomb implements Item{
      * Constructs a Bomb with a specific damage value.
      * Used for testing purposes.
      *
-     *  @param theDamage the amount of damge this bomb deals
+     * @param theDamage the amount of damge this bomb deals
      */
 
     public Bomb(final int theDamage) {

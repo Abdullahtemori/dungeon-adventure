@@ -3,13 +3,13 @@ package edu.uw.tcss.dungeoneer.model;
 import java.util.Random;
 
 /**
- * Healling potion restores a random amount of hit points to the hero when used.
+ * Healing potion restores a random amount of hit points to the hero when used.
  * The heal amount is between 5 and 15 HP.
  *
  * @author Daniella Birungi
  * @version 1.0
  */
-public class HealingPotion implements Item{
+public class HealingPotion implements Item {
 
     /**
      * Minimum healing amount.
@@ -24,7 +24,7 @@ public class HealingPotion implements Item{
     /**
      * The display character for this item on dungeon map.
      */
-    public static final char DISPLAY_CHARACTER = 'HP';
+    public static final char DISPLAY_CHARACTER = 'H';
 
     /**
      * The amount of hit points this potion will heal.
@@ -44,12 +44,14 @@ public class HealingPotion implements Item{
      * Constructs a healing potion with a specific heal amount.
      * Used for testing purposes.
      *
-     *  @param theHealAmount the amount of HP this potion heals
+     * @param theHealAmount the amount of HP this potion heals
+     *
      */
 
     public HealingPotion(final int theHealAmount) {
-     myHealAmount = theHealAmount;
-     }
+
+        myHealAmount = theHealAmount;
+    }
 
     /**
      * The amount of hit points this potion heals.
@@ -73,7 +75,7 @@ public class HealingPotion implements Item{
     /**
      * A description for this item.
      *
-     * @return descrption of the healing potion
+     * @return description of the healing potion
      */
     @Override
     public String getDescription() {

@@ -1,7 +1,7 @@
 package edu.uw.tcss.dungeoneer.model;
 
 /**
- * Pillar represents one of the four pillars of object oriented programming
+ * Pillar represents one of the four pillars of object-oriented programming
  * that the hero must collect to win the game. The four pillars are Abstraction,
  * Encapsulation, Inheritance and Polymorphism.
  *
@@ -28,7 +28,7 @@ public enum Pillar {
 
     /**
      * The display character for this pillar.
-     * Usess the first letter of the pillar name
+     * Uses the first letter of the pillar name
      *
      * @return the first character of the pillar name
      */
