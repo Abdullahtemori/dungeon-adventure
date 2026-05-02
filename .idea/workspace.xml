@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="510a188e-bbe5-4e45-b744-140b6974b9b9" name="Changes" comment="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="JUnit5 Test Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="DaniellaHB" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;DaniellaHB&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Abdullahtemori/dungeon-adventure.git&quot;,
+    &quot;accountId&quot;: &quot;48b4cef4-952c-49b9-a5c5-081b4f840b32&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="3D0SApITPMlxmYQSeKnRrxbROku" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Downloaded.Files.Path.Enabled": "true",
+    "JUnit.BombTest.executor": "Run",
+    "JUnit.HealingPotionTest.executor": "Run",
+    "JUnit.InventoryTest.executor": "Run",
+    "JUnit.ItemTest.executor": "Run",
+    "JUnit.PillarTest.executor": "Run",
+    "JUnit.VisionPotionTest.executor": "Debug",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/daniellabirungi/IdeaProjects/dungeon-adventure/src",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "advanced.settings"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/test" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src/   edu/uw/tcss/dungeoneer" />
+      <recent name="$PROJECT_DIR$/src/   edu/uw/tcss/dungeoneer/docs" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="edu.uw.tcss.dungeoneer.model" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="InventoryTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="dungeon-adventure" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value=".*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="InventoryTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.InventoryTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="510a188e-bbe5-4e45-b744-140b6974b9b9" name="Changes" comment="" />
+      <created>1777417353257</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1777417353257</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Intial implementation of Item.java">
+      <option name="closed" value="true" />
+      <created>1777681249194</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1777681249194</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Intial implementation of HealingPotion.java">
+      <option name="closed" value="true" />
+      <created>1777682377019</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1777682377019</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Intial implementation of VisionPotion.java">
+      <option name="closed" value="true" />
+      <created>1777683082612</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1777683082612</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Intial implementation of VisionPotion.java">
+      <option name="closed" value="true" />
+      <created>1777683125745</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1777683125746</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Intial implementation of Bomb.java">
+      <option name="closed" value="true" />
+      <created>1777684173532</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1777684173532</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Intial implementation of Pillar.java">
+      <option name="closed" value="true" />
+      <created>1777684608774</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1777684608774</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Intial implementation of InventoryTest.java">
+      <option name="closed" value="true" />
+      <created>1777686175591</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1777686175591</updated>
+    </task>
+    <task id="LOCAL-00008" summary="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files">
+      <option name="closed" value="true" />
+      <created>1777702892652</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1777702892652</updated>
+    </task>
+    <task id="LOCAL-00009" summary="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files">
+      <option name="closed" value="true" />
+      <created>1777702903354</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1777702903354</updated>
+    </task>
+    <task id="LOCAL-00010" summary="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files">
+      <option name="closed" value="true" />
+      <created>1777702919468</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1777702919468</updated>
+    </task>
+    <task id="LOCAL-00011" summary="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully">
+      <option name="closed" value="true" />
+      <created>1777702966141</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1777702966141</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Intial implementation of Item.java" />
+    <MESSAGE value="Intial implementation of HealingPotion.java" />
+    <MESSAGE value="Intial implementation of VisionPotion.java" />
+    <MESSAGE value="Intial implementation of Bomb.java" />
+    <MESSAGE value="Intial implementation of Pillar.java" />
+    <MESSAGE value="Intial implementation of InventoryTest.java" />
+    <MESSAGE value="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files" />
+    <MESSAGE value="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully" />
+    <option name="LAST_COMMIT_MESSAGE" value="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully" />
+  </component>
+</project>
