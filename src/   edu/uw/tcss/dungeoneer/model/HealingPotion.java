@@ -67,7 +67,7 @@ public class HealingPotion implements Item{
      */
     @Override
     public String getDescription() {
-        return " Healing Potion: Restores " + myHealAmount + "hit points.";
+        return " Healing Potion: Restores " + myHealAmount + " hit points.";
     }
 
     /**

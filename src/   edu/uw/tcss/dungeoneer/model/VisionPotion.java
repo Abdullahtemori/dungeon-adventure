@@ -38,7 +38,7 @@ public class VisionPotion implements Item{
      */
     @Override
     public String getDescription() {
-        return "Vision Potion: Reveals the contents of all surrounding rooms";
+        return "Vision Potion: Reveals the contents of all surrounding rooms.";
     }
 
     /**
