@@ -34,12 +34,22 @@ public class HealingPotion implements Item{
     /**
      * Constructs a HealingPotion with a randomly generated heal amount between
      * MIN_HEALING and MAX_HEALING inclusive.
-     *
-     * @param theHealAmount the amount of HP this potion heals
      */
-    public HealingPotion(final int theHealAmount) {
-        myHealAmount = theHealAmount;
+    public HealingPotion() {
+        final Random rand = new Random();
+        myHealAmount = rand.nextInt(MAX_HEALING - MIN_HEALING + 1) + MIN_HEALING;
     }
+
+    /**
+     * Constructs a healing potion with a specific heal amount.
+     * Used for testing purposes.
+     *
+     *  @param theHealAmount the amount of HP this potion heals
+     */
+
+    public HealingPotion(final int theHealAmount) {
+     myHealAmount = theHealAmount;
+     }
 
     /**
      * The amount of hit points this potion heals.
