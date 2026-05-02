@@ -7,7 +7,7 @@ package edu.uw.tcss.dungeoneer.model;
  * @author daniella Birungi
  * @version 1.0
  */
-public class VisionPotion implements Item{
+public class VisionPotion implements Item {
 
     /**
      * Display character for this item on the dungeon map.
@@ -42,9 +42,9 @@ public class VisionPotion implements Item{
     }
 
     /**
-     *  A string representation of thois vision potion
+     * A string representation of this vision potion
      *
-     * @return striung describing this potion
+     * @return string describing this potion
      */
     @Override
     public String toString() {
