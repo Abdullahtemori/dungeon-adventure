@@ -6,7 +6,7 @@ import java.util.Set
  * Abstract class representing a Hero in the dungeon.
  * Heroes can block attacks and have a unique special skill.
  *
- * @author Person 1
+ * @author Person 1, Daniella Birungi
  * @version Iteration 1
  */
 public abstract class Hero extends DungeonCharacter {
