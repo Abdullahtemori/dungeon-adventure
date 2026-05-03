@@ -1,23 +1,22 @@
 # Dungeon Adventure
 
-A Java dungeon crawler game built with MVC design pattern.
+A Java dungeon crawler game built with the MVC design pattern. This project is currently in progress.
 
 ## Team Members
 - Abdullah Temori — Heroes & Monsters
 - Tarik Atasoy — Dungeon & Rooms
-- Daniella Birungi — Items & Potions
+- Daniella Birungi — Items & Inventory
 
-## How to Play
-- Choose a hero: Warrior, Priestess, or Thief
-- Explore the dungeon, fight monsters, collect 4 Pillars of OO
-- Reach the exit to win
+## Project Goal
+The goal of the game is to choose a hero, explore a dungeon, fight monsters, collect the four Pillars of OO, and reach the exit to win.
+
+## Current Progress
+For Iteration 1, we focused on the core model layer, including heroes, monsters, items, inventory, rooms, dungeon generation, and initial JUnit tests.
 
 ## How to Run
-1. Clone the repo
-2. Open in IntelliJ IDEA
-3. Run DungeonAdventure.java
+This project is still in progress. Open the repo in IntelliJ IDEA or another Java IDE and run the available tests/source files from the project structure.
 
 ## Tech
-- Java 18
+- Java 17+
 - JUnit 5
-- SQLite
+- SQLite planned for monster data
