@@ -1,7 +1,8 @@
 package edu.uw.tcss.dungeoneer.model;
 
-import java.util.Hashset;
-import java.util.Set
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Abstract class representing a Hero in the dungeon.
  * Heroes can block attacks and have a unique special skill.
@@ -47,7 +48,7 @@ public abstract class Hero extends DungeonCharacter {
         myHealingPotions = 0;
         myVisionPotions = 0;
         myBombs = 0;
-        myPillarsFound = new Hashset<>();
+        myPillarsFound = new HashSet<>();
     }
 
     /**
@@ -143,7 +144,7 @@ public abstract class Hero extends DungeonCharacter {
      * @return HP healed, or 0 if no potions available
      */
     public int usehealingPotion(){
-        if (myhealingPotions <= 0){
+        if (myHealingPotions <= 0){
             return 0;
         }
         myHealingPotions--;
@@ -157,7 +158,7 @@ public abstract class Hero extends DungeonCharacter {
      *
      * @return true if potion was used, false if none left
      */
-    public int useVisionPotion(){
+    public boolean useVisionPotion(){
         if (myVisionPotions <= 0){
             return false;
         }
@@ -179,7 +180,7 @@ public abstract class Hero extends DungeonCharacter {
         myBombs--;
         final Bomb bomb = new Bomb();
         final int  damage = bomb.getDamage();
-        theTarget.takeDamage(damage);
+        theTarget.setHitPoints(theTarget.getHitPoints() - damage);
         return damage;
     }
     /**
