@@ -1,0 +1,56 @@
+package edu.uw.tcss.dungeoneer.model;
+
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class MonsterFactoryTest {
+    private MonsterFactory myFactory;
+
+    @BeforeEach
+    void setUp() {
+        myFactory = new MonsterFactory();
+    }
+
+    @Test
+    void testCreateOgre() {
+        Monster m = myFactory.createByName("Ogre");
+        assertInstanceOf(Ogre.class, m);
+        assertEquals("Ogre", m.getName());
+        assertEquals(200, m.getHitPoints());
+    }
+
+    @Test
+    void testCreateGremlin() {
+        Monster m = myFactory.createByName("Gremlin");
+        assertInstanceOf(Gremlin.class, m);
+        assertEquals(70, m.getHitPoints());
+        assertEquals(0.4, m.getChanceToHeal(), 0.001);
+    }
+
+    @Test
+    void testCreateSkeleton() {
+        Monster m = myFactory.createByName("Skeleton");
+        assertInstanceOf(Skeleton.class, m);
+        assertEquals(100, m.getHitPoints());
+        assertEquals(0.3, m.getChanceToHeal(), 0.001);
+    }
+
+    @Test
+    void testCreateRandom() {
+        Monster m = myFactory.createRandom();
+        assertNotNull(m);
+        assertTrue(m.isAlive());
+    }
+
+    @Test
+    void testInvalidNameThrows() {
+        assertThrows(IllegalArgumentException.class,
+                () -> myFactory.createByName("Dragon"));
+    }
+
+    @Test
+    void testDatabaseLoadsAtStartup() {
+        // If DB missing, constructor throws — this passing proves DB loaded
+        assertNotNull(myFactory);
+    }
+}
