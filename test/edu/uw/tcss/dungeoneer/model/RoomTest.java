@@ -275,4 +275,160 @@ class RoomTest {
         assertEquals('*', lines[1].charAt(0), "West wall should be '*'");
         assertEquals('*', lines[2].charAt(1), "South wall should be '*'");
     }
+
+    /**
+     * Tests that all four pillar types can be placed in a room and retrieved
+     * correctly.
+     */
+    @Test
+    void testAllFourPillarsCanBePlaced() {
+       for(final Pillar p : Pillar.values()) {
+           final Room room = new Room(0, 0);
+           room.setPillar(p);
+           assertEquals(p, room.getPillar(),
+                   "Room should return pillar:" + p);
+       }
+    }
+
+    /**
+     * Tests that collecting all four pillars across four rooms
+     * fills the hero's pillar set completely.
+     */
+    @Test
+    void testPickUpItemsCollectsAllFourPillars() {
+        final Hero hero = new Warrior("Tester");
+
+        final Pillar[] pillars = Pillar.values();
+        for (final Pillar p : pillars) {
+            final Room room = new Room(0, 0);
+            room.setPillar(p);
+            room.pickUpItems(hero);
+        }
+
+        assertEquals(4, hero.getPillarsFound().size(),
+                "Hero should have all 4 pillars after visiting "
+                        + "all pillar rooms");
+    }
+
+    /**
+     * Tests that pit damage can be set to the minimum value of 1.
+     */
+    @Test
+    void testPitDamageMinimumValue() {
+        myRoom.setPit(1);
+        assertTrue(myRoom.hasPit());
+        assertEquals(1, myRoom.getPitDamage(),
+                "Pit damage minimum should be 1");
+    }
+
+    /**
+     * Tests that pit damage can be set to the maximum value of 20.
+     */
+    @Test
+    void testPitDamageMaximumValue() {
+        myRoom.setPit(20);
+        assertTrue(myRoom.hasPit());
+        assertEquals(20, myRoom.getPitDamage(),
+                "Pit damage maximum should be 20");
+    }
+
+    /**
+     * Tests that all four directions can have doors set independently.
+     */
+    @Test
+    void testAllFourDirectionsCanHaveDoors() {
+        for (final Direction d : Direction.values()) {
+            final Room room = new Room(0, 0);
+            room.setDoor(d, true);
+            assertTrue(room.hasDoor(d),
+                    "Room should have door in direction: " + d);
+        }
+    }
+
+    /**
+     * Tests that setting one door does not affect the others.
+     */
+    @Test
+    void testSettingOneDoorDoesNotAffectOthers() {
+        myRoom.setDoor(Direction.SOUTH, true);
+
+        assertFalse(myRoom.hasDoor(Direction.NORTH),
+                "NORTH should not have a door");
+        assertTrue(myRoom.hasDoor(Direction.SOUTH),
+                "SOUTH should have a door");
+        assertFalse(myRoom.hasDoor(Direction.EAST),
+                "EAST should not have a door");
+        assertFalse(myRoom.hasDoor(Direction.WEST),
+                "WEST should not have a door");
+    }
+
+    /**
+     * Tests that an empty room shows a space in the center.
+     */
+    @Test
+    void testToStringEmptyRoomShowsSpace() {
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals(' ', lines[1].charAt(1),
+                "Empty room center should be a space");
+    }
+
+    /**
+     * Tests that a room with a healing potion shows 'H' in the center.
+     */
+    @Test
+    void testToStringShowsHealingPotionChar() {
+        myRoom.setHealingPotion(new HealingPotion());
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('H', lines[1].charAt(1),
+                "Room with healing potion should show 'H'");
+    }
+
+    /**
+     * Tests that the entrance room shows 'i' in the center.
+     */
+    @Test
+    void testToStringShowsEntranceChar() {
+        myRoom.setEntrance(true);
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('i', lines[1].charAt(1),
+                "Entrance room should show 'i'");
+    }
+
+    /**
+     * Tests that the exit room shows 'O' in the center.
+     */
+    @Test
+    void testToStringShowsExitChar() {
+        myRoom.setExit(true);
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('O', lines[1].charAt(1),
+                "Exit room should show 'O'");
+    }
+
+    /**
+     * Tests that a pit room shows 'X' in the center.
+     */
+    @Test
+    void testToStringShowsPitChar() {
+        myRoom.setPit(10);
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('X', lines[1].charAt(1),
+                "Pit room should show 'X'");
+    }
+
+    /**
+     * Tests that clearing the healing potion individually works.
+     */
+    @Test
+    void testClearHealingPotionIndividually() {
+        myRoom.setHealingPotion(new HealingPotion());
+        myRoom.setVisionPotion(new VisionPotion());
+
+        myRoom.setHealingPotion(null);
+
+        assertNull(myRoom.getHealingPotion(),
+                "Healing potion should be null after clearing");
+        assertNotNull(myRoom.getVisionPotion(),
+                "Vision potion should not be affected");
+    }
 }
