@@ -10,7 +10,7 @@ import java.io.Serializable;
  * selected difficulty, and win/lose flags.
  *
  * GameModel is part of the Model layer in the MVC pattern. It does not
- * contain game logic — that belongs in GameController. It notifies
+ * contain game logic that belongs in GameController. It notifies
  * registered listeners (the View) whenever state changes using the
  * Observer pattern via PropertyChangeSupport.
  *
