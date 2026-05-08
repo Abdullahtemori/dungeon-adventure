@@ -83,9 +83,6 @@ class GameModelTest {
                 "Dungeon should be null when not provided");
     }
 
-    // -------------------------------------------------------
-    // Setter tests
-    // -------------------------------------------------------
 
     /**
      * Tests that setGameOver changes the flag to true.
