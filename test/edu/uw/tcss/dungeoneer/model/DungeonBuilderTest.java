@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * built dungeon is traversable.
  *
  * @author Tarik Atasoy
- * @version Iteration 1
+ * @version Iteration 2
  */
 class DungeonBuilderTest {
 
@@ -30,7 +30,7 @@ class DungeonBuilderTest {
     private static Dungeon build(final Difficulty theDifficulty,
                                  final long theSeed) {
         return new DungeonBuilder()
-                .difficulty(theDifficulty)
+                .setDifficulty(theDifficulty)
                 .random(new Random(theSeed))
                 .build();
     }
@@ -177,7 +177,7 @@ class DungeonBuilderTest {
     @Test
     void testZeroItemChanceLeavesRoomsBare() {
         final Dungeon d = new DungeonBuilder()
-                .difficulty(Difficulty.EASY)
+                .setDifficulty(Difficulty.EASY)
                 .random(new Random(123L))
                 .itemChance(0.0)
                 .build();
@@ -206,5 +206,124 @@ class DungeonBuilderTest {
                 () -> new DungeonBuilder().itemChance(-0.1));
         assertThrows(IllegalArgumentException.class,
                 () -> new DungeonBuilder().itemChance(1.1));
+    }
+
+    /**
+     * Tests that setDifficulty and setSize both return the same
+     * builder instance so calls can be chained.
+     */
+    @Test
+    void testBuilderMethodsAreChainable() {
+        final DungeonBuilder b = new DungeonBuilder();
+        assertSame(b, b.setDifficulty(Difficulty.EASY));
+        assertSame(b, b.setSize(5, 5));
+        assertSame(b, b.itemChance(0.1));
+        assertSame(b, b.random(new Random(1L)));
+    }
+
+    /**
+     * Tests that setSize overrides the dimensions implied by the
+     * chosen difficulty.
+     */
+    @Test
+    void testSetSizeOverridesDifficulty() {
+        final Dungeon d = new DungeonBuilder()
+                .setDifficulty(Difficulty.HARD)
+                .setSize(4, 6)
+                .random(new Random(11L))
+                .build();
+        assertEquals(4, d.getRows());
+        assertEquals(6, d.getCols());
+    }
+
+    /**
+     * Tests that setSize rejects non-positive dimensions.
+     */
+    @Test
+    void testSetSizeRejectsBadValues() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new DungeonBuilder().setSize(0, 5));
+        assertThrows(IllegalArgumentException.class,
+                () -> new DungeonBuilder().setSize(5, -1));
+    }
+
+    /**
+     * Tests that setDifficulty rejects null.
+     */
+    @Test
+    void testSetDifficultyRejectsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new DungeonBuilder().setDifficulty(null));
+    }
+
+    /**
+     * Tests that doors are symmetric: if room A has a door on side
+     * X, the neighbour on that side has a door on the opposite side.
+     */
+    @Test
+    void testDoorsAreSymmetric() {
+        final Dungeon d = build(Difficulty.MEDIUM, 17L);
+        for (int r = 0; r < d.getRows(); r++) {
+            for (int c = 0; c < d.getCols(); c++) {
+                final Room room = d.getRoom(r, c);
+                for (final Direction dir : Direction.values()) {
+                    if (!room.hasDoor(dir)) {
+                        continue;
+                    }
+                    final int nr = r + dir.getRowOffset();
+                    final int nc = c + dir.getColOffset();
+                    assertTrue(nr >= 0 && nr < d.getRows()
+                                    && nc >= 0 && nc < d.getCols(),
+                            "Door at (" + r + "," + c + ") "
+                                    + dir + " points off the grid");
+                    assertTrue(d.getRoom(nr, nc).hasDoor(dir.opposite()),
+                            "Neighbour of (" + r + "," + c + ") "
+                                    + dir + " is missing the return door");
+                }
+            }
+        }
+    }
+
+    /**
+     * Tests that an item chance of 1.0 fills every non-critical room
+     * with a pit, a healing potion, and a vision potion.
+     */
+    @Test
+    void testFullItemChanceFillsAllNormalRooms() {
+        final Dungeon d = new DungeonBuilder()
+                .setDifficulty(Difficulty.EASY)
+                .random(new Random(5L))
+                .itemChance(1.0)
+                .build();
+        for (int r = 0; r < d.getRows(); r++) {
+            for (int c = 0; c < d.getCols(); c++) {
+                final Room room = d.getRoom(r, c);
+                if (room.hasEntrance() || room.hasExit()
+                        || room.getPillar() != null) {
+                    continue;
+                }
+                assertTrue(room.hasPit());
+                assertNotNull(room.getHealingPotion());
+                assertNotNull(room.getVisionPotion());
+            }
+        }
+    }
+
+    /**
+     * Stress test: builds many dungeons across all difficulties and
+     * checks that every one is traversable. Verifies the regenerate
+     * loop and the spanning-tree carving stay correct under varied
+     * seeds.
+     */
+    @Test
+    void testRegenerationProducesTraversableDungeons() {
+        for (final Difficulty diff : Difficulty.values()) {
+            for (long seed = 0; seed < 25; seed++) {
+                final Dungeon d = build(diff, seed);
+                assertTrue(d.isTraversable(),
+                        "Non-traversable dungeon for "
+                                + diff + " seed=" + seed);
+            }
+        }
     }
 }
