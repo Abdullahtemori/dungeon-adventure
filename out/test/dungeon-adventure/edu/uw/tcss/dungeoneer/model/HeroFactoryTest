@@ -1,0 +1,65 @@
+package edu.uw.tcss.dungeoneer.model;
+
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class HeroFactoryTest {
+    private HeroFactory myFactory;
+
+    @BeforeEach
+    void setUp() {
+        myFactory = new HeroFactory();
+    }
+
+    // Correct class returned
+    @Test
+    void testCreateWarrior() {
+        Hero h = myFactory.createHero("Warrior", "Arthur");
+        assertInstanceOf(Warrior.class, h);
+    }
+
+    @Test
+    void testCreatePriestess() {
+        Hero h = myFactory.createHero("Priestess", "Lyra");
+        assertInstanceOf(Priestess.class, h);
+    }
+
+    @Test
+    void testCreateThief() {
+        Hero h = myFactory.createHero("Thief", "Robin");
+        assertInstanceOf(Thief.class, h);
+    }
+
+    // Name is set correctly (acceptance criteria #7)
+    @Test
+    void testHeroNameIsSet() {
+        Hero h = myFactory.createHero("Warrior", "Arthur");
+        assertEquals("Arthur", h.getName());
+    }
+
+    // Case-insensitive (acceptance criteria #5)
+    @Test
+    void testLowercaseWarrior() {
+        Hero h = myFactory.createHero("warrior", "Arthur");
+        assertInstanceOf(Warrior.class, h);
+    }
+
+    @Test
+    void testUppercaseThief() {
+        Hero h = myFactory.createHero("THIEF", "Robin");
+        assertInstanceOf(Thief.class, h);
+    }
+
+    @Test
+    void testMixedCasePriestess() {
+        Hero h = myFactory.createHero("pRiEsTeSs", "Lyra");
+        assertInstanceOf(Priestess.class, h);
+    }
+
+    // Unknown type throws exception (acceptance criteria #6)
+    @Test
+    void testUnknownTypeThrows() {
+        assertThrows(IllegalArgumentException.class,
+                () -> myFactory.createHero("Mage", "Zara"));
+    }
+}
