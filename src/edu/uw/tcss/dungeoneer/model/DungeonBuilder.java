@@ -9,7 +9,9 @@ import java.util.Random;
 
 /**
  * Builds a randomly generated Dungeon. Callers pick a difficulty
- * (which sets the grid size) and then call build().
+ * (which sets the grid size) and then call build(). A custom grid
+ * size can also be supplied with setSize, which overrides the
+ * difficulty-derived dimensions.
  *
  * What build() does, in order:
  *   1. Carve a maze of doors with recursive backtracking. The door
@@ -22,11 +24,14 @@ import java.util.Random;
  *      into the remaining rooms with a small probability each.
  *   5. Place the hero on the entrance.
  *
- * Monsters, save/load, and the SQLite monster table are not part of
- * this iteration.
+ * After population the layout is verified with a BFS traversability
+ * check. If the check fails the dungeon is discarded and rebuilt.
+ *
+ * Monster placement, save/load, and the SQLite monster table are
+ * handled in separate tasks.
  *
  * @author Tarik Atasoy
- * @version Iteration 1
+ * @version Iteration 2
  */
 public class DungeonBuilder {
 
@@ -39,8 +44,17 @@ public class DungeonBuilder {
     /** Maximum damage a pit can deal. */
     private static final int PIT_MAX_DAMAGE = 20;
 
+    /** Sentinel meaning "no custom size set; fall back to difficulty". */
+    private static final int SIZE_UNSET = -1;
+
     /** Difficulty for the next dungeon. */
     private Difficulty myDifficulty = Difficulty.MEDIUM;
+
+    /** Custom row count, or SIZE_UNSET to use the difficulty value. */
+    private int myCustomRows = SIZE_UNSET;
+
+    /** Custom column count, or SIZE_UNSET to use the difficulty value. */
+    private int myCustomCols = SIZE_UNSET;
 
     /** Probability for each item type in a normal room. */
     private double myItemChance = DEFAULT_ITEM_CHANCE;
@@ -54,13 +68,36 @@ public class DungeonBuilder {
     }
 
     /**
-     * Sets the difficulty (and therefore grid size) for the next build.
+     * Sets the difficulty (and therefore grid size) for the next
+     * build. If setSize has also been called, the custom size wins.
      *
      * @param theDifficulty the difficulty to use
      * @return this builder, for chaining
      */
-    public DungeonBuilder difficulty(final Difficulty theDifficulty) {
+    public DungeonBuilder setDifficulty(final Difficulty theDifficulty) {
+        if (theDifficulty == null) {
+            throw new IllegalArgumentException(
+                    "Difficulty must not be null.");
+        }
         myDifficulty = theDifficulty;
+        return this;
+    }
+
+    /**
+     * Overrides the difficulty-derived grid size with an explicit
+     * row and column count. Useful for custom builds and tests.
+     *
+     * @param theRows the number of rows (must be positive)
+     * @param theCols the number of columns (must be positive)
+     * @return this builder, for chaining
+     */
+    public DungeonBuilder setSize(final int theRows, final int theCols) {
+        if (theRows <= 0 || theCols <= 0) {
+            throw new IllegalArgumentException(
+                    "Dungeon size must be positive.");
+        }
+        myCustomRows = theRows;
+        myCustomCols = theCols;
         return this;
     }
 
@@ -101,8 +138,10 @@ public class DungeonBuilder {
      */
     public Dungeon build() {
         while (true) {
-            final int rows = myDifficulty.getRows();
-            final int cols = myDifficulty.getCols();
+            final int rows = myCustomRows == SIZE_UNSET
+                    ? myDifficulty.getRows() : myCustomRows;
+            final int cols = myCustomCols == SIZE_UNSET
+                    ? myDifficulty.getCols() : myCustomCols;
             final Dungeon dungeon = new Dungeon(rows, cols);
 
             carveMaze(dungeon);
