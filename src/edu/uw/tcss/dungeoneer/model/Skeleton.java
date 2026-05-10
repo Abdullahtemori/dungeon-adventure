@@ -1,5 +1,7 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
+
 /**
  * Skeleton monster — balanced stats with moderate heal chance.
  *
@@ -10,7 +12,13 @@ package edu.uw.tcss.dungeoneer.model;
  * @author Person 1
  * @version Iteration 1
  */
-public class Skeleton extends Monster {
+public class Skeleton extends Monster implements Serializable {
+
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a Skeleton with default stats.

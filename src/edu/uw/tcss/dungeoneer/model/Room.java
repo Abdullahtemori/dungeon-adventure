@@ -1,5 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -15,7 +16,13 @@ import java.util.Map;
  * @author Tarik Atasoy
  * @version Iteration 1
  */
-public class Room {
+public class Room implements Serializable {
+
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /** Row index of this room in the dungeon grid. */
     private final int myRow;

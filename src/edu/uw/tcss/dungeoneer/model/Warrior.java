@@ -1,5 +1,7 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
+
 /**
  * Warrior hero — high HP and damage, special skill is Crushing Blow.
  *
@@ -9,7 +11,13 @@ package edu.uw.tcss.dungeoneer.model;
  * @author Person 1
  * @version Iteration 1
  */
-public class Warrior extends Hero {
+public class Warrior extends Hero implements Serializable {
+
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /** Minimum damage for Crushing Blow. */
     private static final int CRUSH_MIN = 75;

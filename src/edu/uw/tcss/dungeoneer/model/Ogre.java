@@ -1,5 +1,7 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
+
 /**
  * Ogre monster — slow but hits hard. Low heal chance.
  *
@@ -10,7 +12,13 @@ package edu.uw.tcss.dungeoneer.model;
  * @author Person 1
  * @version Iteration 1
  */
-public class Ogre extends Monster {
+public class Ogre extends Monster implements Serializable {
+
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructs an Ogre with default stats.

@@ -1,5 +1,7 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
+
 /**
  * Thief hero — fast attacker with a surprise attack special skill.
  *
@@ -14,7 +16,13 @@ package edu.uw.tcss.dungeoneer.model;
  * @author Person 1
  * @version Iteration 1
  */
-public class Thief extends Hero {
+public class Thief extends Hero implements Serializable {
+
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /** Chance surprise attack fully succeeds. */
     private static final double SUCCESS_CHANCE = 0.4;

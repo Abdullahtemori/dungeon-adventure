@@ -1,5 +1,7 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
+
 /**
  * Abstract class representing a Monster in the dungeon.
  * Monsters can heal themselves after taking damage.
@@ -7,7 +9,13 @@ package edu.uw.tcss.dungeoneer.model;
  * @author Person 1
  * @version Iteration 1
  */
-public abstract class Monster extends DungeonCharacter {
+public abstract class Monster extends DungeonCharacter implements Serializable {
+
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /** Probability that this monster heals after being hit. */
     private double myChanceToHeal;

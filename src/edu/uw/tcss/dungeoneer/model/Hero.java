@@ -1,5 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,7 +11,13 @@ import java.util.Set;
  * @author Person 1, Daniella Birungi
  * @version Iteration 1
  */
-public abstract class Hero extends DungeonCharacter {
+public abstract class Hero extends DungeonCharacter implements Serializable {
+
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /** Probability that this hero blocks an incoming attack (0.0–1.0). */
     private double myChanceToBlock;
@@ -143,7 +150,7 @@ public abstract class Hero extends DungeonCharacter {
      *
      * @return HP healed, or 0 if no potions available
      */
-    public int usehealingPotion(){
+    public int useHealingPotion(){
         if (myHealingPotions <= 0){
             return 0;
         }

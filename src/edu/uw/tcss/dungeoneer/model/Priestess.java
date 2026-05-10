@@ -1,5 +1,7 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
+
 /**
  * Priestess hero — lower damage but can heal herself.
  *
@@ -9,7 +11,13 @@ package edu.uw.tcss.dungeoneer.model;
  * @author Person 1
  * @version Iteration 1
  */
-public class Priestess extends Hero {
+public class Priestess extends Hero implements Serializable {
+
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /** Minimum HP healed by special skill. */
     private static final int HEAL_MIN = 20;

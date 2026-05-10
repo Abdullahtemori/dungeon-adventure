@@ -3,7 +3,7 @@ package edu.uw.tcss.dungeoneer.model;
 import edu.uw.tcss.dungeoneer.model.Difficulty;
 import edu.uw.tcss.dungeoneer.model.GameModel;
 import edu.uw.tcss.dungeoneer.model.Hero;
-//import edu.uw.tcss.dungeoneer.model.HeroFactory;
+//import edu.uw.tcss.dungeoneer.model.HeroFactory.java;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +21,7 @@ class GameModelTest {
     /** The GameModel instance used in each test. */
     private GameModel myModel;
 
-    /** A hero created by HeroFactory for use in tests. */
+    /** A hero created by HeroFactory.java for use in tests. */
     private Hero myHero;
 
     /**
@@ -30,12 +30,13 @@ class GameModelTest {
      */
     @BeforeEach
     void setUp() {
-       //final HeroFactory factory = new HeroFactory();
-       // myHero = factory.createHero("Warrior", "TestHero");
+        final HeroFactory factory = new HeroFactory();
+        myHero = factory.createHero("Warrior", "TestHero");
 
         // Pass null for dungeon — dungeon tests belong in DungeonTest
         myModel = new GameModel(null, myHero, Difficulty.MEDIUM);
     }
+
 
 
     /**

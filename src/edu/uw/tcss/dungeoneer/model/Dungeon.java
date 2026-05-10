@@ -1,5 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
@@ -16,7 +17,13 @@ import java.util.Set;
  * @author Tarik Atasoy
  * @version Iteration 1
  */
-public class Dungeon {
+public class Dungeon implements Serializable {
+
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /** The grid of rooms. */
     private final Room[][] myRooms;

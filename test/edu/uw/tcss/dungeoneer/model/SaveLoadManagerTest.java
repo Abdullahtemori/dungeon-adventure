@@ -1,11 +1,5 @@
 package edu.uw.tcss.dungeoneer.model;
 
-
-import edu.uw.tcss.dungeoneer.model.Difficulty;
-import edu.uw.tcss.dungeoneer.model.GameModel;
-import edu.uw.tcss.dungeoneer.model.Hero;
-//import edu.uw.tcss.dungeoneer.model.HeroFactory;
-import edu.uw.tcss.dungeoneer.model.SaveLoadManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,9 +27,9 @@ class SaveLoadManagerTest {
      */
     @BeforeEach
     void setUp() {
-//        final HeroFactory factory = new HeroFactory();
-//        final Hero hero = factory.createHero("Warrior", "TestHero");
-       // myModel = new GameModel(null, myHero, Difficulty.MEDIUM);
+        final HeroFactory factory = new HeroFactory();
+        final Hero theHero = factory.createHero("Warrior", "TestHero");
+        myModel = new GameModel(null, theHero, Difficulty.MEDIUM);
     }
 
     /**
@@ -46,7 +40,10 @@ class SaveLoadManagerTest {
     void tearDown() {
         final File file = new File(TEST_SAVE_PATH);
         if (file.exists()) {
-            file.delete();
+            final boolean deleted = file.delete(); // ← assign result
+            if (!deleted) {
+                System.err.println("Warning: could not delete test save file");
+            }
         }
     }
 
@@ -82,6 +79,9 @@ class SaveLoadManagerTest {
         assertNotNull(loaded,
                 "Loaded model should not be null");
     }
+
+
+
 
     /**
      * Tests that the loaded model has the correct difficulty.

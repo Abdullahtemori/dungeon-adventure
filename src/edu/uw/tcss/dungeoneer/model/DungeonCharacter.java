@@ -1,5 +1,7 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serializable;
+
 /**
  * Abstract base class for all dungeon characters (heroes and monsters).
  * Contains shared fields and behaviors such as attacking and HP management.
@@ -7,7 +9,12 @@ package edu.uw.tcss.dungeoneer.model;
  * @author Person 1
  * @version Iteration 1
  */
-public abstract class DungeonCharacter {
+public abstract class DungeonCharacter implements Serializable {
+    /**
+     * Serial Version UID required for safe serialization.
+     * If the class structure changes this number should be updated.
+     */
+    private static final long serialVersionUID = 1L;
 
     /** The character's name. */
     private String myName;
