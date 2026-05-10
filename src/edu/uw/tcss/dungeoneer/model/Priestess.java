@@ -1,6 +1,9 @@
 package edu.uw.tcss.dungeoneer.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Priestess hero — lower damage but can heal herself.
@@ -35,15 +38,22 @@ public class Priestess extends Hero implements Serializable {
     }
 
     /**
-     * Heal — restores 20–50 HP to self.
+     * Heal, restores 20-50 HP to self. The opponent argument is
+     * ignored; kept for signature compatibility with the abstract
+     * specialSkill in Hero.
      *
      * @param theOpponent not used for healing (heals self)
+     * @return list with one SPECIAL_HEAL event
      */
     @Override
-    public void specialSkill(final DungeonCharacter theOpponent) {
-        int heal = HEAL_MIN + (int) (Math.random() * (HEAL_MAX - HEAL_MIN + 1));
+    public List<CombatEvent> specialSkill(final DungeonCharacter theOpponent) {
+        final int heal = HEAL_MIN
+                + (int) (Math.random() * (HEAL_MAX - HEAL_MIN + 1));
         setHitPoints(getHitPoints() + heal);
-        System.out.println(getName() + " heals herself for " + heal + " HP!");
+        final List<CombatEvent> events = new ArrayList<>(1);
+        events.add(new CombatEvent(CombatEvent.Type.SPECIAL_HEAL,
+                getName(), getName(), heal));
+        return Collections.unmodifiableList(events);
     }
 
     @Override

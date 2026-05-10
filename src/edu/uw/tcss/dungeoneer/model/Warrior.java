@@ -1,6 +1,9 @@
 package edu.uw.tcss.dungeoneer.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Warrior hero — high HP and damage, special skill is Crushing Blow.
@@ -39,18 +42,26 @@ public class Warrior extends Hero implements Serializable {
 
     /**
      * Crushing Blow — 40% chance to deal 75–175 damage.
+     * Returns a single-element list with a SPECIAL_SUCCESS or
+     * SPECIAL_FAIL event describing the outcome.
      *
      * @param theOpponent the target
+     * @return list of events produced by this skill
      */
     @Override
-    public void specialSkill(final DungeonCharacter theOpponent) {
+    public List<CombatEvent> specialSkill(final DungeonCharacter theOpponent) {
+        final List<CombatEvent> events = new ArrayList<>(1);
         if (Math.random() < CRUSH_CHANCE) {
-            int damage = CRUSH_MIN + (int) (Math.random() * (CRUSH_MAX - CRUSH_MIN + 1));
+            final int damage = CRUSH_MIN
+                    + (int) (Math.random() * (CRUSH_MAX - CRUSH_MIN + 1));
             theOpponent.setHitPoints(theOpponent.getHitPoints() - damage);
-            System.out.println(getName() + " lands a Crushing Blow for " + damage + " damage!");
+            events.add(new CombatEvent(CombatEvent.Type.SPECIAL_SUCCESS,
+                    getName(), theOpponent.getName(), damage));
         } else {
-            System.out.println(getName() + "'s Crushing Blow missed!");
+            events.add(new CombatEvent(CombatEvent.Type.SPECIAL_FAIL,
+                    getName(), theOpponent.getName(), 0));
         }
+        return Collections.unmodifiableList(events);
     }
 
     @Override

@@ -58,19 +58,26 @@ public abstract class DungeonCharacter implements Serializable {
     /**
      * Attacks an opponent. If the attack hits (based on chance to hit),
      * random damage in [minDamage, maxDamage] is applied to the opponent.
+     * Returns a CombatEvent describing what happened so the view can
+     * render it; the model itself does no I/O.
+     *
+     * Note: this method does not check the opponent's block chance.
+     * Block resolution is handled by the Combat orchestrator before
+     * calling this method, since only Heroes block.
      *
      * @param theOpponent the character being attacked
+     * @return a CombatEvent (ATTACK_HIT or ATTACK_MISS) describing the result
      */
-    public void attack(final DungeonCharacter theOpponent) {
+    public CombatEvent attack(final DungeonCharacter theOpponent) {
         if (Math.random() < myChanceToHit) {
-            int damage = myMinDamage +
-                    (int) (Math.random() * (myMaxDamage - myMinDamage + 1));
+            final int damage = myMinDamage
+                    + (int) (Math.random() * (myMaxDamage - myMinDamage + 1));
             theOpponent.setHitPoints(theOpponent.getHitPoints() - damage);
-            System.out.println(myName + " attacks " + theOpponent.getName()
-                    + " for " + damage + " damage!");
-        } else {
-            System.out.println(myName + "'s attack missed!");
+            return new CombatEvent(CombatEvent.Type.ATTACK_HIT,
+                    myName, theOpponent.getName(), damage);
         }
+        return new CombatEvent(CombatEvent.Type.ATTACK_MISS,
+                myName, theOpponent.getName(), 0);
     }
 
     /** @return the character's name */

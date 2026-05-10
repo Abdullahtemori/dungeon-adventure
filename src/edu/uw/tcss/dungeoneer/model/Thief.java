@@ -1,6 +1,9 @@
 package edu.uw.tcss.dungeoneer.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Thief hero — fast attacker with a surprise attack special skill.
@@ -42,22 +45,29 @@ public class Thief extends Hero implements Serializable {
     /**
      * Surprise Attack special skill.
      * 40% chance of double attack, 20% caught (no attack), 40% normal attack.
+     * The events from any landed attacks are bundled and returned so
+     * the view can show all of them in order.
      *
      * @param theOpponent the target
+     * @return list of events produced by this skill (may be empty if caught)
      */
     @Override
-    public void specialSkill(final DungeonCharacter theOpponent) {
-        double roll = Math.random();
+    public List<CombatEvent> specialSkill(final DungeonCharacter theOpponent) {
+        final List<CombatEvent> events = new ArrayList<>();
+        final double roll = Math.random();
         if (roll < SUCCESS_CHANCE) {
-            System.out.println(getName() + "'s Surprise Attack succeeds! Two attacks!");
-            attack(theOpponent);
-            attack(theOpponent);
+            // Surprise Attack succeeded: thief gets two attacks this round.
+            events.add(attack(theOpponent));
+            events.add(attack(theOpponent));
         } else if (roll < SUCCESS_CHANCE + CAUGHT_CHANCE) {
-            System.out.println(getName() + " was caught! No attack this round.");
+            // Thief was caught, no attack at all.
+            events.add(new CombatEvent(CombatEvent.Type.SPECIAL_CAUGHT,
+                    getName(), theOpponent.getName(), 0));
         } else {
-            System.out.println(getName() + " performs a normal attack.");
-            attack(theOpponent);
+            // Normal attack fallback.
+            events.add(attack(theOpponent));
         }
+        return Collections.unmodifiableList(events);
     }
 
     @Override

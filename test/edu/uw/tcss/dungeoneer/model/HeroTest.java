@@ -6,8 +6,13 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * JUnit tests for Hero subclasses: Warrior, Priestess, Thief.
  *
- * @author Person 1
- * @version Iteration 1
+ * Updated for Iteration 2: specialSkill now returns a list of
+ * CombatEvent objects instead of being void. The tests still
+ * verify the same state changes (HP, damage, etc.) without
+ * relying on console output.
+ *
+ * @author Person 1, Tarik Atasoy
+ * @version Iteration 2
  */
 public class HeroTest {
 
@@ -64,6 +69,9 @@ public class HeroTest {
         int startHP = dummy.getHitPoints();
         for (int i = 0; i < 100; i++) {
             dummy.setHitPoints(startHP);
+            // specialSkill now returns a list of CombatEvent; we only
+            // care that the resulting damage stays in range, so the
+            // return value is intentionally unused here.
             w.specialSkill(dummy);
             int dmgDealt = startHP - dummy.getHitPoints();
             assertTrue(dmgDealt <= 175, "Crushing Blow max is 175");
