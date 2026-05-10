@@ -51,15 +51,23 @@ public abstract class Monster extends DungeonCharacter implements Serializable {
     }
 
     /**
-     * Attempts to heal. Only triggers if monster is still alive.
-     * Called after the monster takes damage.
+     * Attempts to heal after taking damage. Only triggers if the
+     * monster is still alive (HP > 0). Returns a CombatEvent if the
+     * heal succeeded, or null if the monster did not heal this time.
+     * Returning null instead of throwing keeps the call site (Combat)
+     * simple, it just adds non-null events to its log.
+     *
+     * @return a MONSTER_HEAL event if a heal occurred, otherwise null
      */
-    public void heal() {
+    public CombatEvent heal() {
         if (isAlive() && Math.random() < myChanceToHeal) {
-            int amount = myMinHeal + (int) (Math.random() * (myMaxHeal - myMinHeal + 1));
+            final int amount = myMinHeal
+                    + (int) (Math.random() * (myMaxHeal - myMinHeal + 1));
             setHitPoints(getHitPoints() + amount);
-            System.out.println(getName() + " heals for " + amount + " HP!");
+            return new CombatEvent(CombatEvent.Type.MONSTER_HEAL,
+                    getName(), getName(), amount);
         }
+        return null;
     }
 
     /** @return chance to heal */

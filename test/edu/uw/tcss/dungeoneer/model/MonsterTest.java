@@ -6,8 +6,12 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * JUnit tests for Monster subclasses: Ogre, Gremlin, Skeleton.
  *
- * @author Person 1
- * @version Iteration 1
+ * Updated for Iteration 2: heal() now returns a CombatEvent (or
+ * null) instead of being void. The tests still check the same HP
+ * changes, they just ignore the new return value.
+ *
+ * @author Person 1, Tarik Atasoy
+ * @version Iteration 2
  */
 public class MonsterTest {
 

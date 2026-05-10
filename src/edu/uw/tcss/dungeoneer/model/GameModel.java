@@ -17,7 +17,7 @@ import java.io.Serializable;
  * GameModel implements Serializable so the entire game state can be
  * saved to a file and loaded back later.
  *
- * @author Daniella Birungi
+ * @author Daniella Birungi, Tarik Atasoy
  * @version Iteration 2
  */
 public class GameModel implements Serializable {
@@ -56,6 +56,13 @@ public class GameModel implements Serializable {
      * Only meaningful when MyGameOver is also true.
      */
     private boolean myPlayerWon;
+
+    /**
+     * The currently active combat encounter, or null when the hero is
+     * not in a fight. The controller and view use this to drive the
+     * turn-based combat flow through the model.
+     */
+    private Combat myActiveCombat;
 
     /**
      * PropertyChangeSupport handles notifying the View when model
@@ -185,6 +192,46 @@ public class GameModel implements Serializable {
         final Hero oldVal = myHero;
         myHero = theHero;
         myPcs.firePropertyChange("hero", oldVal, theHero);
+    }
+
+    /**
+     * Returns the currently active combat, or null if the hero is not
+     * in a fight right now.
+     *
+     * @return active Combat instance, or null if no fight is active
+     */
+    public Combat getActiveCombat() {
+        return myActiveCombat;
+    }
+
+    /**
+     * Starts a new combat between the current hero and the given
+     * monster. Fires a "combat" property change so the view can
+     * switch into combat mode.
+     *
+     * @param theMonster the monster the hero just encountered
+     */
+    public void startCombat(final Monster theMonster) {
+        final Combat oldVal = myActiveCombat;
+        myActiveCombat = new Combat(myHero, theMonster);
+        if (myPcs == null) {
+            myPcs = new PropertyChangeSupport(this);
+        }
+        myPcs.firePropertyChange("combat", oldVal, myActiveCombat);
+    }
+
+    /**
+     * Ends the current combat (whether by victory, defeat, or flee).
+     * Fires a "combat" property change so the view can return to
+     * exploration mode.
+     */
+    public void endCombat() {
+        final Combat oldVal = myActiveCombat;
+        myActiveCombat = null;
+        if (myPcs == null) {
+            myPcs = new PropertyChangeSupport(this);
+        }
+        myPcs.firePropertyChange("combat", oldVal, null);
     }
 
     /**

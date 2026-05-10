@@ -59,11 +59,15 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
     }
 
     /**
-     * Each hero has a unique special skill.
+     * Each hero has a unique special skill. Implementations return a
+     * list of CombatEvent objects describing what happened so the
+     * view can render them; the model performs no I/O.
      *
      * @param theOpponent the target of the special skill
+     * @return list of events produced by this skill (never null)
      */
-    public abstract void specialSkill(final DungeonCharacter theOpponent);
+    public abstract java.util.List<CombatEvent> specialSkill(
+            final DungeonCharacter theOpponent);
 
     /**
      * Attempts to block an incoming attack.
