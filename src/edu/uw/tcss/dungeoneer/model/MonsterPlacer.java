@@ -24,8 +24,8 @@ import java.util.Random;
  *
  * This is a stateless utility class; all methods are static.
  *
- * @author Generated scaffold — fill in team member name
- * @version Iteration 2
+ * @author Abdullah Temori
+ * @version Iteration 3
  */
 public final class MonsterPlacer {
 
