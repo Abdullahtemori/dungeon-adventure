@@ -24,6 +24,7 @@ import java.util.List;
  *   4. As soon as either side hits 0 HP the fight is over.
  *
  * @author Tarik Atasoy
+ 
  * @version Iteration 2
  */
 public class Combat implements Serializable {
