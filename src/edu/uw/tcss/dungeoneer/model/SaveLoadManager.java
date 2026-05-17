@@ -44,6 +44,11 @@ public class SaveLoadManager {
      */
     public static boolean saveGame(final GameModel theModel,
                                    final String thePath) {
+
+        // Guard against null model
+        if(theModel == null) {
+            System.err.println("SaveLoadManager: cannot save null model");
+        }
         // Use default path if none provided
         final String path = (thePath == null || thePath.isEmpty())
                 ? DEFAULT_SAVE_PATH : thePath;
@@ -54,12 +59,14 @@ public class SaveLoadManager {
 
             // Write the entire GameModel object to the file
             oos.writeObject(theModel);
+            oos.flush();
             System.out.println("Game saved successfully to: " + path);
             return true;
 
         } catch (final IOException e) {
             // Saving failed — inform the player but don't crash
             System.err.println("Failed to save game: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -91,6 +98,12 @@ public class SaveLoadManager {
         final String path = (thePath == null || thePath.isEmpty())
                 ? DEFAULT_SAVE_PATH : thePath;
 
+        // check before trying open
+        if(!saveExists(path)) {
+            System.err.println("SaveLoadManager: save file not found: " + path);
+            return null;
+        }
+
         // Try-with-resources automatically closes the streams
         try (final FileInputStream fis = new FileInputStream(path);
              final ObjectInputStream ois = new ObjectInputStream(fis)) {
@@ -104,6 +117,7 @@ public class SaveLoadManager {
             // File not found or corrupted
             System.err.println("Failed to load save file: "
                     + e.getMessage());
+            e.printStackTrace();
             return null;
 
         } catch (final ClassNotFoundException e) {
@@ -146,6 +160,38 @@ public class SaveLoadManager {
      */
     public static boolean saveExists() {
         return saveExists(DEFAULT_SAVE_PATH);
+    }
+
+    /**
+     * Deletes the save file at the given path.
+     * Used by tests in tearDown() to clean up save files after each test
+     * so they do not affect other tests.
+     *
+     * @param thePath the file path to delete
+     * @return true if deleted successfully, false if file did not exist
+     */
+    public static boolean deleteSave(final String thePath) {
+        final String path = (thePath == null || thePath.isEmpty())
+                ? DEFAULT_SAVE_PATH : thePath;
+        final java.io.File file = new java.io.File(path);
+        if (file.exists()) {
+            final boolean deleted = file.delete();
+            if (!deleted) {
+                System.err.println(
+                        "SaveLoadManager: could not delete " + path);
+            }
+            return deleted;
+        }
+        return false;
+    }
+
+    /**
+     * Deletes the save file at the default path.
+     *
+     * @return true if deleted, false if file did not exist
+     */
+    public static boolean deleteSave() {
+        return deleteSave(DEFAULT_SAVE_PATH);
     }
 
 }
