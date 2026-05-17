@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * blocked movement, and isTraversable.
  *
  * @author Tarik Atasoy
- * @version Iteration 1
+ * @version Iteration 3
  */
 class DungeonTest {
 
@@ -205,5 +205,213 @@ class DungeonTest {
                 theCol + theDirection.getColOffset());
         from.setDoor(theDirection, true);
         to.setDoor(theDirection.opposite(), true);
+    }
+
+    /**
+     * Tests that moveHero succeeds northward when a door is present.
+     */
+    @Test
+    void testMoveHeroNorth() {
+        connect(myDungeon, 1, 1, Direction.NORTH);
+        myDungeon.setHeroPosition(1, 1);
+        assertTrue(myDungeon.moveHero(Direction.NORTH));
+        assertEquals(0, myDungeon.getHeroRow());
+        assertEquals(1, myDungeon.getHeroCol());
+    }
+
+    /**
+     * Tests that moveHero succeeds southward when a door is present.
+     */
+    @Test
+    void testMoveHeroSouth() {
+        connect(myDungeon, 1, 1, Direction.SOUTH);
+        myDungeon.setHeroPosition(1, 1);
+        assertTrue(myDungeon.moveHero(Direction.SOUTH));
+        assertEquals(2, myDungeon.getHeroRow());
+        assertEquals(1, myDungeon.getHeroCol());
+    }
+
+    /**
+     * Tests that moveHero succeeds eastward when a door is present.
+     */
+    @Test
+    void testMoveHeroEast() {
+        connect(myDungeon, 1, 1, Direction.EAST);
+        myDungeon.setHeroPosition(1, 1);
+        assertTrue(myDungeon.moveHero(Direction.EAST));
+        assertEquals(1, myDungeon.getHeroRow());
+        assertEquals(2, myDungeon.getHeroCol());
+    }
+
+    /**
+     * Tests that moveHero succeeds westward when a door is present.
+     */
+    @Test
+    void testMoveHeroWest() {
+        connect(myDungeon, 1, 1, Direction.WEST);
+        myDungeon.setHeroPosition(1, 1);
+        assertTrue(myDungeon.moveHero(Direction.WEST));
+        assertEquals(1, myDungeon.getHeroRow());
+        assertEquals(0, myDungeon.getHeroCol());
+    }
+
+    /**
+     * Tests that the hero cannot move past the north edge regardless
+     * of whether a door is set.
+     */
+    @Test
+    void testMoveHeroBlockedAtNorthEdge() {
+        myDungeon.getRoom(0, 1).setDoor(Direction.NORTH, true);
+        myDungeon.setHeroPosition(0, 1);
+        assertFalse(myDungeon.moveHero(Direction.NORTH));
+        assertEquals(0, myDungeon.getHeroRow());
+        assertEquals(1, myDungeon.getHeroCol());
+    }
+
+    /**
+     * Tests that the hero cannot move past the south edge.
+     */
+    @Test
+    void testMoveHeroBlockedAtSouthEdge() {
+        myDungeon.getRoom(2, 1).setDoor(Direction.SOUTH, true);
+        myDungeon.setHeroPosition(2, 1);
+        assertFalse(myDungeon.moveHero(Direction.SOUTH));
+        assertEquals(2, myDungeon.getHeroRow());
+        assertEquals(1, myDungeon.getHeroCol());
+    }
+
+    /**
+     * Tests that the hero cannot move past the east edge.
+     */
+    @Test
+    void testMoveHeroBlockedAtEastEdge() {
+        myDungeon.getRoom(1, 2).setDoor(Direction.EAST, true);
+        myDungeon.setHeroPosition(1, 2);
+        assertFalse(myDungeon.moveHero(Direction.EAST));
+        assertEquals(1, myDungeon.getHeroRow());
+        assertEquals(2, myDungeon.getHeroCol());
+    }
+
+    /**
+     * Tests that the hero cannot move past the west edge.
+     */
+    @Test
+    void testMoveHeroBlockedAtWestEdge() {
+        myDungeon.getRoom(1, 0).setDoor(Direction.WEST, true);
+        myDungeon.setHeroPosition(1, 0);
+        assertFalse(myDungeon.moveHero(Direction.WEST));
+        assertEquals(1, myDungeon.getHeroRow());
+        assertEquals(0, myDungeon.getHeroCol());
+    }
+
+    /**
+     * Tests that moveHero rejects a null direction.
+     */
+    @Test
+    void testMoveHeroRejectsNullDirection() {
+        myDungeon.setHeroPosition(1, 1);
+        assertThrows(IllegalArgumentException.class,
+                () -> myDungeon.moveHero(null));
+    }
+
+    /**
+     * Tests that getCurrentRoom returns null before the hero is
+     * placed.
+     */
+    @Test
+    void testGetCurrentRoomNullBeforePlacement() {
+        assertNull(myDungeon.getCurrentRoom());
+    }
+
+    /**
+     * Tests that getCurrentRoom returns the room at the hero's
+     * position and stays in sync across several moves.
+     */
+    @Test
+    void testGetCurrentRoomTracksHeroPosition() {
+        connect(myDungeon, 0, 0, Direction.EAST);
+        connect(myDungeon, 0, 1, Direction.SOUTH);
+        myDungeon.setHeroPosition(0, 0);
+
+        assertSame(myDungeon.getRoom(0, 0), myDungeon.getCurrentRoom());
+        assertTrue(myDungeon.moveHero(Direction.EAST));
+        assertSame(myDungeon.getRoom(0, 1), myDungeon.getCurrentRoom());
+        assertTrue(myDungeon.moveHero(Direction.SOUTH));
+        assertSame(myDungeon.getRoom(1, 1), myDungeon.getCurrentRoom());
+    }
+
+    /**
+     * Tests that the legacy getHeroRoom() accessor returns the same
+     * room as getCurrentRoom().
+     */
+    @Test
+    void testGetHeroRoomMatchesGetCurrentRoom() {
+        myDungeon.setHeroPosition(2, 0);
+        assertSame(myDungeon.getCurrentRoom(), myDungeon.getHeroRoom());
+    }
+
+    /**
+     * Tests that the hero cannot move through a wall (no door).
+     */
+    @Test
+    void testHeroCannotMoveThroughWall() {
+        myDungeon.setHeroPosition(1, 1);
+        for (final Direction dir : Direction.values()) {
+            assertFalse(myDungeon.moveHero(dir),
+                    "Hero should not pass through wall in " + dir);
+        }
+        assertEquals(1, myDungeon.getHeroRow());
+        assertEquals(1, myDungeon.getHeroCol());
+    }
+
+    /**
+     * Tests that the hero's position is updated correctly after a
+     * valid move through an open door.
+     */
+    @Test
+    void testHeroPositionUpdatesAfterValidMove() {
+        connect(myDungeon, 0, 0, Direction.EAST);
+        myDungeon.setHeroPosition(0, 0);
+
+        assertEquals(0, myDungeon.getHeroRow());
+        assertEquals(0, myDungeon.getHeroCol());
+
+        assertTrue(myDungeon.moveHero(Direction.EAST));
+        assertEquals(0, myDungeon.getHeroRow());
+        assertEquals(1, myDungeon.getHeroCol());
+        assertSame(myDungeon.getRoom(0, 1), myDungeon.getCurrentRoom());
+    }
+
+    /**
+     * Tests that getSurroundingRooms returns 3 rooms when the hero
+     * is in a corner.
+     */
+    @Test
+    void testGetSurroundingRoomsAtCornerReturns3() {
+        myDungeon.setHeroPosition(0, 0);
+        assertEquals(3, myDungeon.getSurroundingRooms().size(),
+                "Corner position should expose 3 neighbours");
+    }
+
+    /**
+     * Tests that getSurroundingRooms returns 5 rooms when the hero
+     * is on a non-corner edge.
+     */
+    @Test
+    void testGetSurroundingRoomsAtEdgeReturns5() {
+        myDungeon.setHeroPosition(0, 1);
+        assertEquals(5, myDungeon.getSurroundingRooms().size(),
+                "Edge position should expose 5 neighbours");
+    }
+
+    /**
+     * Tests that getSurroundingRooms returns 8 rooms when the hero
+     * is at an interior position.
+     */
+    @Test
+    void testGetSurroundingRoomsAtInteriorReturns8() {
+        myDungeon.setHeroPosition(1, 1);
+        assertEquals(8, myDungeon.getSurroundingRooms().size(),
+                "Interior position should expose 8 neighbours");
     }
 }

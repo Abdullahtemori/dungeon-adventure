@@ -4,8 +4,11 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.function.Supplier;
 
 /**
  * Builds a randomly generated Dungeon. Callers pick a difficulty
@@ -22,16 +25,18 @@ import java.util.Random;
  *      not the entrance or exit.
  *   4. Sprinkle pits, healing potions, vision potions, and bombs
  *      into the remaining rooms with a small probability each.
- *   5. Place the hero on the entrance.
+ *   5. Populate rooms with monsters drawn from the MonsterFactory.
+ *      Pillar rooms, the exit, and rooms next to the exit always
+ *      receive a strong monster (Ogre). The entrance never gets
+ *      a monster. The spawn rate for normal rooms is per-difficulty
+ *      and may be overridden via monsterChance.
+ *   6. Place the hero on the entrance.
  *
  * After population the layout is verified with a BFS traversability
  * check. If the check fails the dungeon is discarded and rebuilt.
  *
- * Monster placement, save/load, and the SQLite monster table are
- * handled in separate tasks.
- *
  * @author Tarik Atasoy
- * @version Iteration 2
+ * @version Iteration 3
  */
 public class DungeonBuilder {
 
@@ -47,6 +52,15 @@ public class DungeonBuilder {
     /** Sentinel meaning "no custom size set; fall back to difficulty". */
     private static final int SIZE_UNSET = -1;
 
+    /** Default monster spawn chance for normal rooms, per difficulty. */
+    private static final Map<Difficulty, Double> DEFAULT_MONSTER_CHANCE;
+    static {
+        DEFAULT_MONSTER_CHANCE = new EnumMap<>(Difficulty.class);
+        DEFAULT_MONSTER_CHANCE.put(Difficulty.EASY, 0.15);
+        DEFAULT_MONSTER_CHANCE.put(Difficulty.MEDIUM, 0.25);
+        DEFAULT_MONSTER_CHANCE.put(Difficulty.HARD, 0.35);
+    }
+
     /** Difficulty for the next dungeon. */
     private Difficulty myDifficulty = Difficulty.MEDIUM;
 
@@ -58,6 +72,32 @@ public class DungeonBuilder {
 
     /** Probability for each item type in a normal room. */
     private double myItemChance = DEFAULT_ITEM_CHANCE;
+
+    /**
+     * Monster spawn chance override for normal rooms, or null to
+     * fall back to the per-difficulty default.
+     */
+    private Double myMonsterChance;
+
+    /**
+     * Supplier for normal-room monsters. Defaults to the shared
+     * MonsterFactory's createRandom() on first use; tests can inject
+     * a stub to avoid hitting the database.
+     */
+    private Supplier<Monster> myRandomMonsterSupplier;
+
+    /**
+     * Supplier for tougher monsters used in pillar, exit, and exit
+     * adjacent rooms. Defaults to MonsterFactory.createByName("Ogre").
+     */
+    private Supplier<Monster> myStrongMonsterSupplier;
+
+    /**
+     * Lazily constructed MonsterFactory shared by the default
+     * suppliers. Built on first build() so unit tests that never
+     * call build() avoid the SQLite load.
+     */
+    private MonsterFactory myMonsterFactory;
 
     /** Random source. Can be swapped out so tests stay deterministic. */
     private Random myRandom = new Random();
@@ -129,6 +169,49 @@ public class DungeonBuilder {
     }
 
     /**
+     * Overrides the per-difficulty default monster spawn chance for
+     * normal rooms. Pillar rooms, the exit, and exit-adjacent rooms
+     * always get a monster regardless of this value.
+     *
+     * @param theChance probability between 0.0 and 1.0
+     * @return this builder, for chaining
+     */
+    public DungeonBuilder monsterChance(final double theChance) {
+        if (theChance < 0.0 || theChance > 1.0) {
+            throw new IllegalArgumentException(
+                    "Monster chance must be between 0.0 and 1.0.");
+        }
+        myMonsterChance = theChance;
+        return this;
+    }
+
+    /**
+     * Injects the supplier used for normal-room monsters. Intended
+     * for tests that need deterministic placement without touching
+     * the SQLite database.
+     *
+     * @param theSupplier the supplier to use
+     * @return this builder, for chaining
+     */
+    public DungeonBuilder monsterSupplier(final Supplier<Monster> theSupplier) {
+        myRandomMonsterSupplier = theSupplier;
+        return this;
+    }
+
+    /**
+     * Injects the supplier used for strong (guardian) monsters in
+     * pillar rooms, the exit, and exit-adjacent rooms.
+     *
+     * @param theSupplier the supplier to use
+     * @return this builder, for chaining
+     */
+    public DungeonBuilder strongMonsterSupplier(
+            final Supplier<Monster> theSupplier) {
+        myStrongMonsterSupplier = theSupplier;
+        return this;
+    }
+
+    /**
      * Builds and returns a new randomly generated dungeon. The maze
      * carving step already produces a connected layout, but we still
      * verify with isTraversable() and rebuild if a future change
@@ -148,11 +231,112 @@ public class DungeonBuilder {
             placeEntranceAndExit(dungeon);
             placePillars(dungeon);
             placeRandomContent(dungeon);
+            placeMonsters(dungeon);
 
             if (dungeon.isTraversable()) {
                 return dungeon;
             }
         }
+    }
+
+    /**
+     * Populates the given dungeon with monsters. Rules:
+     *   - The entrance room never gets a monster.
+     *   - Every pillar room gets a strong (Ogre) guardian.
+     *   - The exit room and every room orthogonally adjacent to the
+     *     exit get a strong guardian.
+     *   - All other rooms have a monster placed with probability
+     *     equal to the effective monster chance (per difficulty or
+     *     the explicit override). Those use MonsterFactory.createRandom().
+     *
+     * Public so external callers (e.g. a legacy MonsterPlacer
+     * wrapper) can repopulate an existing dungeon without going
+     * through a full build().
+     *
+     * @param theDungeon the dungeon to populate
+     */
+    public void placeMonsters(final Dungeon theDungeon) {
+        ensureMonsterSuppliers();
+        final int rows = theDungeon.getRows();
+        final int cols = theDungeon.getCols();
+        final int exitRow = rows - 1;
+        final int exitCol = cols - 1;
+        final double chance = effectiveMonsterChance();
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                final Room room = theDungeon.getRoom(r, c);
+                if (room.hasEntrance()) {
+                    room.setMonster(null);
+                    continue;
+                }
+                if (room.hasExit() || room.getPillar() != null
+                        || isOrthogonallyAdjacent(r, c, exitRow, exitCol)) {
+                    room.setMonster(myStrongMonsterSupplier.get());
+                    continue;
+                }
+                if (myRandom.nextDouble() < chance) {
+                    room.setMonster(myRandomMonsterSupplier.get());
+                } else {
+                    room.setMonster(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Resolves the effective monster spawn chance for the current
+     * configuration. Explicit override wins over the difficulty
+     * default.
+     *
+     * @return chance in [0.0, 1.0]
+     */
+    private double effectiveMonsterChance() {
+        if (myMonsterChance != null) {
+            return myMonsterChance;
+        }
+        return DEFAULT_MONSTER_CHANCE.getOrDefault(myDifficulty, 0.25);
+    }
+
+    /**
+     * Initializes the default monster suppliers on first use. The
+     * MonsterFactory is built lazily so the SQLite database is only
+     * touched when a real dungeon is being built.
+     */
+    private void ensureMonsterSuppliers() {
+        if (myRandomMonsterSupplier != null
+                && myStrongMonsterSupplier != null) {
+            return;
+        }
+        if (myMonsterFactory == null) {
+            myMonsterFactory = new MonsterFactory();
+        }
+        if (myRandomMonsterSupplier == null) {
+            myRandomMonsterSupplier = myMonsterFactory::createRandom;
+        }
+        if (myStrongMonsterSupplier == null) {
+            myStrongMonsterSupplier = () -> myMonsterFactory.createByName("Ogre");
+        }
+    }
+
+    /**
+     * Returns true if (theRow, theCol) is orthogonally adjacent to
+     * (theTargetRow, theTargetCol) (i.e. shares an edge, not the
+     * same cell).
+     *
+     * @param theRow        source row
+     * @param theCol        source column
+     * @param theTargetRow  target row
+     * @param theTargetCol  target column
+     * @return true if the two cells are orthogonal neighbours
+     */
+    private static boolean isOrthogonallyAdjacent(final int theRow,
+                                                  final int theCol,
+                                                  final int theTargetRow,
+                                                  final int theTargetCol) {
+        final int dr = Math.abs(theRow - theTargetRow);
+        final int dc = Math.abs(theCol - theTargetCol);
+        return dr + dc == 1;
     }
 
     /**
