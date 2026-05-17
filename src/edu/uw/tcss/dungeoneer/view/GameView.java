@@ -1,4 +1,4 @@
-package edu.uw.tcss.dungeoneer.model;
+package edu.uw.tcss.dungeoneer.view;
 
 import edu.uw.tcss.dungeoneer.model.Dungeon;
 import edu.uw.tcss.dungeoneer.model.Hero;
@@ -73,4 +73,21 @@ public interface GameView extends PropertyChangeListener {
      * @param theHero the hero whose stats to display
      */
     void displayHeroStats(Hero theHero);
+
+    /**
+     * Prompts the player to select a combat action.
+     * Blocks execution until a valid selection is made.
+     *
+     * @return the selected HeroAction enum variant
+     */
+    edu.uw.tcss.dungeoneer.model.HeroAction promptHeroAction();
+
+    /**
+     * Translates a combat model event into visual or textual feedback.
+     *
+     * @param theEvent the event detailing actions, damage, or item use
+     */
+    void displayCombatEvent(edu.uw.tcss.dungeoneer.model.CombatEvent theEvent);
+
+
 }

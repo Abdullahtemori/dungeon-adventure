@@ -48,6 +48,7 @@ public class SaveLoadManager {
         // Guard against null model
         if(theModel == null) {
             System.err.println("SaveLoadManager: cannot save null model");
+            return false;
         }
         // Use default path if none provided
         final String path = (thePath == null || thePath.isEmpty())

@@ -1,10 +1,7 @@
 package edu.uw.tcss.dungeoneer.model;
 
 import java.io.Serializable;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A 2D grid of Room objects that makes up the dungeon. The dungeon
@@ -105,6 +102,24 @@ public class Dungeon implements Serializable {
             return null;
         }
         return myRooms[myHeroRow][myHeroCol];
+    }
+
+    /**
+     * Gets a collection of valid rooms immediately adjacent to the hero's position.
+     * Useful for vision potions or map rendering.
+     */
+    public List<Room> getSurroundingRooms() {
+        List<Room> surrounding = new ArrayList<>();
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+
+        for (int[] dir : directions) {
+            int targetRow = myHeroRow + dir[0];
+            int targetCol = myHeroCol + dir[1];
+            if (inBounds(targetRow, targetCol)) {
+                surrounding.add(myRooms[targetRow][targetCol]);
+            }
+        }
+        return surrounding;
     }
 
     /**
