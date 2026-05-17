@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * built dungeon is traversable.
  *
  * @author Tarik Atasoy
- * @version Iteration 2
+ * @version Iteration 3
  */
 class DungeonBuilderTest {
 
@@ -32,7 +32,19 @@ class DungeonBuilderTest {
         return new DungeonBuilder()
                 .setDifficulty(theDifficulty)
                 .random(new Random(theSeed))
+                .monsterSupplier(DungeonBuilderTest::stubGremlin)
+                .strongMonsterSupplier(DungeonBuilderTest::stubOgre)
                 .build();
+    }
+
+    /** Stub supplier for normal-room monsters; avoids DB access. */
+    private static Monster stubGremlin() {
+        return new Gremlin();
+    }
+
+    /** Stub supplier for strong monsters; avoids DB access. */
+    private static Monster stubOgre() {
+        return new Ogre();
     }
 
     /**
@@ -66,32 +78,46 @@ class DungeonBuilderTest {
     }
 
     /**
-     * Tests that a built dungeon has exactly one entrance and
-     * exactly one exit.
+     * Tests that a built dungeon has exactly one entrance room.
      */
     @Test
-    void testExactlyOneEntranceAndExit() {
+    void testDungeonHasExactlyOneEntrance() {
         final Dungeon d = build(Difficulty.MEDIUM, 42L);
 
         int entrances = 0;
-        int exits = 0;
         for (int r = 0; r < d.getRows(); r++) {
             for (int c = 0; c < d.getCols(); c++) {
-                final Room room = d.getRoom(r, c);
-                if (room.hasEntrance()) {
+                if (d.getRoom(r, c).hasEntrance()) {
                     entrances++;
-                }
-                if (room.hasExit()) {
-                    exits++;
                 }
             }
         }
         assertEquals(1, entrances, "Should have exactly one entrance");
+    }
+
+    /**
+     * Tests that a built dungeon has exactly one exit room.
+     */
+    @Test
+    void testDungeonHasExactlyOneExit() {
+        final Dungeon d = build(Difficulty.MEDIUM, 42L);
+
+        int exits = 0;
+        for (int r = 0; r < d.getRows(); r++) {
+            for (int c = 0; c < d.getCols(); c++) {
+                if (d.getRoom(r, c).hasExit()) {
+                    exits++;
+                }
+            }
+        }
         assertEquals(1, exits, "Should have exactly one exit");
     }
 
     /**
-     * Tests that the entrance and exit rooms have no other content.
+     * Tests that the entrance and exit rooms have no items or pits.
+     * The exit is allowed to hold a guardian monster (placed by
+     * placeMonsters), but the entrance must be fully clear including
+     * of monsters.
      */
     @Test
     void testEntranceAndExitRoomsAreEmpty() {
@@ -108,7 +134,10 @@ class DungeonBuilderTest {
                 assertNull(room.getBomb());
                 assertNull(room.getPillar());
                 assertFalse(room.hasPit());
-                assertFalse(room.hasMonster());
+                if (room.hasEntrance()) {
+                    assertFalse(room.hasMonster(),
+                            "Entrance must not hold a monster");
+                }
             }
         }
     }
@@ -126,32 +155,65 @@ class DungeonBuilderTest {
     }
 
     /**
-     * Tests that the four pillars are placed in four distinct rooms
-     * and that none of those rooms are the entrance or exit.
+     * Tests that the four pillars are placed in four distinct rooms.
      */
     @Test
-    void testFourDistinctPillarsPlaced() {
+    void testAllFourPillarsInSeparateRooms() {
         final Dungeon d = build(Difficulty.MEDIUM, 99L);
 
         final Set<Pillar> seen = new HashSet<>();
         int pillarRooms = 0;
         for (int r = 0; r < d.getRows(); r++) {
             for (int c = 0; c < d.getCols(); c++) {
-                final Room room = d.getRoom(r, c);
-                final Pillar p = room.getPillar();
+                final Pillar p = d.getRoom(r, c).getPillar();
                 if (p == null) {
                     continue;
                 }
                 pillarRooms++;
                 seen.add(p);
-                assertFalse(room.hasEntrance(),
-                        "Pillar should not be in the entrance room");
-                assertFalse(room.hasExit(),
-                        "Pillar should not be in the exit room");
             }
         }
         assertEquals(4, pillarRooms, "Should have exactly 4 pillar rooms");
         assertEquals(4, seen.size(), "All four pillars should be different");
+    }
+
+    /**
+     * Tests that no pillar shares a room with the entrance or exit.
+     */
+    @Test
+    void testNoPillarSharesRoomWithEntranceOrExit() {
+        for (long seed = 0; seed < 10; seed++) {
+            final Dungeon d = build(Difficulty.MEDIUM, seed);
+            for (int r = 0; r < d.getRows(); r++) {
+                for (int c = 0; c < d.getCols(); c++) {
+                    final Room room = d.getRoom(r, c);
+                    if (room.getPillar() == null) {
+                        continue;
+                    }
+                    assertFalse(room.hasEntrance(),
+                            "Pillar in entrance at (" + r + "," + c
+                                    + ") seed=" + seed);
+                    assertFalse(room.hasExit(),
+                            "Pillar in exit at (" + r + "," + c
+                                    + ") seed=" + seed);
+                }
+            }
+        }
+    }
+
+    /**
+     * Tests that a built dungeon is traversable from its entrance
+     * to its exit.
+     */
+    @Test
+    void testDungeonTraversableFromEntranceToExit() {
+        final Dungeon d = build(Difficulty.MEDIUM, 123L);
+        assertTrue(d.getRoom(0, 0).hasEntrance(),
+                "Top-left should be the entrance");
+        assertTrue(d.getRoom(d.getRows() - 1, d.getCols() - 1).hasExit(),
+                "Bottom-right should be the exit");
+        assertTrue(d.isTraversable(),
+                "There should be a path from entrance to exit");
     }
 
     /**
@@ -180,6 +242,8 @@ class DungeonBuilderTest {
                 .setDifficulty(Difficulty.EASY)
                 .random(new Random(123L))
                 .itemChance(0.0)
+                .monsterSupplier(DungeonBuilderTest::stubGremlin)
+                .strongMonsterSupplier(DungeonBuilderTest::stubOgre)
                 .build();
 
         for (int r = 0; r < d.getRows(); r++) {
@@ -231,6 +295,8 @@ class DungeonBuilderTest {
                 .setDifficulty(Difficulty.HARD)
                 .setSize(4, 6)
                 .random(new Random(11L))
+                .monsterSupplier(DungeonBuilderTest::stubGremlin)
+                .strongMonsterSupplier(DungeonBuilderTest::stubOgre)
                 .build();
         assertEquals(4, d.getRows());
         assertEquals(6, d.getCols());
@@ -294,6 +360,8 @@ class DungeonBuilderTest {
                 .setDifficulty(Difficulty.EASY)
                 .random(new Random(5L))
                 .itemChance(1.0)
+                .monsterSupplier(DungeonBuilderTest::stubGremlin)
+                .strongMonsterSupplier(DungeonBuilderTest::stubOgre)
                 .build();
         for (int r = 0; r < d.getRows(); r++) {
             for (int c = 0; c < d.getCols(); c++) {
@@ -325,5 +393,166 @@ class DungeonBuilderTest {
                                 + diff + " seed=" + seed);
             }
         }
+    }
+
+    /**
+     * Tests that every pillar room contains a monster after build.
+     */
+    @Test
+    void testEveryPillarRoomHasMonster() {
+        final Dungeon d = build(Difficulty.MEDIUM, 33L);
+        int pillarRoomsChecked = 0;
+        for (int r = 0; r < d.getRows(); r++) {
+            for (int c = 0; c < d.getCols(); c++) {
+                final Room room = d.getRoom(r, c);
+                if (room.getPillar() != null) {
+                    pillarRoomsChecked++;
+                    assertTrue(room.hasMonster(),
+                            "Pillar room (" + r + "," + c
+                                    + ") is missing a monster");
+                }
+            }
+        }
+        assertEquals(4, pillarRoomsChecked, "Expected 4 pillar rooms");
+    }
+
+    /**
+     * Tests that the exit room always contains a monster.
+     */
+    @Test
+    void testExitRoomHasMonster() {
+        final Dungeon d = build(Difficulty.MEDIUM, 44L);
+        final Room exit = d.getRoom(d.getRows() - 1, d.getCols() - 1);
+        assertTrue(exit.hasExit(), "Bottom-right should be the exit");
+        assertTrue(exit.hasMonster(), "Exit room must hold a monster");
+    }
+
+    /**
+     * Tests that the entrance room never contains a monster.
+     */
+    @Test
+    void testEntranceRoomHasNoMonster() {
+        for (long seed = 0; seed < 10; seed++) {
+            final Dungeon d = build(Difficulty.MEDIUM, seed);
+            final Room entrance = d.getRoom(0, 0);
+            assertTrue(entrance.hasEntrance());
+            assertFalse(entrance.hasMonster(),
+                    "Entrance must never contain a monster (seed=" + seed + ")");
+        }
+    }
+
+    /**
+     * Tests that pillar rooms and the exit receive the strong
+     * monster supplier output rather than the regular one.
+     */
+    @Test
+    void testStrongMonsterUsedForPillarAndExitRooms() {
+        final Dungeon d = new DungeonBuilder()
+                .setDifficulty(Difficulty.MEDIUM)
+                .random(new Random(7L))
+                .monsterSupplier(DungeonBuilderTest::stubGremlin)
+                .strongMonsterSupplier(DungeonBuilderTest::stubOgre)
+                .build();
+
+        // Exit room must hold an Ogre (from the strong supplier).
+        final Room exit = d.getRoom(d.getRows() - 1, d.getCols() - 1);
+        assertInstanceOf(Ogre.class, exit.getMonster(),
+                "Exit room should contain the strong monster");
+
+        // Every pillar room must hold an Ogre.
+        for (int r = 0; r < d.getRows(); r++) {
+            for (int c = 0; c < d.getCols(); c++) {
+                final Room room = d.getRoom(r, c);
+                if (room.getPillar() != null) {
+                    assertInstanceOf(Ogre.class, room.getMonster(),
+                            "Pillar room (" + r + "," + c
+                                    + ") should hold the strong monster");
+                }
+            }
+        }
+    }
+
+    /**
+     * Tests that monsterChance(0.0) leaves all non-guardian rooms
+     * free of monsters.
+     */
+    @Test
+    void testMonsterChanceZeroLeavesNormalRoomsMonsterFree() {
+        final Dungeon d = new DungeonBuilder()
+                .setDifficulty(Difficulty.MEDIUM)
+                .random(new Random(2L))
+                .monsterChance(0.0)
+                .monsterSupplier(DungeonBuilderTest::stubGremlin)
+                .strongMonsterSupplier(DungeonBuilderTest::stubOgre)
+                .build();
+
+        final int exitRow = d.getRows() - 1;
+        final int exitCol = d.getCols() - 1;
+
+        for (int r = 0; r < d.getRows(); r++) {
+            for (int c = 0; c < d.getCols(); c++) {
+                final Room room = d.getRoom(r, c);
+                final boolean isGuardian = room.hasExit()
+                        || room.getPillar() != null
+                        || (Math.abs(r - exitRow) + Math.abs(c - exitCol)) == 1;
+                if (room.hasEntrance() || isGuardian) {
+                    continue;
+                }
+                assertFalse(room.hasMonster(),
+                        "Normal room (" + r + "," + c
+                                + ") should be monster-free at chance 0.0");
+            }
+        }
+    }
+
+    /**
+     * Tests that monsterChance(1.0) places a monster in every
+     * non-entrance room.
+     */
+    @Test
+    void testMonsterChanceOneFillsAllNonEntranceRooms() {
+        final Dungeon d = new DungeonBuilder()
+                .setDifficulty(Difficulty.EASY)
+                .random(new Random(3L))
+                .monsterChance(1.0)
+                .monsterSupplier(DungeonBuilderTest::stubGremlin)
+                .strongMonsterSupplier(DungeonBuilderTest::stubOgre)
+                .build();
+
+        for (int r = 0; r < d.getRows(); r++) {
+            for (int c = 0; c < d.getCols(); c++) {
+                final Room room = d.getRoom(r, c);
+                if (room.hasEntrance()) {
+                    assertFalse(room.hasMonster());
+                } else {
+                    assertTrue(room.hasMonster(),
+                            "Room (" + r + "," + c
+                                    + ") should hold a monster at chance 1.0");
+                }
+            }
+        }
+    }
+
+    /**
+     * Tests that monsterChance rejects out-of-range values.
+     */
+    @Test
+    void testMonsterChanceRejectsBadValues() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new DungeonBuilder().monsterChance(-0.01));
+        assertThrows(IllegalArgumentException.class,
+                () -> new DungeonBuilder().monsterChance(1.01));
+    }
+
+    /**
+     * Tests that monsterChance and the supplier setters return the
+     * same builder for chaining.
+     */
+    @Test
+    void testMonsterBuilderMethodsAreChainable() {
+        final DungeonBuilder b = new DungeonBuilder();
+        assertSame(b, b.monsterChance(0.5));
+        assertSame(b, b.monsterSupplier(DungeonBuilderTest::stubGremlin));
+        assertSame(b, b.strongMonsterSupplier(DungeonBuilderTest::stubOgre));
     }
 }

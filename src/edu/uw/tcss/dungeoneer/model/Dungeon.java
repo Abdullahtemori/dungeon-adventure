@@ -96,8 +96,14 @@ public class Dungeon implements Serializable {
         return myHeroCol;
     }
 
-    /** @return the room the hero is currently in, or null if not placed */
-    public Room getHeroRoom() {
+    /**
+     * Returns the room at the hero's current position, or null if
+     * the hero has not been placed yet. Primary accessor used by
+     * movement, combat, and rendering code.
+     *
+     * @return the room the hero is currently in, or null
+     */
+    public Room getCurrentRoom() {
         if (myHeroRow < 0 || myHeroCol < 0) {
             return null;
         }
@@ -105,16 +111,35 @@ public class Dungeon implements Serializable {
     }
 
     /**
-     * Gets a collection of valid rooms immediately adjacent to the hero's position.
-     * Useful for vision potions or map rendering.
+     * Legacy alias for {@link #getCurrentRoom()}. Kept so older
+     * controller code that calls getHeroRoom() keeps working; new
+     * callers should prefer getCurrentRoom().
+     *
+     * @return the room the hero is currently in, or null if not placed
+     */
+    @Deprecated
+    public Room getHeroRoom() {
+        return getCurrentRoom();
+    }
+
+    /**
+     * Returns the rooms immediately surrounding the hero on the
+     * 3x3 patch centered on the current position (orthogonal and
+     * diagonal neighbours). Cells outside the grid are skipped, so
+     * a corner position yields 3 rooms, an edge position yields 5,
+     * and an interior position yields 8.
+     *
+     * @return list of in-bounds neighbouring rooms (never null)
      */
     public List<Room> getSurroundingRooms() {
-        List<Room> surrounding = new ArrayList<>();
-        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
-
-        for (int[] dir : directions) {
-            int targetRow = myHeroRow + dir[0];
-            int targetCol = myHeroCol + dir[1];
+        final List<Room> surrounding = new ArrayList<>();
+        final int[][] offsets = {
+                {-1, 0}, {1, 0}, {0, -1}, {0, 1},
+                {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+        };
+        for (final int[] off : offsets) {
+            final int targetRow = myHeroRow + off[0];
+            final int targetCol = myHeroCol + off[1];
             if (inBounds(targetRow, targetCol)) {
                 surrounding.add(myRooms[targetRow][targetCol]);
             }
@@ -140,14 +165,19 @@ public class Dungeon implements Serializable {
 
     /**
      * Tries to move the hero one step in the given direction. The
-     * move only succeeds if the current room has a door on that
-     * side and the target room is inside the grid.
+     * move only succeeds if the hero has been placed, the current
+     * room has a door on that side, and the target room is inside
+     * the grid.
      *
      * @param theDirection the direction to move in
      * @return true if the hero moved, false otherwise
      */
     public boolean moveHero(final Direction theDirection) {
-        final Room current = getHeroRoom();
+        if (theDirection == null) {
+            throw new IllegalArgumentException(
+                    "Direction must not be null.");
+        }
+        final Room current = getCurrentRoom();
         if (current == null || !current.hasDoor(theDirection)) {
             return false;
         }

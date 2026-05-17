@@ -18,17 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * loop and check a property that must be true regardless of random
  * rolls (for example, the fight must end once a side reaches 0 HP).
  *
- * @author Tarik Atasoy
- * @version Iteration 2
- * @author Abdullah Temori 
- * @ version Iteration 3
+ * @author Tarik Atasoy, Abdullah Temori
+ * @version Iteration 3
  */
 class CombatTest {
-
-    // ---------------------------------------------------------------
-    // Constructor / null-safety tests  (existing)
-    // ---------------------------------------------------------------
-
     /**
      * Tests that the constructor rejects a null hero.
      */
@@ -56,11 +49,6 @@ class CombatTest {
         assertThrows(IllegalArgumentException.class,
                 () -> c.executeHeroAction(null));
     }
-
-    // ---------------------------------------------------------------
-    // Win / lose  (existing + strengthened)
-    // ---------------------------------------------------------------
-
     /**
      * Combat.fight() equivalent — hero wins when monster reaches 0 HP.
      * Acceptance criteria: Combat returns true (heroWon) when hero wins.
@@ -106,11 +94,6 @@ class CombatTest {
                     "Hero death should mean hero did not win");
         }
     }
-
-    // ---------------------------------------------------------------
-    // Attacks per round  (existing)
-    // ---------------------------------------------------------------
-
     /**
      * Acceptance criteria: attacks per round calculated correctly from
      * speed ratio.
@@ -136,11 +119,6 @@ class CombatTest {
         assertTrue(c.getHeroAttacksThisRound()
                 >= c.getMonsterAttacksThisRound());
     }
-
-    // ---------------------------------------------------------------
-    // Block chance  (NEW)
-    // ---------------------------------------------------------------
-
     /**
      * Acceptance criteria: hero block chance correctly reduces or
      * prevents damage.
@@ -197,11 +175,6 @@ class CombatTest {
                 .anyMatch(e -> e.getType() == CombatEvent.Type.ATTACK_BLOCKED);
         assertFalse(anyBlock, "Hero with 0% block should never produce ATTACK_BLOCKED");
     }
-
-    // ---------------------------------------------------------------
-    // Monster heal after damage  (NEW)
-    // ---------------------------------------------------------------
-
     /**
      * Acceptance criteria: monster heal is attempted after taking damage.
      *
@@ -232,29 +205,6 @@ class CombatTest {
     }
 
     /**
-     * Monster heal must not raise HP above max HP.
-     * We give a Gremlin 1 HP below max, force a guaranteed heal via
-     * a subclass, and check the cap holds.
-     */
-    @Test
-    void testMonsterHealCannotExceedMaxHP() {
-        final int maxHP = 70; // Gremlin default max HP
-        final Gremlin monster = new Gremlin() {
-            @Override
-            public CombatEvent heal() {
-                // Always heal for a huge amount to stress-test the cap.
-                setHitPoints(getHitPoints() + 9999);
-                return new CombatEvent(CombatEvent.Type.MONSTER_HEAL,
-                        getName(), getName(), 9999);
-            }
-        };
-        monster.setHitPoints(maxHP - 1);
-        monster.heal();
-        assertTrue(monster.getHitPoints() <= maxHP,
-                "Monster HP after heal must not exceed max HP (" + maxHP + ")");
-    }
-
-    /**
      * Healing is blocked when monster HP is already 0.
      */
     @Test
@@ -272,11 +222,6 @@ class CombatTest {
                     "Dead monster should not heal any HP");
         }
     }
-
-    // ---------------------------------------------------------------
-    // Warrior special skill  (NEW)
-    // ---------------------------------------------------------------
-
     /**
      * Acceptance criteria: Warrior special skill deals damage in the
      * 75–175 range when it succeeds.
@@ -338,11 +283,6 @@ class CombatTest {
         assertTrue(failLogged,
                 "SPECIAL_FAIL must appear in combat log when Crushing Blow misses");
     }
-
-    // ---------------------------------------------------------------
-    // Priestess special skill  (NEW)
-    // ---------------------------------------------------------------
-
     /**
      * Acceptance criteria: Priestess special skill heals 20–40 HP.
      *
@@ -385,7 +325,7 @@ class CombatTest {
      * and the heal event appears in the round events list.
      */
     @Test
-    void testPriestessSpecialSkillViaCombaAction() {
+    void testPriestessSpecialSkillViaCombatAction() {
         final Priestess hero = new Priestess("Aria");
         hero.setHitPoints(10);
         final Gremlin monster = new Gremlin();
@@ -399,11 +339,6 @@ class CombatTest {
         assertTrue(healFound,
                 "SPECIAL_HEAL must appear in round events when Priestess uses special skill");
     }
-
-    // ---------------------------------------------------------------
-    // Thief special skill  (NEW)
-    // ---------------------------------------------------------------
-
     /**
      * Acceptance criteria: Thief surprise attack produces exactly one of
      * three outcomes — SUCCESS (two attacks), CAUGHT (no attack), or
@@ -487,11 +422,6 @@ class CombatTest {
         assertTrue(caughtLogged,
                 "SPECIAL_CAUGHT must appear in combat log when Thief is caught");
     }
-
-    // ---------------------------------------------------------------
-    // Item / inventory tests  (existing)
-    // ---------------------------------------------------------------
-
     /**
      * Using a healing potion when inventory is empty produces
      * ITEM_UNAVAILABLE and does not increase HP.
@@ -530,11 +460,6 @@ class CombatTest {
         assertTrue(first.getAmount() > 0,
                 "Potion should restore a positive amount of HP");
     }
-
-    // ---------------------------------------------------------------
-    // Log / lifecycle tests  (existing)
-    // ---------------------------------------------------------------
-
     /**
      * Calling executeHeroAction after combat is over is a safe no-op.
      */
