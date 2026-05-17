@@ -87,7 +87,8 @@ public abstract class DungeonCharacter implements Serializable {
     public int getHitPoints() { return myHitPoints; }
 
     /** @param theHP new hit points value */
-    public void setHitPoints(final int theHP) { myHitPoints = theHP; }
+    public void setHitPoints(final int theHP) {
+        this.myHitPoints = Math.max(0, theHP); }
 
     /** @return minimum damage */
     public int getMinDamage() { return myMinDamage; }
