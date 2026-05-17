@@ -2,6 +2,8 @@ package edu.uw.tcss.dungeoneer.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 /**
@@ -70,6 +72,31 @@ public class GameModel implements Serializable {
      * be serialized. It will be rebuilt when the game is loaded.
      */
     private transient PropertyChangeSupport myPcs;
+
+    /**
+     * Property name fired when gameOver changes
+     */
+    public static final String PROP_GAME_OVER = "gameOver";
+
+    /**
+     * Property name fired when playerWon changes
+     */
+    public static final String PROP_PLAYER_WON = "playerWon";
+
+    /**
+     * Property name fired when dungeon changes
+     */
+    public static final String PROP_DUNGEON = "dungeon";
+
+    /**
+     * Property name fired when hero changes
+     */
+    public static final String PROP_HERO = "hero";
+
+    /**
+     * Property name fired when combat starts and ends
+     */
+    public static final String PROP_COMBAT = "combat";
 
     /**
      * Constructs a GameModel with the given dungeon, hero, and difficulty.
@@ -152,7 +179,7 @@ public class GameModel implements Serializable {
 
         // Notify the View that gameOver has changed
         // The View can then show a game over or victory screen
-        myPcs.firePropertyChange("gameOver", oldVal, theVal);
+        myPcs.firePropertyChange(PROP_GAME_OVER, oldVal, theVal);
     }
 
     /**
@@ -167,7 +194,7 @@ public class GameModel implements Serializable {
         myPlayerWon = theVal;
 
         // Notify the View so it can display the victory screen
-        myPcs.firePropertyChange("playerWon", oldVal, theVal);
+        myPcs.firePropertyChange(PROP_PLAYER_WON, oldVal, theVal);
     }
 
     /**
@@ -217,7 +244,7 @@ public class GameModel implements Serializable {
         if (myPcs == null) {
             myPcs = new PropertyChangeSupport(this);
         }
-        myPcs.firePropertyChange("combat", oldVal, myActiveCombat);
+        myPcs.firePropertyChange(PROP_COMBAT, oldVal, myActiveCombat);
     }
 
     /**
@@ -231,7 +258,7 @@ public class GameModel implements Serializable {
         if (myPcs == null) {
             myPcs = new PropertyChangeSupport(this);
         }
-        myPcs.firePropertyChange("combat", oldVal, null);
+        myPcs.firePropertyChange(PROP_COMBAT, oldVal, null);
     }
 
     /**
@@ -261,6 +288,23 @@ public class GameModel implements Serializable {
         if (myPcs != null) {
             myPcs.removePropertyChangeListener(theListener);
         }
+    }
+
+    /**
+     * Rebuilds PropertyChangeSupport during deserialization.
+     * myPcs is transient so Java skips it when loading.
+     * This method is called automatically by Java during loading.
+     *
+     * @param theIn the object input stream
+     * @throws IOException if reading fails
+     * @throws ClassNotFoundException if class not found
+     */
+    private void readObject(final ObjectInputStream theIn)
+            throws IOException, ClassNotFoundException {
+        // Read all non-transient fields normally
+        theIn.defaultReadObject();
+        // Rebuild the transient field
+        myPcs = new PropertyChangeSupport(this);
     }
 
     /**
