@@ -6,13 +6,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Priestess hero — lower damage but can heal herself.
+ * Priestess hero — lower damage than other heroes, but can heal herself
+ * during combat using her special skill.
  *
  * Stats:
  *   HP: 75 | Speed: 5 | Hit Chance: 70% | Damage: 25–45 | Block: 30%
  *
- * @author Person 1
- * @version Iteration 1
+ * Special Skill — Heal:
+ *   Always succeeds; restores 20–50 HP to self.
+ *
+ * @author Person 1, Abdullah Temori
+ * @version Iteration 4
  */
 public class Priestess extends Hero implements Serializable {
 
@@ -22,28 +26,30 @@ public class Priestess extends Hero implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    /** Minimum HP healed by special skill. */
+    /** Minimum HP restored by the Heal special skill. */
     private static final int HEAL_MIN = 20;
 
-    /** Maximum HP healed by special skill. */
+    /** Maximum HP restored by the Heal special skill. */
     private static final int HEAL_MAX = 50;
 
     /**
-     * Constructs a Priestess with the given name and default stats.
+     * Constructs a Priestess with the given player-chosen name and default stats.
      *
-     * @param theName the priestess's name
+     * @param theName the priestess's display name; must not be null or empty
      */
     public Priestess(final String theName) {
         super(theName, 75, 25, 45, 5, 0.7, 0.3);
     }
 
     /**
-     * Heal, restores 20-50 HP to self. The opponent argument is
-     * ignored; kept for signature compatibility with the abstract
-     * specialSkill in Hero.
+     * Heal special skill.
+     * Restores 20–50 HP to the Priestess herself. This skill always
+     * succeeds and ignores the opponent argument, which is accepted only
+     * to satisfy the abstract method signature defined in Hero.
      *
-     * @param theOpponent not used for healing (heals self)
-     * @return list with one SPECIAL_HEAL event
+     * @param theOpponent the current combat opponent; not used by this skill
+     * @return an unmodifiable single-element list containing a
+     *         SPECIAL_HEAL event with the amount of HP restored
      */
     @Override
     public List<CombatEvent> specialSkill(final DungeonCharacter theOpponent) {
@@ -56,6 +62,11 @@ public class Priestess extends Hero implements Serializable {
         return Collections.unmodifiableList(events);
     }
 
+    /**
+     * Returns a string representation of this Priestess.
+     *
+     * @return formatted string prefixed with "Priestess"
+     */
     @Override
     public String toString() {
         return "Priestess | " + super.toString();
