@@ -4,12 +4,15 @@ import java.io.Serializable;
 
 /**
  * Abstract base class for all dungeon characters (heroes and monsters).
- * Contains shared fields and behaviors such as attacking and HP management.
+ * Contains shared fields and behaviours such as attacking and HP management.
+ * All concrete character types (Hero subclasses and Monster subclasses)
+ * extend this class and inherit its attack logic and stat accessors.
  *
- * @author Person 1
- * @version Iteration 1
+ * @author Person 1, Abdullah Temori
+ * @version Iteration 4
  */
 public abstract class DungeonCharacter implements Serializable {
+
     /**
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
@@ -22,13 +25,13 @@ public abstract class DungeonCharacter implements Serializable {
     /** The character's current hit points. */
     private int myHitPoints;
 
-    /** Minimum damage this character can deal. */
+    /** Minimum damage this character can deal per attack. */
     private int myMinDamage;
 
-    /** Maximum damage this character can deal. */
+    /** Maximum damage this character can deal per attack. */
     private int myMaxDamage;
 
-    /** Attack speed (higher = faster). */
+    /** Attack speed (higher value means faster). */
     private int myAttackSpeed;
 
     /** Probability of landing an attack (0.0 to 1.0). */
@@ -37,20 +40,21 @@ public abstract class DungeonCharacter implements Serializable {
     /**
      * Constructs a DungeonCharacter with the given stats.
      *
-     * @param theName       character name
-     * @param theHP         starting hit points
-     * @param theMinDmg     minimum damage per attack
-     * @param theMaxDmg     maximum damage per attack
-     * @param theSpeed      attack speed
-     * @param theChanceToHit probability to hit (0.0–1.0)
+     * @param theName        the character's display name
+     * @param theHP          starting hit points
+     * @param theMinDmg      minimum damage per attack
+     * @param theMaxDmg      maximum damage per attack
+     * @param theSpeed       attack speed
+     * @param theChanceToHit probability to hit per swing (0.0–1.0)
      */
     protected DungeonCharacter(final String theName, final int theHP,
-                                final int theMinDmg, final int theMaxDmg,
-                                final int theSpeed, final double theChanceToHit) {
-        myName = theName;
-        myHitPoints = theHP;
-        myMinDamage = theMinDmg;
-        myMaxDamage = theMaxDmg;
+                               final int theMinDmg, final int theMaxDmg,
+                               final int theSpeed,
+                               final double theChanceToHit) {
+        myName       = theName;
+        myHitPoints  = theHP;
+        myMinDamage  = theMinDmg;
+        myMaxDamage  = theMaxDmg;
         myAttackSpeed = theSpeed;
         myChanceToHit = theChanceToHit;
     }
@@ -63,10 +67,11 @@ public abstract class DungeonCharacter implements Serializable {
      *
      * Note: this method does not check the opponent's block chance.
      * Block resolution is handled by the Combat orchestrator before
-     * calling this method, since only Heroes block.
+     * calling this method, since only Heroes can block.
      *
-     * @param theOpponent the character being attacked
-     * @return a CombatEvent (ATTACK_HIT or ATTACK_MISS) describing the result
+     * @param theOpponent the character being attacked; must not be null
+     * @return a CombatEvent of type ATTACK_HIT if the attack landed,
+     *         or ATTACK_MISS if it did not
      */
     public CombatEvent attack(final DungeonCharacter theOpponent) {
         if (Math.random() < myChanceToHit) {
@@ -80,35 +85,85 @@ public abstract class DungeonCharacter implements Serializable {
                 myName, theOpponent.getName(), 0);
     }
 
-    /** @return the character's name */
-    public String getName() { return myName; }
-
-    /** @return current hit points */
-    public int getHitPoints() { return myHitPoints; }
-
-    /** @param theHP new hit points value */
-    public void setHitPoints(final int theHP) {
-        this.myHitPoints = Math.max(0, theHP); }
-
-    /** @return minimum damage */
-    public int getMinDamage() { return myMinDamage; }
-
-    /** @return maximum damage */
-    public int getMaxDamage() { return myMaxDamage; }
-
-    /** @return attack speed */
-    public int getAttackSpeed() { return myAttackSpeed; }
-
-    /** @return chance to hit */
-    public double getChanceToHit() { return myChanceToHit; }
-
-    /** @return true if character has more than 0 HP */
-    public boolean isAlive() { return myHitPoints > 0; }
+    /**
+     * Returns the character's display name.
+     *
+     * @return the name of this character
+     */
+    public String getName() {
+        return myName;
+    }
 
     /**
-     * Returns a string representation of this character.
+     * Returns the character's current hit points.
      *
-     * @return formatted character info
+     * @return current HP (always >= 0)
+     */
+    public int getHitPoints() {
+        return myHitPoints;
+    }
+
+    /**
+     * Sets the character's current hit points.
+     * Values below zero are clamped to zero so HP never goes negative.
+     *
+     * @param theHP the new hit points value
+     */
+    public void setHitPoints(final int theHP) {
+        myHitPoints = Math.max(0, theHP);
+    }
+
+    /**
+     * Returns the minimum damage this character deals per attack.
+     *
+     * @return minimum damage value
+     */
+    public int getMinDamage() {
+        return myMinDamage;
+    }
+
+    /**
+     * Returns the maximum damage this character deals per attack.
+     *
+     * @return maximum damage value
+     */
+    public int getMaxDamage() {
+        return myMaxDamage;
+    }
+
+    /**
+     * Returns the character's attack speed.
+     * Higher values allow more swings per combat round relative to slower
+     * opponents; see Combat.attacksPerRound() for the formula.
+     *
+     * @return attack speed (positive integer)
+     */
+    public int getAttackSpeed() {
+        return myAttackSpeed;
+    }
+
+    /**
+     * Returns the probability that this character's attack lands.
+     *
+     * @return chance to hit, in the range 0.0 (never) to 1.0 (always)
+     */
+    public double getChanceToHit() {
+        return myChanceToHit;
+    }
+
+    /**
+     * Returns whether this character is still alive.
+     *
+     * @return true if current HP is greater than zero, false otherwise
+     */
+    public boolean isAlive() {
+        return myHitPoints > 0;
+    }
+
+    /**
+     * Returns a string representation of this character's name and HP.
+     *
+     * @return formatted character info string
      */
     @Override
     public String toString() {
