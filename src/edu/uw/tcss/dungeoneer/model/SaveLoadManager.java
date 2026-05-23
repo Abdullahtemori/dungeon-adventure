@@ -22,7 +22,7 @@ public class SaveLoadManager {
      * The default file name used when no path is specified.
      * Saved in the project root directory.
      */
-    private static final String DEFAULT_SAVE_PATH = "dungeoneer_save.sav";
+    public static final String DEFAULT_SAVE_PATH = "dungeoneer_save.sav";
 
     /**
      * Private constructor — this class should never be instantiated.

@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="510a188e-bbe5-4e45-b744-140b6974b9b9" name="Changes" comment="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully&#10;Implementation of GameModel.java&#10;Implementation of SaveLoadManager.java&#10;Implementation of GameModelTest.java&#10;Implementation of SaveLoadManagerTest.java&#10;Changes to RoomTest.java&#10;implementation of ItemIntergrationTest.java" />
+    <list default="true" id="510a188e-bbe5-4e45-b744-140b6974b9b9" name="Changes" comment="Implementation of WinLoseConditionTest.java" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,7 +21,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="DaniellaHB" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -49,39 +49,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Downloaded.Files.Path.Enabled": "true",
-    "JUnit.BombTest.executor": "Run",
-    "JUnit.GameModelTest.executor": "Run",
-    "JUnit.HealingPotionTest.executor": "Run",
-    "JUnit.InventoryTest.executor": "Run",
-    "JUnit.ItemIntegrationTest.executor": "Run",
-    "JUnit.ItemTest.executor": "Run",
-    "JUnit.PillarTest.executor": "Run",
-    "JUnit.RoomTest.executor": "Run",
-    "JUnit.SaveLoadManagerTest.executor": "Run",
-    "JUnit.SaveLoadManagerTest.testLoadGameDebug.executor": "Debug",
-    "JUnit.SaveLoadManagerTest.testLoadGameReturnsModel.executor": "Run",
-    "JUnit.SaveLoadManagerTest.testSaveGameDebug.executor": "Debug",
-    "JUnit.VisionPotionTest.executor": "Debug",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "false",
-    "Repository.Attach.Sources": "false",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/daniellabirungi/IdeaProjects/dungeon-adventure",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "advanced.settings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.DungeonAdventure.executor&quot;: &quot;Run&quot;,
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;true&quot;,
+    &quot;JUnit.BombTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.GameModelTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.HealingPotionTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.IntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.InventoryTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ItemIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ItemTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.PillarTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.RoomTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;JUnit.SaveLoadManagerTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.SaveLoadManagerTest.testLoadGameDebug.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.SaveLoadManagerTest.testLoadGameReturnsModel.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.SaveLoadManagerTest.testSaveGameDebug.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.VisionPotionTest.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.WinLoseConditionTest.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;DaniellaSprint4&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/daniellabirungi/IdeaProjects/dungeon-adventure&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src" />
@@ -102,12 +105,12 @@
       <recent name="edu.uw.tcss.dungeoneer.model" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.SaveLoadManagerTest.testLoadGameDebug">
     <configuration name="SaveLoadManagerTest.testLoadGameDebug" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="dungeon-adventure" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="edu.uw.tcss.dungeoneer.model.*" />
+          <option name="PATTERN" value="edu.uw.tcss.dungeoneer.view.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -123,7 +126,7 @@
       <module name="dungeon-adventure" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="edu.uw.tcss.dungeoneer.model.*" />
+          <option name="PATTERN" value="edu.uw.tcss.dungeoneer.view.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -139,7 +142,7 @@
       <module name="dungeon-adventure" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="edu.uw.tcss.dungeoneer.model.*" />
+          <option name="PATTERN" value="edu.uw.tcss.dungeoneer.view.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -150,17 +153,6 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="dungeon-adventure" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="dungeon-adventure" />
-      <option name="filePath" />
-      <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
@@ -289,7 +281,71 @@
       <option name="project" value="LOCAL" />
       <updated>1778430327909</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully&#10;Implementation of GameModel.java&#10;Implementation of SaveLoadManager.java&#10;Implementation of GameModelTest.java&#10;Implementation of SaveLoadManagerTest.java&#10;Changes to RoomTest.java&#10;implementation of ItemIntergrationTest.java&#10;added Serializable to all hero and monster classes">
+      <option name="closed" value="true" />
+      <created>1778431123339</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1778431123339</updated>
+    </task>
+    <task id="LOCAL-00015" summary="fixing errors in GameModel.java">
+      <option name="closed" value="true" />
+      <created>1779024854159</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1779024854159</updated>
+    </task>
+    <task id="LOCAL-00016" summary="fixing errors in SaveLoadManager.java">
+      <option name="closed" value="true" />
+      <created>1779026353613</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1779026353613</updated>
+    </task>
+    <task id="LOCAL-00017" summary="fixing errors in SaveLoadManagerTest.java">
+      <option name="closed" value="true" />
+      <created>1779026372842</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1779026372842</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Implementation of GameView.java">
+      <option name="closed" value="true" />
+      <created>1779027160373</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1779027160373</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Implementation of ConsoleView.java">
+      <option name="closed" value="true" />
+      <created>1779027193709</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1779027193709</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Implementation of GameController.java&#10;changes to SaveLoadManager.java, GameView.java,ConsoleView.java,DungeonCharacter.java, and Dungeon.java&#10;moved ConsoleView.java and GameView.java">
+      <option name="closed" value="true" />
+      <created>1779031820001</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1779031820001</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Implementation of WinLoseConditionTest.java">
+      <option name="closed" value="true" />
+      <created>1779031851256</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1779031851256</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -302,10 +358,27 @@
     <MESSAGE value="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files" />
     <MESSAGE value="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully" />
     <MESSAGE value="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully&#10;Implementation of GameModel.java&#10;Implementation of SaveLoadManager.java&#10;Implementation of GameModelTest.java&#10;Implementation of SaveLoadManagerTest.java&#10;Changes to RoomTest.java&#10;implementation of ItemIntergrationTest.java" />
-    <option name="LAST_COMMIT_MESSAGE" value="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully&#10;Implementation of GameModel.java&#10;Implementation of SaveLoadManager.java&#10;Implementation of GameModelTest.java&#10;Implementation of SaveLoadManagerTest.java&#10;Changes to RoomTest.java&#10;implementation of ItemIntergrationTest.java" />
+    <MESSAGE value="InventoryTest.java deleted and  new individual tests for each class created&#10;Formating of model java files&#10;Intial implementation of testing files&#10;all files have been test and pass successfully&#10;Implementation of GameModel.java&#10;Implementation of SaveLoadManager.java&#10;Implementation of GameModelTest.java&#10;Implementation of SaveLoadManagerTest.java&#10;Changes to RoomTest.java&#10;implementation of ItemIntergrationTest.java&#10;added Serializable to all hero and monster classes" />
+    <MESSAGE value="fixing errors in GameModel.java" />
+    <MESSAGE value="fixing errors in SaveLoadManager.java" />
+    <MESSAGE value="fixing errors in SaveLoadManagerTest.java" />
+    <MESSAGE value="Implementation of GameView.java" />
+    <MESSAGE value="Implementation of ConsoleView.java" />
+    <MESSAGE value="Implementation of GameController.java&#10;changes to SaveLoadManager.java, GameView.java,ConsoleView.java,DungeonCharacter.java, and Dungeon.java&#10;moved ConsoleView.java and GameView.java" />
+    <MESSAGE value="Implementation of WinLoseConditionTest.java" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implementation of WinLoseConditionTest.java" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/dungeon_adventure$RoomTest.ic" NAME="RoomTest Coverage Results" MODIFIED="1778447805014" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>edu.uw.tcss.dungeoneer.model.*</FILTER>
+    </SUITE>
     <SUITE FILE_PATH="coverage/dungeon_adventure$SaveLoadManagerTest_testSaveGameDebug.ic" NAME="SaveLoadManagerTest.testSaveGameDebug Coverage Results" MODIFIED="1778268894354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>edu.uw.tcss.dungeoneer.model.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/dungeon_adventure$ItemIntegrationTest.ic" NAME="ItemIntegrationTest Coverage Results" MODIFIED="1778447729498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>edu.uw.tcss.dungeoneer.model.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/dungeon_adventure$GameModelTest.ic" NAME="GameModelTest Coverage Results" MODIFIED="1778447696514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
       <FILTER>edu.uw.tcss.dungeoneer.model.*</FILTER>
     </SUITE>
   </component>

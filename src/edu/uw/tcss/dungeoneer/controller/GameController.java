@@ -43,7 +43,6 @@ public class GameController {
 
     /**
      * Starts a new game with the given hero name, class, and difficulty.
-     *
      * Steps:
      * 1. Build the dungeon using DungeonBuilder
      * 2. Create the hero using HeroFactory
@@ -77,10 +76,10 @@ public class GameController {
         myRunning = true;
 
         // Step 5: Apply room entry effects at starting room (entrance)
-        onEnterRoom(dungeon.getHeroRoom());
+        onEnterRoom(dungeon.getCurrentRoom());
 
         // Show the starting room
-        myView.displayRoom(dungeon.getHeroRoom());
+        myView.displayRoom(dungeon.getCurrentRoom());
         myView.displayHeroStats(hero);
     }
 
@@ -133,13 +132,12 @@ public class GameController {
 
         myView.displayMessage("Game loaded successfully.");
         myView.displayDungeon(myModel.getDungeon());
-        myView.displayRoom(myModel.getDungeon().getHeroRoom());
+        myView.displayRoom(myModel.getDungeon().getCurrentRoom());
         myView.displayHeroStats(myModel.getHero());
     }
 
     /**
      * Handles the player choosing to move in a direction.
-     *
      * Steps:
      * 1. Attempt to move in the dungeon
      * 2. If move succeeded, apply room entry effects
@@ -160,7 +158,7 @@ public class GameController {
         }
 
         // Hero moved — apply room effects
-        final Room currentRoom = dungeon.getHeroRoom();
+        final Room currentRoom = dungeon.getCurrentRoom();
         onEnterRoom(currentRoom);
 
         // Check if the game has ended
@@ -180,7 +178,6 @@ public class GameController {
 
     /**
      * Applies all effects when the hero enters a room.
-     *
      * This method handles:
      * - Automatic item pickup (potions, bombs, pillars)
      * - Pit damage
@@ -336,6 +333,9 @@ public class GameController {
                 "A " + theMonster.getName()
                         + " blocks your path! Combat begins!");
 
+        // Store combat in model so CombatPanel can access it
+        myModel.startCombat(theMonster);
+
         final Hero hero = myModel.getHero();
         final Combat combat = new Combat(hero, theMonster);
 
@@ -362,7 +362,7 @@ public class GameController {
                     "You defeated the " + theMonster.getName() + "!");
 
             // Remove the monster from the room
-            myModel.getDungeon().getHeroRoom().setMonster(null);
+            myModel.getDungeon().getCurrentRoom().setMonster(null);
             myView.displayHeroStats(hero);
         } else {
             // Hero died — end the game
@@ -374,8 +374,47 @@ public class GameController {
     }
 
     /**
-     * Checks whether the game has ended after a room entry.
+     * Processes a single hero combat action during an active combat encounter.
+     * Called by CombatPanel when the player clicks an action button.
      *
+     * @param theAction the action the player chose (ATTACK, SPECIAL_SKILL, etc.)
+     */
+    public void handleCombatAction(final HeroAction theAction) {
+        // Guard —> do nothing if no active combat in the model
+        if (myModel == null || myModel.getActiveCombat() == null) {
+            myView.displayMessage("No active combat.");
+            return;
+        }
+
+        final Combat combat = myModel.getActiveCombat();
+        final Hero hero = myModel.getHero();
+
+        // Execute one round with the chosen action
+        final java.util.List<CombatEvent> events =
+                combat.executeHeroAction(theAction);
+
+        // Send each event to the view for display
+        for (final CombatEvent event : events) {
+            myView.displayCombatEvent(event);
+        }
+
+        // Check if combat ended after this round
+        if (combat.isOver()) {
+            if (combat.heroWon()) {
+                myView.displayMessage(
+                        "You defeated " + combat.getMonster().getName() + "!");
+                myModel.getDungeon().getCurrentRoom().setMonster(null);
+                myModel.endCombat();
+            } else {
+                myView.displayMessage("You have been defeated...");
+                myModel.setGameOver(true);
+                myModel.endCombat();
+            }
+        }
+    }
+
+    /**
+     * Checks whether the game has ended after a room entry.
      * Win condition: Hero has all 4 pillars AND is at the exit.
      * Lose condition: Hero HP is 0 or below.
      *
@@ -384,7 +423,7 @@ public class GameController {
     public boolean checkWinLose() {
         final Hero hero = myModel.getHero();
         final Room currentRoom =
-                myModel.getDungeon().getHeroRoom();
+                myModel.getDungeon().getCurrentRoom();
 
         // Check lose condition first (hero could die from pit)
         if (!hero.isAlive()) {
