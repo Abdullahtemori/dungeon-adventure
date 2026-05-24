@@ -4,6 +4,7 @@ import edu.uw.tcss.dungeoneer.controller.GameController;
 import edu.uw.tcss.dungeoneer.model.Difficulty;
 import edu.uw.tcss.dungeoneer.model.Direction;
 import edu.uw.tcss.dungeoneer.model.SaveLoadManager;
+import edu.uw.tcss.dungeoneer.view.AudioManager;
 import edu.uw.tcss.dungeoneer.view.ConsoleView;
 import edu.uw.tcss.dungeoneer.view.GameView;
 import edu.uw.tcss.dungeoneer.view.SwingView;
@@ -66,6 +67,8 @@ public final class DungeonAdventure {
         SwingUtilities.invokeLater(() -> {
             final SwingView view = new SwingView();
             final GameController controller = new GameController(view);
+            AudioManager.getInstance().playMusic(
+                    AudioManager.MUSIC_MENU);
             view.setController(controller);
             view.show();
         });

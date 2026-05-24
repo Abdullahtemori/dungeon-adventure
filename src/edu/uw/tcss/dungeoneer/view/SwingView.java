@@ -53,6 +53,9 @@ public class SwingView implements GameView {
     /** Color for the nav button panel border. */
     private static final Color PANEL_BORDER = new Color(80, 80, 100);
 
+    /** Dedicated scrollable text area for the active turn combat logs. */
+    private JTextArea myMapArea;
+
     /** The main application window. */
     private final JFrame myFrame;
 
@@ -115,6 +118,7 @@ public class SwingView implements GameView {
         myFrame.setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
         myFrame.getContentPane().setBackground(BG_COLOR);
 
+
         // Create log area (read-only, scrollable)
         myLogArea = new JTextArea(LOG_ROWS, LOG_COLS);
         myLogArea.setEditable(false);
@@ -162,7 +166,42 @@ public class SwingView implements GameView {
      */
     public void setController(final GameController theController) {
         myController = theController;
-        attachListeners();
+
+        myFrame.setFocusable(true);
+        myFrame.requestFocusInWindow();
+
+        myFrame.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    // WASD / Arrows Navigation Controls
+                    case java.awt.event.KeyEvent.VK_W:
+                    case java.awt.event.KeyEvent.VK_UP:
+                        myController.handleMove(Direction.NORTH);
+                        break;
+                    case java.awt.event.KeyEvent.VK_S:
+                    case java.awt.event.KeyEvent.VK_DOWN:
+                        myController.handleMove(Direction.SOUTH);
+                        break;
+                    case java.awt.event.KeyEvent.VK_A:
+                    case java.awt.event.KeyEvent.VK_LEFT:
+                        myController.handleMove(Direction.WEST);
+                        break;
+                    case java.awt.event.KeyEvent.VK_D:
+                    case java.awt.event.KeyEvent.VK_RIGHT:
+                        myController.handleMove(Direction.EAST);
+                        break;
+
+                    // Hotkey Inventory Consumption
+                    case java.awt.event.KeyEvent.VK_H:
+                        myController.handleUseHealingPotion();
+                        break;
+                    case java.awt.event.KeyEvent.VK_V:
+                        myController.handleUseVisionPotion();
+                        break;
+                }
+            }
+        });
     }
 
     /**
@@ -216,7 +255,10 @@ public class SwingView implements GameView {
      */
     @Override
     public void displayDungeon(final Dungeon theDungeon) {
-        appendLog("\n  DUNGEON MAP:\n" + theDungeon.toString());
+        SwingUtilities.invokeLater(() -> {
+            // Updates map text layout
+            myMapArea.setText(theDungeon.toString());
+        });
     }
 
     /**
