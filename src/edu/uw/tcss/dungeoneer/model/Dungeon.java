@@ -12,7 +12,7 @@ import java.util.*;
  * items, pillars, entrance, and exit lives in DungeonBuilder.
  *
  * @author Tarik Atasoy
- * @version Iteration 1
+ * @version Iteration 4
  */
 public class Dungeon implements Serializable {
 
@@ -61,12 +61,20 @@ public class Dungeon implements Serializable {
         myHeroCol = -1;
     }
 
-    /** @return number of rows */
+    /**
+     * Returns the number of rows in the dungeon grid.
+     *
+     * @return the row count of this dungeon
+     */
     public int getRows() {
         return myRows;
     }
 
-    /** @return number of columns */
+    /**
+     * Returns the number of columns in the dungeon grid.
+     *
+     * @return the column count of this dungeon
+     */
     public int getCols() {
         return myCols;
     }
@@ -86,12 +94,20 @@ public class Dungeon implements Serializable {
         return myRooms[theRow][theCol];
     }
 
-    /** @return the hero's current row, or -1 if not placed */
+    /**
+     * Returns the hero's current row index.
+     *
+     * @return the hero's row, or -1 if the hero has not been placed
+     */
     public int getHeroRow() {
         return myHeroRow;
     }
 
-    /** @return the hero's current column, or -1 if not placed */
+    /**
+     * Returns the hero's current column index.
+     *
+     * @return the hero's column, or -1 if the hero has not been placed
+     */
     public int getHeroCol() {
         return myHeroCol;
     }
