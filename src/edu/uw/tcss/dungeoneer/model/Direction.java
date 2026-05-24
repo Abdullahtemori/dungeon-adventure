@@ -5,7 +5,7 @@ package edu.uw.tcss.dungeoneer.model;
  * inside the dungeon.
  *
  * @author Tarik Atasoy
- * @version Iteration 1
+ * @version Iteration 4
  */
 public enum Direction {
 
@@ -38,12 +38,22 @@ public enum Direction {
         myColOffset = theColOffset;
     }
 
-    /** @return the row offset for this direction */
+    /**
+     * Returns the row delta applied when the hero moves one step
+     * in this direction.
+     *
+     * @return the row offset for this direction
+     */
     public int getRowOffset() {
         return myRowOffset;
     }
 
-    /** @return the column offset for this direction */
+    /**
+     * Returns the column delta applied when the hero moves one step
+     * in this direction.
+     *
+     * @return the column offset for this direction
+     */
     public int getColOffset() {
         return myColOffset;
     }

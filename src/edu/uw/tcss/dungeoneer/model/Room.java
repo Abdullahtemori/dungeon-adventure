@@ -14,7 +14,7 @@ import java.util.Map;
  * inventory methods expect.
  *
  * @author Tarik Atasoy
- * @version Iteration 1
+ * @version Iteration 4
  */
 public class Room implements Serializable {
 
@@ -76,12 +76,20 @@ public class Room implements Serializable {
         }
     }
 
-    /** @return this room's row index */
+    /**
+     * Returns this room's row index in the dungeon grid.
+     *
+     * @return the row index of this room
+     */
     public int getRow() {
         return myRow;
     }
 
-    /** @return this room's column index */
+    /**
+     * Returns this room's column index in the dungeon grid.
+     *
+     * @return the column index of this room
+     */
     public int getCol() {
         return myCol;
     }
@@ -106,7 +114,11 @@ public class Room implements Serializable {
         myDoors.put(theDirection, theOpen);
     }
 
-    /** @return true if this room is the entrance */
+    /**
+     * Checks whether this room is flagged as the dungeon entrance.
+     *
+     * @return true if this room is the entrance, false otherwise
+     */
     public boolean hasEntrance() {
         return myHasEntrance;
     }
@@ -120,7 +132,11 @@ public class Room implements Serializable {
         myHasEntrance = theHasEntrance;
     }
 
-    /** @return true if this room is the exit */
+    /**
+     * Checks whether this room is flagged as the dungeon exit.
+     *
+     * @return true if this room is the exit, false otherwise
+     */
     public boolean hasExit() {
         return myHasExit;
     }
@@ -134,12 +150,20 @@ public class Room implements Serializable {
         myHasExit = theHasExit;
     }
 
-    /** @return true if this room has a pit */
+    /**
+     * Checks whether this room contains a pit hazard.
+     *
+     * @return true if a pit is present in this room
+     */
     public boolean hasPit() {
         return myHasPit;
     }
 
-    /** @return the damage dealt by this room's pit (0 if none) */
+    /**
+     * Returns the damage dealt by this room's pit on entry.
+     *
+     * @return the pit damage value, or 0 if no pit is present
+     */
     public int getPitDamage() {
         return myPitDamage;
     }
@@ -154,18 +178,28 @@ public class Room implements Serializable {
         myPitDamage = theDamage;
     }
 
-    /** Removes the pit from this room. */
+    /**
+     * Removes any pit from this room and resets its damage to zero.
+     */
     public void clearPit() {
         myHasPit = false;
         myPitDamage = 0;
     }
 
-    /** @return true if this room contains a monster */
+    /**
+     * Checks whether a monster currently occupies this room.
+     *
+     * @return true if a monster is present, false otherwise
+     */
     public boolean hasMonster() {
         return myMonster != null;
     }
 
-    /** @return the monster in this room, or null */
+    /**
+     * Returns the monster currently occupying this room.
+     *
+     * @return the monster in this room, or null if none
+     */
     public Monster getMonster() {
         return myMonster;
     }
@@ -179,7 +213,11 @@ public class Room implements Serializable {
         myMonster = theMonster;
     }
 
-    /** @return the healing potion in this room, or null */
+    /**
+     * Returns the healing potion lying in this room.
+     *
+     * @return the healing potion present, or null if none
+     */
     public HealingPotion getHealingPotion() {
         return myHealingPotion;
     }
@@ -193,7 +231,11 @@ public class Room implements Serializable {
         myHealingPotion = thePotion;
     }
 
-    /** @return the vision potion in this room, or null */
+    /**
+     * Returns the vision potion lying in this room.
+     *
+     * @return the vision potion present, or null if none
+     */
     public VisionPotion getVisionPotion() {
         return myVisionPotion;
     }
@@ -207,7 +249,11 @@ public class Room implements Serializable {
         myVisionPotion = thePotion;
     }
 
-    /** @return the bomb in this room, or null */
+    /**
+     * Returns the bomb lying in this room.
+     *
+     * @return the bomb present, or null if none
+     */
     public Bomb getBomb() {
         return myBomb;
     }
@@ -221,7 +267,11 @@ public class Room implements Serializable {
         myBomb = theBomb;
     }
 
-    /** @return the pillar in this room, or null */
+    /**
+     * Returns the Pillar of OO lying in this room.
+     *
+     * @return the pillar present, or null if none
+     */
     public Pillar getPillar() {
         return myPillar;
     }

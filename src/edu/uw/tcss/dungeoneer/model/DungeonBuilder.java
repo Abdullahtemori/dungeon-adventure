@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * check. If the check fails the dungeon is discarded and rebuilt.
  *
  * @author Tarik Atasoy
- * @version Iteration 3
+ * @version Iteration 4
  */
 public class DungeonBuilder {
 
@@ -102,7 +102,11 @@ public class DungeonBuilder {
     /** Random source. Can be swapped out so tests stay deterministic. */
     private Random myRandom = new Random();
 
-    /** Default constructor. */
+    /**
+     * Creates a new builder with the default difficulty, item
+     * chance, and random source. All other settings can be adjusted
+     * through the fluent setter methods before calling build().
+     */
     public DungeonBuilder() {
         // Field defaults already cover initialization.
     }
