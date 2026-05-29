@@ -10,11 +10,18 @@ import edu.uw.tcss.dungeoneer.view.GameView;
  * GameController NEVER holds game state directly. All state lives
  * in GameModel. GameController only reads from and writes to the model.
  *
+ * Fix applied in this version:
+ *   handleUseHealingPotion() now correctly applies the healed HP amount
+ *   to the hero's hit points when used outside of combat. Previously
+ *   Hero.useHealingPotion() returned the heal amount but never applied
+ *   it, and the controller also failed to call setHitPoints(), meaning
+ *   potions used in navigation mode had no actual effect on the hero's HP.
+ *
  * @author Daniella Birungi
- * @version Iteration 3
+ * @author Abdullah Temori 
+ * @version Iteration 4 (bugfix)
  */
 public class GameController {
-
 
     /** The game model holding all state. */
     private GameModel myModel;
@@ -22,18 +29,18 @@ public class GameController {
     /** The view used to display information to the player. */
     private final GameView myView;
 
-    /** Whether cheat mode is active (shows entire dungeon). */
+    /** Whether cheat mode is active (shows entire dungeon after each move). */
     private boolean myCheatMode;
 
-    /** Whether the game loop is currently running. */
+    /** Whether a game is currently in progress. */
     private boolean myRunning;
 
     /**
-     * Constructs a GameController with the given view.
-     * The model is not set here — it is created when startNewGame()
-     * is called or assigned when loadGame() is called.
+     * Constructs a GameController wired to the given view.
+     * The model is not created here — it is built when startNewGame()
+     * is called or assigned when loadGame() restores a saved session.
      *
-     * @param theView the view this controller will send output to
+     * @param theView the view this controller will send output to; must not be null
      */
     public GameController(final GameView theView) {
         myView = theView;
@@ -43,16 +50,19 @@ public class GameController {
 
     /**
      * Starts a new game with the given hero name, class, and difficulty.
-     * Steps:
-     * 1. Build the dungeon using DungeonBuilder
-     * 2. Create the hero using HeroFactory
-     * 3. Create GameModel with dungeon, hero, difficulty
-     * 4. Register the view as a listener on the model
-     * 5. Place hero at entrance and trigger room entry effects
      *
-     * @param theName       the hero's name entered by the player
-     * @param theHeroType   the hero class: "Warrior", "Priestess", "Thief"
-     * @param theDifficulty the selected difficulty level
+     * Steps performed in order:
+     *   1. Build the dungeon using DungeonBuilder with the chosen difficulty.
+     *   2. Create the hero using HeroFactory with the chosen class and name.
+     *   3. Create a new GameModel containing the dungeon, hero, and difficulty.
+     *   4. Register the view as a PropertyChangeListener on the model so it
+     *      updates automatically whenever model state changes.
+     *   5. Apply room-entry effects at the entrance (item pickup, pit check).
+     *   6. Display the starting room and hero stats.
+     *
+     * @param theName       the hero's name entered by the player; must not be blank
+     * @param theHeroType   the hero class: "Warrior", "Priestess", or "Thief"
+     * @param theDifficulty the selected difficulty level; must not be null
      */
     public void startNewGame(final String theName,
                              final String theHeroType,
@@ -75,19 +85,20 @@ public class GameController {
 
         myRunning = true;
 
-        // Step 5: Apply room entry effects at starting room (entrance)
+        // Step 5: Apply room entry effects at the entrance
         onEnterRoom(dungeon.getCurrentRoom());
 
-        // Show the starting room
+        // Step 6: Show the starting room and hero stats
         myView.displayRoom(dungeon.getCurrentRoom());
         myView.displayHeroStats(hero);
     }
 
     /**
-     * Saves the current game to the given file path.
-     * Shows a message to the player confirming success or failure.
+     * Saves the current game state to the given file path using serialization.
+     * Displays a success or failure message to the player via the view.
+     * Does nothing if no game is currently in progress.
      *
-     * @param thePath the file path to save to
+     * @param thePath the file path to write the save file to; must not be null
      */
     public void saveGame(final String thePath) {
         if (myModel == null) {
@@ -95,23 +106,22 @@ public class GameController {
             return;
         }
 
-        final boolean success =
-                SaveLoadManager.saveGame(myModel, thePath);
+        final boolean success = SaveLoadManager.saveGame(myModel, thePath);
 
         if (success) {
             myView.displayMessage("Game saved successfully.");
         } else {
-            myView.displayMessage(
-                    "Save failed. Check console for details.");
+            myView.displayMessage("Save failed. Check console for details.");
         }
     }
 
     /**
-     * Loads a game from the given file path.
-     * Replaces the current model with the loaded one and
-     * re-registers the view as a listener.
+     * Loads a previously saved game from the given file path.
+     * Replaces the current model with the loaded one and re-registers the
+     * view as a listener (listeners are not serialized).
+     * Displays an error message if the file is missing or corrupted.
      *
-     * @param thePath the file path to load from
+     * @param thePath the file path to read the save file from; must not be null
      */
     public void loadGame(final String thePath) {
         final GameModel loaded = SaveLoadManager.loadGame(thePath);
@@ -122,84 +132,78 @@ public class GameController {
             return;
         }
 
-        // Replace the current model with the loaded one
         myModel = loaded;
 
-        // Re-register the view since listeners are not serialized
+        // Re-register the view since listeners are transient and not saved
         myModel.addPropertyChangeListener(myView);
 
         myRunning = true;
 
         myView.displayMessage("Game loaded successfully.");
-        myView.displayDungeon(myModel.getDungeon());
         myView.displayRoom(myModel.getDungeon().getCurrentRoom());
         myView.displayHeroStats(myModel.getHero());
     }
 
     /**
      * Handles the player choosing to move in a direction.
-     * Steps:
-     * 1. Attempt to move in the dungeon
-     * 2. If move succeeded, apply room entry effects
-     * 3. Check win/lose conditions
-     * 4. Update the view
      *
-     * @param theDir the direction to move (NORTH, SOUTH, EAST, WEST)
+     * Steps performed in order:
+     *   1. Attempt to move the hero in the dungeon grid.
+     *   2. If the move failed (wall), inform the player and return.
+     *   3. Apply room-entry effects in the new room.
+     *   4. Check win and lose conditions.
+     *   5. Display the new room; in cheat mode also display the full dungeon.
+     *
+     * @param theDir the direction to move; must not be null
      */
     public void handleMove(final Direction theDir) {
         final Dungeon dungeon = myModel.getDungeon();
         final boolean moved = dungeon.moveHero(theDir);
 
         if (!moved) {
-            // No door in that direction
             myView.displayMessage(
                     "There is no door to the " + theDir + ".");
             return;
         }
 
-        // Hero moved — apply room effects
         final Room currentRoom = dungeon.getCurrentRoom();
         onEnterRoom(currentRoom);
 
-        // Check if the game has ended
         if (checkWinLose()) {
             return;
         }
 
-        // Update the view with the new room
         myView.displayRoom(currentRoom);
 
-        // In cheat mode show the entire dungeon
         if (myCheatMode) {
             myView.displayDungeon(dungeon);
         }
     }
 
-
     /**
-     * Applies all effects when the hero enters a room.
-     * This method handles:
-     * - Automatic item pickup (potions, bombs, pillars)
-     * - Pit damage
-     * - Monster encounters (starts combat)
+     * Applies all automatic effects when the hero enters a room.
      *
-     * @param theRoom the room the hero just entered
+     * Effects applied in order:
+     *   1. All collectible items (potions, bombs, pillars) are picked up
+     *      and removed from the room. The view is notified of each pickup.
+     *   2. If the room has a pit, the hero loses HP and the view is notified.
+     *   3. If the room contains a monster, combat begins immediately.
+     *
+     * @param theRoom the room the hero just entered; must not be null
      */
     public void onEnterRoom(final Room theRoom) {
         final Hero hero = myModel.getHero();
 
-        // --- Step 1: Pick up all items in the room ---
-        // pickUpItems handles null checks internally for each slot
-        // It also removes items from the room so they can't be
-        // collected again on a future visit
-        final int potionsBefore = hero.getHealingPotions();
-        final int visionsBefore = hero.getVisionPotions();
-        final int bombsBefore = hero.getBombs();
-        final int pillarsBefore = hero.getPillarsFound().size();
+        // Snapshot inventory counts before pickup to detect changes
+        final int potionsBefore  = hero.getHealingPotions();
+        final int visionsBefore  = hero.getVisionPotions();
+        final int bombsBefore    = hero.getBombs();
+        final int pillarsBefore  = hero.getPillarsFound().size();
 
+        // Pick up all items; items are removed from the room on pickup
         theRoom.pickUpItems(hero);
 
-        // Report what was picked up
+        // Notify the player of each item collected
         if (hero.getHealingPotions() > potionsBefore) {
             myView.displayMessage("You picked up a Healing Potion! ("
                     + hero.getHealingPotions() + " total)");
@@ -213,44 +217,46 @@ public class GameController {
                     + hero.getBombs() + " total)");
         }
         if (hero.getPillarsFound().size() > pillarsBefore) {
-            myView.displayMessage(
-                    "You found a Pillar of OO! ("
-                            + hero.getPillarsFound().size()
-                            + "/4 collected)");
+            myView.displayMessage("You found a Pillar of OO! ("
+                    + hero.getPillarsFound().size() + "/4 collected)");
         }
 
-        // --- Step 2: Apply pit damage ---
+        // Apply pit damage if present
         if (theRoom.hasPit()) {
             final int damage = theRoom.getPitDamage();
             hero.setHitPoints(hero.getHitPoints() - damage);
-            myView.displayMessage(
-                    "You fell into a pit! Lost " + damage + " HP. ("
-                            + hero.getHitPoints() + " HP remaining)");
+            myView.displayMessage("You fell into a pit! Lost " + damage
+                    + " HP. (" + hero.getHitPoints() + " HP remaining)");
         }
 
-        // --- Step 3: Trigger combat if monster present ---
+        // Start combat if a monster is present
         if (theRoom.hasMonster()) {
             handleCombat(theRoom.getMonster());
         }
     }
 
     /**
-     * Handles the player choosing to use a Healing Potion.
-     * Can be called from navigation mode (outside combat).
-     * During combat, this is called as a combat action choice.
+     * Handles the player choosing to use a Healing Potion outside of combat.
+     *
+     * Fix: Hero.useHealingPotion() returns the amount to heal but does not
+     * modify HP. This method now calls hero.setHitPoints() to actually apply
+     * the heal. Previously the HP display message showed the old HP value and
+     * the hero's HP was never changed, making potions useless outside combat.
+     *
+     * Does nothing if the hero has no healing potions remaining.
      */
     public void handleUseHealingPotion() {
         final Hero hero = myModel.getHero();
 
-        // Check if the hero has any potions
         if (hero.getHealingPotions() <= 0) {
-            myView.displayMessage(
-                    "You have no Healing Potions left.");
+            myView.displayMessage("You have no Healing Potions left.");
             return;
         }
 
-        // Use the potion — returns amount healed
+        // FIX: useHealingPotion() returns the heal amount but does NOT
+        // apply it. We must call setHitPoints() here to actually heal.
         final int healed = hero.useHealingPotion();
+        hero.setHitPoints(hero.getHitPoints() + healed);
 
         myView.displayMessage(
                 "You used a Healing Potion and restored "
@@ -262,52 +268,43 @@ public class GameController {
     }
 
     /**
-     * Handles the player choosing to use a Vision Potion.
-     * Reveals the contents of the 8 surrounding rooms.
-     * Vision Potions can only be used in navigation mode,
-     * not during combat.
+     * Handles the player choosing to use a Vision Potion outside of combat.
+     * Reveals the contents of up to 8 rooms surrounding the hero's current
+     * position. Does nothing if the hero has no vision potions remaining.
      */
     public void handleUseVisionPotion() {
         final Hero hero = myModel.getHero();
 
-        // Check if the hero has any vision potions
         if (hero.getVisionPotions() <= 0) {
-            myView.displayMessage(
-                    "You have no Vision Potions left.");
+            myView.displayMessage("You have no Vision Potions left.");
             return;
         }
 
-        // Use the potion — returns true if successful
         final boolean used = hero.useVisionPotion();
 
         if (used) {
-            // Get and display surrounding rooms
             myView.displayMessage(
                     "You used a Vision Potion. Surrounding rooms revealed! ("
                             + hero.getVisionPotions() + " potions left)");
-
             myView.displayVision(
                     myModel.getDungeon().getSurroundingRooms());
         }
     }
 
     /**
-     * Handles the player choosing to use a Bomb in combat.
-     * Deals 75-150 damage to the target monster.
+     * Handles the player choosing to throw a Bomb at a monster during combat.
+     * Deals 75–150 damage to the target. Does nothing if the hero has no bombs.
      *
-     * @param theTarget the monster to bomb
+     * @param theTarget the monster to bomb; must not be null
      */
     public void handleUseBomb(final Monster theTarget) {
         final Hero hero = myModel.getHero();
 
-        // Check if the hero has any bombs
         if (hero.getBombs() <= 0) {
-            myView.displayMessage(
-                    "You have no Bombs left.");
+            myView.displayMessage("You have no Bombs left.");
             return;
         }
 
-        // Use the bomb — returns damage dealt
         final int damage = hero.useBomb(theTarget);
 
         myView.displayMessage(
@@ -321,51 +318,47 @@ public class GameController {
     }
 
     /**
-     * Handles combat between the hero and a monster.
-     * Called automatically when the hero enters a room with a monster.
-     * After combat ends the monster is removed from the room
-     * if the hero won, or the game ends if the hero lost.
+     * Handles turn-based combat between the hero and a monster.
+     * Called automatically when the hero enters a room containing a monster.
      *
-     * @param theMonster the monster to fight
+     * Each round the view prompts the player for an action, the Combat engine
+     * processes it, and the resulting CombatEvents are sent back to the view
+     * for display. Combat continues until one side reaches 0 HP.
+     *
+     * On hero victory: the monster is removed from the room.
+     * On hero defeat: the game is flagged as over.
+     *
+     * @param theMonster the monster to fight; must not be null and must be alive
      */
     public void handleCombat(final Monster theMonster) {
         myView.displayMessage(
                 "A " + theMonster.getName()
                         + " blocks your path! Combat begins!");
 
-        // Store combat in model so CombatPanel can access it
         myModel.startCombat(theMonster);
 
         final Hero hero = myModel.getHero();
         final Combat combat = new Combat(hero, theMonster);
 
-        // Turn-based game loop: runs until the combat instance flags it is over
         while (!combat.isOver()) {
             myView.displayCombat(hero, theMonster);
 
-            // 1. Ask the view/user to pick an action (Attack, Potion, Skill, Bomb)
             final HeroAction chosenAction = myView.promptHeroAction();
 
-            // 2. Process the round using your Combat engine
             final java.util.List<CombatEvent> roundEvents =
                     combat.executeHeroAction(chosenAction);
 
-            // 3. Send the list of what happened back to the view to show text/animations
             for (final CombatEvent event : roundEvents) {
                 myView.displayCombatEvent(event);
             }
         }
 
-        // Check the conclusion of combat
         if (combat.heroWon()) {
             myView.displayMessage(
                     "You defeated the " + theMonster.getName() + "!");
-
-            // Remove the monster from the room
             myModel.getDungeon().getCurrentRoom().setMonster(null);
             myView.displayHeroStats(hero);
         } else {
-            // Hero died — end the game
             myView.displayMessage(
                     "You were defeated by the "
                             + theMonster.getName() + "...");
@@ -375,12 +368,12 @@ public class GameController {
 
     /**
      * Processes a single hero combat action during an active combat encounter.
-     * Called by CombatPanel when the player clicks an action button.
+     * Called by CombatPanel (Swing GUI) when the player clicks an action button.
+     * Does nothing if there is no active combat in the model.
      *
-     * @param theAction the action the player chose (ATTACK, SPECIAL_SKILL, etc.)
+     * @param theAction the action the player chose; must not be null
      */
     public void handleCombatAction(final HeroAction theAction) {
-        // Guard —> do nothing if no active combat in the model
         if (myModel == null || myModel.getActiveCombat() == null) {
             myView.displayMessage("No active combat.");
             return;
@@ -389,16 +382,13 @@ public class GameController {
         final Combat combat = myModel.getActiveCombat();
         final Hero hero = myModel.getHero();
 
-        // Execute one round with the chosen action
         final java.util.List<CombatEvent> events =
                 combat.executeHeroAction(theAction);
 
-        // Send each event to the view for display
         for (final CombatEvent event : events) {
             myView.displayCombatEvent(event);
         }
 
-        // Check if combat ended after this round
         if (combat.isOver()) {
             if (combat.heroWon()) {
                 myView.displayMessage(
@@ -414,21 +404,24 @@ public class GameController {
     }
 
     /**
-     * Checks whether the game has ended after a room entry.
-     * Win condition: Hero has all 4 pillars AND is at the exit.
-     * Lose condition: Hero HP is 0 or below.
+     * Checks whether the game has ended after a room entry or combat.
      *
-     * @return true if the game has ended, false if still in progress
+     * Lose condition: hero HP is 0 or below.
+     *   — Displays the full dungeon map, sets game-over flags, stops the loop.
+     *
+     * Win condition: hero has all 4 pillars AND is standing in the exit room.
+     *   — Displays a congratulations message and the full dungeon map,
+     *     sets the win and game-over flags, stops the loop.
+     *
+     * @return true if the game has ended (win or loss), false if still running
      */
     public boolean checkWinLose() {
         final Hero hero = myModel.getHero();
-        final Room currentRoom =
-                myModel.getDungeon().getCurrentRoom();
+        final Room currentRoom = myModel.getDungeon().getCurrentRoom();
 
-        // Check lose condition first (hero could die from pit)
+        // Lose condition: hero is dead
         if (!hero.isAlive()) {
-            myView.displayMessage(
-                    "You have been defeated. Game over.");
+            myView.displayMessage("You have been defeated. Game over.");
             myView.displayDungeon(myModel.getDungeon());
             myModel.setGameOver(true);
             myModel.setPlayerWon(false);
@@ -436,7 +429,7 @@ public class GameController {
             return true;
         }
 
-        // Check win condition: all 4 pillars AND at exit
+        // Win condition: all 4 pillars collected and standing at the exit
         final boolean hasAllPillars =
                 hero.getPillarsFound().size() == Pillar.values().length;
         final boolean atExit = currentRoom.hasExit();
@@ -457,13 +450,15 @@ public class GameController {
 
     /**
      * Toggles cheat mode on or off.
-     * When active, the entire dungeon is displayed after each move.
-     * This is a hidden feature for testing per the project spec.
+     * When cheat mode is active, the entire dungeon map is displayed after
+     * every move so the player can see all rooms and their contents.
+     * This is a hidden testing feature required by the project specification.
+     * In the console it is activated by typing XYZZY; in the Swing GUI
+     * it is accessible via Help > Cheat Mode.
      */
     public void toggleCheatMode() {
         myCheatMode = !myCheatMode;
-        myView.displayMessage(
-                "Cheat mode " + (myCheatMode ? "ON" : "OFF"));
+        myView.displayMessage("Cheat mode " + (myCheatMode ? "ON" : "OFF"));
 
         if (myCheatMode && myModel != null) {
             myView.displayDungeon(myModel.getDungeon());
@@ -472,17 +467,20 @@ public class GameController {
 
     /**
      * Returns whether cheat mode is currently active.
+     * Used by SwingView to keep the cheat mode checkbox in sync.
      *
-     * @return true if cheat mode is on
+     * @return true if cheat mode is on, false otherwise
      */
     public boolean isCheatMode() {
         return myCheatMode;
     }
 
     /**
-     * Returns whether the game loop is currently running.
+     * Returns whether a game is currently in progress.
+     * Used by the console game loop to decide whether to keep running.
      *
-     * @return true if a game is in progress
+     * @return true if a game is active, false if no game has started
+     *         or the game has ended
      */
     public boolean isRunning() {
         return myRunning;
@@ -490,9 +488,10 @@ public class GameController {
 
     /**
      * Returns the current game model.
-     * Used by tests to inspect state after controller actions.
+     * Intended for use by unit tests that need to inspect model state
+     * after controller actions without going through the view.
      *
-     * @return the current GameModel, or null if no game started
+     * @return the current GameModel, or null if no game has been started
      */
     public GameModel getModel() {
         return myModel;
