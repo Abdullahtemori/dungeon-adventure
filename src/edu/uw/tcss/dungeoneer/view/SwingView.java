@@ -39,10 +39,10 @@ import java.util.List;
 public class SwingView implements GameView {
 
     /** Minimum window width in pixels. */
-    private static final int MIN_WIDTH = 900;
+    private static final int MIN_WIDTH = 800;
 
     /** Minimum window height in pixels. */
-    private static final int MIN_HEIGHT = 650;
+    private static final int MIN_HEIGHT = 600;
 
     /** Font size used for hero status labels. */
     private static final int STATUS_FONT_SIZE = 14;
@@ -168,12 +168,12 @@ public class SwingView implements GameView {
         myDifficultyLabel = makeLabel("Difficulty: ---");
 
         // Create navigation buttons (disabled by default until a game starts)
-        myNorthBtn     = makeNavButton("North ▲");
-        mySouthBtn     = makeNavButton("South ▼");
-        myEastBtn      = makeNavButton("East ►");
-        myWestBtn      = makeNavButton("◄ West");
-        myUsePotionBtn = makeNavButton("Use Potion (H)");
-        myUseVisionBtn = makeNavButton("Use Vision (V)");
+        myNorthBtn     = makeNavButton("North [W/↑]");
+        mySouthBtn     = makeNavButton("South [S/↓]");
+        myEastBtn      = makeNavButton("East [D/→]");
+        myWestBtn      = makeNavButton("West [A/←]");
+        myUsePotionBtn = makeNavButton("Use Potion [H]");
+        myUseVisionBtn = makeNavButton("Use Vision [V]");
 
         // Assemble the layout
         myFrame.setJMenuBar(buildMenuBar());
@@ -863,12 +863,19 @@ public class SwingView implements GameView {
                         + "GOAL: Collect all 4 Pillars of OO and reach the Exit.\n\n"
                         + "PILLARS: A=Abstraction  E=Encapsulation\n"
                         + "         I=Inheritance  P=Polymorphism\n\n"
+                        + "KEYBOARD SHORTCUTS:\n"
+                        + "  Move North: W or Up Arrow\n"
+                        + "  Move South: S or Down Arrow\n"
+                        + "  Move West:  A or Left Arrow\n"
+                        + "  Move East:  D or Right Arrow\n"
+                        + "  Use Healing Potion: H\n"
+                        + "  Use Vision Potion:  V\n\n"
                         + "NAVIGATION:\n"
-                        + "  Click North/South/East/West buttons, or use WASD/Arrow keys.\n"
+                        + "  Click North [W], South [S], West [A], East [D].\n"
                         + "  Disabled buttons mean a wall blocks that direction.\n\n"
                         + "ITEMS (picked up automatically on room entry):\n"
-                        + "  H = Healing Potion  — press H or click Use Potion\n"
-                        + "  V = Vision Potion   — press V or click Use Vision\n"
+                        + "  H = Healing Potion  - press H or click Use Potion [H]\n"
+                        + "  V = Vision Potion   - press V or click Use Vision [V]\n"
                         + "  B = Bomb            — use during combat for heavy damage\n\n"
                         + "COMBAT:\n"
                         + "  Entering a room with a monster starts combat.\n"
