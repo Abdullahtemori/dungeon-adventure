@@ -156,7 +156,7 @@ public class GameController {
      *   4. Check win and lose conditions.
      *   5. Display the new room; in cheat mode also display the full dungeon.
      *
-     * @param theDir the direction to move; must not be null
+     * @param theDir the direction to move (must not be null)
      */
     public void handleMove(final Direction theDir) {
         final Dungeon dungeon = myModel.getDungeon();
