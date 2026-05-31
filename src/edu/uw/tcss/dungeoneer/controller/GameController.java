@@ -286,32 +286,6 @@ public class GameController {
     }
 
     /**
-     * Handles the player choosing to throw a Bomb at a monster during combat.
-     * Deals 75–150 damage to the target. Does nothing if the hero has no bombs.
-     *
-     * @param theTarget the monster to bomb; must not be null
-     */
-    public void handleUseBomb(final Monster theTarget) {
-        final Hero hero = myModel.getHero();
-
-        if (hero.getBombs() <= 0) {
-            myView.displayMessage("You have no Bombs left.");
-            return;
-        }
-
-        final int damage = hero.useBomb(theTarget);
-
-        myView.displayMessage(
-                "BOOM! You threw a Bomb dealing "
-                        + damage + " damage to "
-                        + theTarget.getName() + "! ("
-                        + hero.getBombs() + " bombs left, "
-                        + theTarget.getHitPoints() + " HP remaining)");
-
-        myView.displayCombat(hero, theTarget);
-    }
-
-    /**
      * Handles turn-based combat between the hero and a monster.
      * Called automatically when the hero enters a room containing a monster.
      *

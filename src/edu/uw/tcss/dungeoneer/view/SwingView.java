@@ -122,6 +122,9 @@ public class SwingView implements GameView {
     /** Button to use a vision potion outside of combat. */
     private final JButton myUseVisionBtn;
 
+    /** Cheat mode checkbox — field so keyboard shortcut can sync it. */
+    private JCheckBoxMenuItem myCheatItem;
+
     /** Card name for the navigation view. */
     private static final String CARD_NAV = "navigation";
 
@@ -563,13 +566,13 @@ public class SwingView implements GameView {
             audioItem.setSelected(AudioManager.getInstance().isMuted());
         });
 
-        final JCheckBoxMenuItem cheatItem =
-                new JCheckBoxMenuItem("Cheat Mode ON");
-        cheatItem.setSelected(false);
-        cheatItem.addActionListener(e -> {
+        myCheatItem = new JCheckBoxMenuItem("Cheat Mode");
+        myCheatItem.setSelected(false);
+        myCheatItem.addActionListener(e -> {
             if (myController != null) {
                 myController.toggleCheatMode();
-                cheatItem.setSelected(myController.isCheatMode());
+                // Sync checkbox with actual controller state
+                myCheatItem.setSelected(myController.isCheatMode());
             }
         });
 
@@ -578,7 +581,7 @@ public class SwingView implements GameView {
         helpMenu.addSeparator();
         helpMenu.add(audioItem);
         helpMenu.addSeparator();
-        helpMenu.add(cheatItem);
+        helpMenu.add(myCheatItem);
 
         bar.add(fileMenu);
         bar.add(helpMenu);
@@ -837,6 +840,8 @@ public class SwingView implements GameView {
             public void actionPerformed(final java.awt.event.ActionEvent e) {
                 if (myController != null) {
                     myController.toggleCheatMode();
+                    // Sync the menu checkbox so it matches the keyboard toggle
+                    myCheatItem.setSelected(myController.isCheatMode());
                 }
             }
         });
@@ -925,6 +930,7 @@ public class SwingView implements GameView {
         myDifficultyLabel.setText("Difficulty: " + diffStr);
 
         final Difficulty difficulty = Difficulty.valueOf(diffStr);
+        myCheatItem.setSelected(false);
         myController.startNewGame(name.trim(), heroType, difficulty);
 
         AudioManager.getInstance().playMusic(AudioManager.MUSIC_DUNGEON);
