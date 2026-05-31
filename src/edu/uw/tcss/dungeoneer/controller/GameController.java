@@ -67,7 +67,9 @@ public class GameController {
     public void startNewGame(final String theName,
                              final String theHeroType,
                              final Difficulty theDifficulty) {
-
+        // reset cheat mode for the new game
+        myCheatMode = false;
+        myView.displayMessage("cheat Mode reset for New game");
         // Step 1: Build the dungeon
         final Dungeon dungeon = new DungeonBuilder()
                 .setDifficulty(theDifficulty)
@@ -237,12 +239,6 @@ public class GameController {
 
     /**
      * Handles the player choosing to use a Healing Potion outside of combat.
-     *
-     * Fix: Hero.useHealingPotion() returns the amount to heal but does not
-     * modify HP. This method now calls hero.setHitPoints() to actually apply
-     * the heal. Previously the HP display message showed the old HP value and
-     * the hero's HP was never changed, making potions useless outside combat.
-     *
      * Does nothing if the hero has no healing potions remaining.
      */
     public void handleUseHealingPotion() {
@@ -253,8 +249,6 @@ public class GameController {
             return;
         }
 
-        // FIX: useHealingPotion() returns the heal amount but does NOT
-        // apply it. We must call setHitPoints() here to actually heal.
         final int healed = hero.useHealingPotion();
         hero.setHitPoints(hero.getHitPoints() + healed);
 
