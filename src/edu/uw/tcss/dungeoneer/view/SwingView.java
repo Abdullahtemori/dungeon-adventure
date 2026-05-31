@@ -4,11 +4,7 @@ import edu.uw.tcss.dungeoneer.controller.*;
 import edu.uw.tcss.dungeoneer.model.*;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
@@ -81,6 +77,15 @@ public class SwingView implements GameView {
     /** Label showing the hero's name and class. */
     private final JLabel myHeroNameLabel;
 
+    /** CardLayout used to switch between navigation and combat panels. */
+    private final CardLayout myCardLayout;
+
+    /** Container that holds both the nav panel and the combat panel. */
+    private final JPanel myCardPanel;
+
+    /** The combat panel shown during battles. */
+    private CombatPanel myCombatPanel;
+
     /** Label showing the hero's current hit points. */
     private final JLabel myHpLabel;
 
@@ -116,6 +121,12 @@ public class SwingView implements GameView {
 
     /** Button to use a vision potion outside of combat. */
     private final JButton myUseVisionBtn;
+
+    /** Card name for the navigation view. */
+    private static final String CARD_NAV = "navigation";
+
+    /** Card name for the combat view. */
+    private static final String CARD_COMBAT = "combat";
 
     /**
      * Reference to the GameController.
@@ -180,9 +191,19 @@ public class SwingView implements GameView {
         myFrame.setLayout(new BorderLayout(8, 8));
         myFrame.add(buildLogPanel(),    BorderLayout.CENTER);
         myFrame.add(buildStatusPanel(), BorderLayout.WEST);
-        myFrame.add(buildNavPanel(),    BorderLayout.EAST);
         myFrame.add(buildTitleBar(),    BorderLayout.NORTH);
 
+        // Initialize card layout and container
+        myCardLayout = new CardLayout();
+        myCardPanel  = new JPanel(myCardLayout);
+        myCardPanel.setBackground(BG_COLOR);
+        myCardPanel.setPreferredSize(new Dimension(160, 0));
+
+        // Add nav panel as the default card
+        myCardPanel.add(buildNavPanel(), CARD_NAV);
+
+        // Add card panel to frame (combat panel added later in setController)
+        myFrame.add(myCardPanel, BorderLayout.EAST);
         myFrame.pack();
         myFrame.setLocationRelativeTo(null);
     }
@@ -192,75 +213,24 @@ public class SwingView implements GameView {
      * Must be called after both the view and controller have been created,
      * and before show() is called so that input works from the first frame.
      *
-     * Fix 1: attachListeners() is now called here so navigation button
-     * clicks are forwarded to the controller. Previously this method
-     * existed but was never invoked, making all buttons non-functional.
-     *
-     * Fix 2: myLogArea.setFocusable(false) is set here so the JTextArea
-     * cannot steal keyboard focus from the JFrame. Without this fix,
-     * clicking anywhere in the log area caused WASD and arrow key presses
-     * to be swallowed by the text area and never reach the key listener
-     * registered on the frame.
-     *
      * @param theController the game controller to wire up; must not be null
      */
     public void setController(final GameController theController) {
         myController = theController;
 
-        // FIX 2: Prevent the log area from stealing keyboard focus.
-        // The key listener is on myFrame, so focus must stay on the frame.
+        // attach all button action listeners
+        attachListeners();
+
+        // prevent log area from stealing keyboard focus
         myLogArea.setFocusable(false);
 
-        myFrame.setFocusable(true);
-        myFrame.requestFocusInWindow();
+        // use InputMap/ActionMap so keys work regardless of focus
+        setupKeyBindings();
 
-        // Register WASD / arrow key navigation and hotkeys on the frame
-        myFrame.addKeyListener(new java.awt.event.KeyAdapter() {
-            /**
-             * Dispatches key press events to the appropriate controller method.
-             * WASD and arrow keys move the hero. H uses a healing potion.
-             * V uses a vision potion.
-             *
-             * @param e the key event fired by the JFrame
-             */
-            @Override
-            public void keyPressed(final java.awt.event.KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    // WASD / Arrow key navigation
-                    case java.awt.event.KeyEvent.VK_W:
-                    case java.awt.event.KeyEvent.VK_UP:
-                        myController.handleMove(Direction.NORTH);
-                        break;
-                    case java.awt.event.KeyEvent.VK_S:
-                    case java.awt.event.KeyEvent.VK_DOWN:
-                        myController.handleMove(Direction.SOUTH);
-                        break;
-                    case java.awt.event.KeyEvent.VK_A:
-                    case java.awt.event.KeyEvent.VK_LEFT:
-                        myController.handleMove(Direction.WEST);
-                        break;
-                    case java.awt.event.KeyEvent.VK_D:
-                    case java.awt.event.KeyEvent.VK_RIGHT:
-                        myController.handleMove(Direction.EAST);
-                        break;
-
-                    // Inventory hotkeys
-                    case java.awt.event.KeyEvent.VK_H:
-                        myController.handleUseHealingPotion();
-                        break;
-                    case java.awt.event.KeyEvent.VK_V:
-                        myController.handleUseVisionPotion();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-        // FIX 1: Wire navigation buttons to controller actions.
-        // attachListeners() was defined but never called in the previous
-        // version, so button clicks had no effect.
-        attachListeners();
+        // Wire combat panel now that controller exists
+        myCombatPanel = new CombatPanel(theController);
+        myCardPanel.add(myCombatPanel, CARD_COMBAT);
+        myCardLayout.show(myCardPanel, CARD_NAV);
     }
 
     /**
@@ -763,6 +733,113 @@ public class SwingView implements GameView {
                 myController.handleUseHealingPotion());
         myUseVisionBtn.addActionListener(e ->
                 myController.handleUseVisionPotion());
+    }
+
+    /**
+     * Sets up keyboard shortcuts using InputMap and ActionMap on the
+     * root pane with WHEN_IN_FOCUSED_WINDOW scope.
+     *
+     * Controls:
+     *   W / Arrow Up    - Move North
+     *   S / Arrow Down  - Move South
+     *   A / Arrow Left  - Move West
+     *   D / Arrow Right - Move East
+     *   H               - Use Healing Potion
+     *   V               - Use Vision Potion
+     */
+    private void setupKeyBindings() {
+        final javax.swing.InputMap im = myFrame.getRootPane()
+                .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        final javax.swing.ActionMap am = myFrame.getRootPane()
+                .getActionMap();
+
+        // Helper — registers one key (or two keys) to one named action
+        // This keeps the repetitive boilerplate out of the method body
+
+        // ---- North: W and Up Arrow ----
+        im.put(KeyStroke.getKeyStroke("W"),      "moveNorth");
+        im.put(KeyStroke.getKeyStroke("UP"),     "moveNorth");
+        am.put("moveNorth", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(final java.awt.event.ActionEvent e) {
+                if (myController != null) {
+                    AudioManager.getInstance().playSFX(AudioManager.SFX_MOVE);
+                    myController.handleMove(Direction.NORTH);
+                }
+            }
+        });
+
+        // ---- South: S and Down Arrow ----
+        im.put(KeyStroke.getKeyStroke("S"),      "moveSouth");
+        im.put(KeyStroke.getKeyStroke("DOWN"),   "moveSouth");
+        am.put("moveSouth", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(final java.awt.event.ActionEvent e) {
+                if (myController != null) {
+                    AudioManager.getInstance().playSFX(AudioManager.SFX_MOVE);
+                    myController.handleMove(Direction.SOUTH);
+                }
+            }
+        });
+
+        // ---- West: A and Left Arrow ----
+        im.put(KeyStroke.getKeyStroke("A"),      "moveWest");
+        im.put(KeyStroke.getKeyStroke("LEFT"),   "moveWest");
+        am.put("moveWest", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(final java.awt.event.ActionEvent e) {
+                if (myController != null) {
+                    AudioManager.getInstance().playSFX(AudioManager.SFX_MOVE);
+                    myController.handleMove(Direction.WEST);
+                }
+            }
+        });
+
+        // ---- East: D and Right Arrow ----
+        im.put(KeyStroke.getKeyStroke("D"),      "moveEast");
+        im.put(KeyStroke.getKeyStroke("RIGHT"),  "moveEast");
+        am.put("moveEast", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(final java.awt.event.ActionEvent e) {
+                if (myController != null) {
+                    AudioManager.getInstance().playSFX(AudioManager.SFX_MOVE);
+                    myController.handleMove(Direction.EAST);
+                }
+            }
+        });
+
+        // ---- H — Use Healing Potion ----
+        im.put(KeyStroke.getKeyStroke("H"), "usePotion");
+        am.put("usePotion", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(final java.awt.event.ActionEvent e) {
+                if (myController != null) {
+                    myController.handleUseHealingPotion();
+                }
+            }
+        });
+
+        // ---- V — Use Vision Potion ----
+        im.put(KeyStroke.getKeyStroke("V"), "useVision");
+        am.put("useVision", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(final java.awt.event.ActionEvent e) {
+                if (myController != null) {
+                    myController.handleUseVisionPotion();
+                }
+            }
+        });
+
+        // ---- Ctrl+D — Toggle Cheat Mode ----
+        im.put(KeyStroke.getKeyStroke("control D"), "cheatMode");
+        am.put("cheatMode", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(final java.awt.event.ActionEvent e) {
+                if (myController != null) {
+                    myController.toggleCheatMode();
+                }
+            }
+        });
     }
 
     /**
