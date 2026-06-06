@@ -1,7 +1,12 @@
 package edu.uw.tcss.dungeoneer.model;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A 2D grid of Room objects that makes up the dungeon. The dungeon
@@ -21,6 +26,9 @@ public class Dungeon implements Serializable {
      * If the class structure changes this number should be updated.
      */
     private static final long serialVersionUID = 1L;
+
+    /** Number of text rows used to draw a single room in the map. */
+    private static final int ROOM_TEXT_HEIGHT = 3;
 
     /** The grid of rooms. */
     private final Room[][] myRooms;
@@ -261,15 +269,19 @@ public class Dungeon implements Serializable {
         final String nl = System.lineSeparator();
         final StringBuilder sb = new StringBuilder();
         for (int r = 0; r < myRows; r++) {
-            // Each row is three text-rows tall.
-            final String[] lines = {"", "", ""};
+            // Each grid row is drawn ROOM_TEXT_HEIGHT text-rows tall.
+            final String[] lines = new String[ROOM_TEXT_HEIGHT];
+            for (int i = 0; i < ROOM_TEXT_HEIGHT; i++) {
+                lines[i] = "";
+            }
             for (int c = 0; c < myCols; c++) {
-                final String[] roomLines = myRooms[r][c].toString().split("\\R");
-                for (int i = 0; i < 3; i++) {
+                final String[] roomLines =
+                        myRooms[r][c].toString().split("\\R");
+                for (int i = 0; i < ROOM_TEXT_HEIGHT; i++) {
                     lines[i] += roomLines[i];
                 }
             }
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < ROOM_TEXT_HEIGHT; i++) {
                 sb.append(lines[i]).append(nl);
             }
         }

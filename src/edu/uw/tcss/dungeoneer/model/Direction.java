@@ -70,6 +70,8 @@ public enum Direction {
             case SOUTH -> NORTH;
             case EAST -> WEST;
             case WEST -> EAST;
+            default -> throw new IllegalStateException(
+                    "Unhandled direction: " + this);
         };
     }
 }

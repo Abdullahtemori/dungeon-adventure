@@ -414,4 +414,40 @@ class DungeonTest {
         assertEquals(8, myDungeon.getSurroundingRooms().size(),
                 "Interior position should expose 8 neighbours");
     }
+
+    /**
+     * Tests that setHeroPosition rejects coordinates outside the
+     * grid.
+     */
+    @Test
+    void testSetHeroPositionRejectsOutOfBounds() {
+        assertThrows(IndexOutOfBoundsException.class,
+                () -> myDungeon.setHeroPosition(-1, 0));
+        assertThrows(IndexOutOfBoundsException.class,
+                () -> myDungeon.setHeroPosition(0, 3));
+    }
+
+    /**
+     * Tests that getSurroundingRooms returns the actual neighbouring
+     * rooms (not just the right count) for an interior position.
+     */
+    @Test
+    void testGetSurroundingRoomsContainsCorrectNeighbours() {
+        myDungeon.setHeroPosition(1, 1);
+        final java.util.List<Room> neighbours =
+                myDungeon.getSurroundingRooms();
+
+        assertTrue(neighbours.contains(myDungeon.getRoom(0, 1)),
+                "North neighbour should be included");
+        assertTrue(neighbours.contains(myDungeon.getRoom(2, 1)),
+                "South neighbour should be included");
+        assertTrue(neighbours.contains(myDungeon.getRoom(1, 0)),
+                "West neighbour should be included");
+        assertTrue(neighbours.contains(myDungeon.getRoom(1, 2)),
+                "East neighbour should be included");
+        assertTrue(neighbours.contains(myDungeon.getRoom(0, 0)),
+                "Diagonal neighbour should be included");
+        assertFalse(neighbours.contains(myDungeon.getRoom(1, 1)),
+                "The hero's own room should not be included");
+    }
 }

@@ -455,8 +455,8 @@ public class DungeonBuilder {
                     continue;
                 }
                 if (myRandom.nextDouble() < myItemChance) {
-                    final int dmg = PIT_MIN_DAMAGE
-                            + myRandom.nextInt(PIT_MAX_DAMAGE - PIT_MIN_DAMAGE + 1);
+                    final int range = PIT_MAX_DAMAGE - PIT_MIN_DAMAGE + 1;
+                    final int dmg = PIT_MIN_DAMAGE + myRandom.nextInt(range);
                     room.setPit(dmg);
                 }
                 if (myRandom.nextDouble() < myItemChance) {

@@ -431,4 +431,80 @@ class RoomTest {
         assertNotNull(myRoom.getVisionPotion(),
                 "Vision potion should not be affected");
     }
+
+    /**
+     * Tests that a room holding a vision potion shows 'V' in the
+     * center.
+     */
+    @Test
+    void testToStringShowsVisionPotionChar() {
+        myRoom.setVisionPotion(new VisionPotion());
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('V', lines[1].charAt(1),
+                "Room with vision potion should show 'V'");
+    }
+
+    /**
+     * Tests that a room holding a bomb shows 'B' in the center.
+     */
+    @Test
+    void testToStringShowsBombChar() {
+        myRoom.setBomb(new Bomb());
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('B', lines[1].charAt(1),
+                "Room with a bomb should show 'B'");
+    }
+
+    /**
+     * Tests that a room holding a single pillar shows that pillar's
+     * own display character in the center.
+     */
+    @Test
+    void testToStringShowsPillarChar() {
+        myRoom.setPillar(Pillar.POLYMORPHISM);
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('P', lines[1].charAt(1),
+                "Room with a pillar should show its display char");
+    }
+
+    /**
+     * Tests that a room holding more than one item shows 'M' for
+     * multiple items rather than a single item's character.
+     */
+    @Test
+    void testToStringShowsMultipleItemsChar() {
+        myRoom.setHealingPotion(new HealingPotion());
+        myRoom.setBomb(new Bomb());
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('M', lines[1].charAt(1),
+                "Room with two items should show 'M'");
+    }
+
+    /**
+     * Tests that the multiple-items marker takes priority over a
+     * pit when both are present in the same room.
+     */
+    @Test
+    void testMultipleItemsTakePriorityOverPit() {
+        myRoom.setHealingPotion(new HealingPotion());
+        myRoom.setVisionPotion(new VisionPotion());
+        myRoom.setPit(10);
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('M', lines[1].charAt(1),
+                "Multiple items should outrank a pit");
+    }
+
+    /**
+     * Tests that the entrance marker takes priority over any items
+     * that might also be present in the room.
+     */
+    @Test
+    void testEntranceTakesPriorityOverItems() {
+        myRoom.setEntrance(true);
+        myRoom.setHealingPotion(new HealingPotion());
+        myRoom.setBomb(new Bomb());
+        final String[] lines = myRoom.toString().split("\\R");
+        assertEquals('i', lines[1].charAt(1),
+                "Entrance should outrank any items present");
+    }
 }
