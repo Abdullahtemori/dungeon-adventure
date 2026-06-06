@@ -1,27 +1,29 @@
 package edu.uw.tcss.dungeoneer.model;
-
+ 
 import java.io.Serializable;
-
+ 
 /**
  * A single thing that happened during a combat round.
- * Combat methods return CombatEvent objects (or lists of them)
- * instead of printing to System.out, so the model layer stays
- * fully decoupled from the GUI. The view is responsible for
- * turning these events into text, animations, sounds, etc.
  *
- * Events are immutable.
+ * <p>Combat methods return {@link CombatEvent} objects (or lists of
+ * them) instead of printing to {@code System.out}, so the model layer
+ * stays fully decoupled from the GUI. The view is responsible for
+ * turning these events into text, animations, sounds, etc.</p>
+ *
+ * <p>Events are immutable.</p>
  *
  * @author Tarik Atasoy
- * @version Iteration 2
+ * @author Abdullah Temori 
+ * @version Iteration 6
  */
 public final class CombatEvent implements Serializable {
-
+ 
     /**
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
     private static final long serialVersionUID = 1L;
-
+ 
     /** Categories of things that can happen in a combat round. */
     public enum Type {
         /** An attack landed and dealt damage. */
@@ -49,22 +51,22 @@ public final class CombatEvent implements Serializable {
         /** Combat finished. amount = 1 if hero won, 0 if hero lost. */
         COMBAT_END
     }
-
+ 
     /** What kind of event this is. */
     private final Type myType;
-
+ 
     /** Name of whoever caused the event (attacker, healer, etc.). */
     private final String myActor;
-
+ 
     /** Name of the target of the event (may equal actor for self-heal). */
     private final String myTarget;
-
+ 
     /**
      * Numeric payload (damage dealt, HP healed, hero-won flag, etc.).
      * Meaning depends on the event type. 0 when not applicable.
      */
     private final int myAmount;
-
+ 
     /**
      * Constructs a CombatEvent.
      *
@@ -75,43 +77,62 @@ public final class CombatEvent implements Serializable {
      */
     public CombatEvent(final Type theType, final String theActor,
                        final String theTarget, final int theAmount) {
-        myType = theType;
-        myActor = theActor;
+        myType   = theType;
+        myActor  = theActor;
         myTarget = theTarget;
         myAmount = theAmount;
     }
-
-    /** @return the event type */
+ 
+    /**
+     * Returns the event type.
+     *
+     * @return the event type
+     */
     public Type getType() {
         return myType;
     }
-
-    /** @return name of the actor */
+ 
+    /**
+     * Returns the name of the actor that caused this event.
+     *
+     * @return name of the actor
+     */
     public String getActor() {
         return myActor;
     }
-
-    /** @return name of the target */
+ 
+    /**
+     * Returns the name of the target affected by this event.
+     *
+     * @return name of the target
+     */
     public String getTarget() {
         return myTarget;
     }
-
-    /** @return the numeric amount associated with this event */
+ 
+    /**
+     * Returns the numeric amount associated with this event (damage
+     * dealt, HP healed, or win/loss flag for
+     * {@link Type#COMBAT_END}).
+     *
+     * @return the numeric amount (&ge; 0)
+     */
     public int getAmount() {
         return myAmount;
     }
-
+ 
     /**
-     * Builds a human readable line for a console view. The Swing
+     * Builds a human-readable line for a console view. The Swing
      * view is free to ignore this and format events its own way.
      *
-     * @return one-line description
+     * @return one-line description of this event
      */
     @Override
     public String toString() {
         switch (myType) {
             case ATTACK_HIT:
-                return myActor + " hits " + myTarget + " for " + myAmount + " damage.";
+                return myActor + " hits " + myTarget
+                        + " for " + myAmount + " damage.";
             case ATTACK_MISS:
                 return myActor + "'s attack on " + myTarget + " missed.";
             case ATTACK_BLOCKED:
@@ -119,7 +140,8 @@ public final class CombatEvent implements Serializable {
             case MONSTER_HEAL:
                 return myActor + " heals for " + myAmount + " HP.";
             case POTION_USED:
-                return myActor + " drinks a healing potion (+" + myAmount + " HP).";
+                return myActor + " drinks a healing potion (+"
+                        + myAmount + " HP).";
             case BOMB_USED:
                 return myActor + " throws a bomb at " + myTarget
                         + " for " + myAmount + " damage.";
@@ -143,3 +165,4 @@ public final class CombatEvent implements Serializable {
         }
     }
 }
+ 
