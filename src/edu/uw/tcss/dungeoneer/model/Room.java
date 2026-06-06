@@ -413,10 +413,11 @@ public class Room implements Serializable {
         final char west = hasDoor(Direction.WEST) ? '|' : '*';
         final char center = getDisplayCharacter();
 
+        final String nl = System.lineSeparator();
         final StringBuilder sb = new StringBuilder();
-        sb.append('*').append(north).append('*').append(System.lineSeparator());
-        sb.append(west).append(center).append(east).append(System.lineSeparator());
-        sb.append('*').append(south).append('*').append(System.lineSeparator());
+        sb.append('*').append(north).append('*').append(nl);
+        sb.append(west).append(center).append(east).append(nl);
+        sb.append('*').append(south).append('*').append(nl);
         return sb.toString();
     }
 }
