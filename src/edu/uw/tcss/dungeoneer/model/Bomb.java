@@ -47,7 +47,6 @@ public class Bomb implements Item {
      *
      * @param theDamage the amount of damge this bomb deals
      */
-
     public Bomb(final int theDamage) {
         myDamage = theDamage;
     }
@@ -78,7 +77,8 @@ public class Bomb implements Item {
      */
     @Override
     public String getDescription() {
-        return " Bomb: Deals " + myDamage + " damage to a single monster in combat.";
+        return " Bomb: Deals " + myDamage
+                + " damage to a single monster in combat.";
     }
 
     /**

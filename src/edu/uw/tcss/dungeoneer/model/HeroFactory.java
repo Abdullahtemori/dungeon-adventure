@@ -21,7 +21,7 @@ public class HeroFactory {
                            final String theName) {
 
         // Normalize so "warrior", "WARRIOR", "Warrior" all work
-        String normalized = theType.substring(0, 1).toUpperCase()
+        final String normalized = theType.substring(0, 1).toUpperCase()
                 + theType.substring(1).toLowerCase();
 
         return switch (normalized) {
