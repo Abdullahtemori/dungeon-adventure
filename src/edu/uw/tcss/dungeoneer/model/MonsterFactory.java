@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,9 @@ import java.util.Random;
  * MonsterFactory loads monsters from SQLite.
  * If the database is missing, the game uses fallback monsters
  * instead of crashing.
+ *
+ * @author atemori
+ * @version Iteration 4
  */
 public class MonsterFactory {
 
@@ -62,7 +66,7 @@ public class MonsterFactory {
             Class.forName("org.sqlite.JDBC");
 
             // Check database file exists
-            File dbFile = new File(DB_PATH);
+            final File dbFile = new File(DB_PATH);
 
             if (!dbFile.exists()) {
 
@@ -85,7 +89,7 @@ public class MonsterFactory {
                 }
             }
 
-        } catch (Exception ex) {
+        } catch (final ClassNotFoundException | SQLException ex) {
 
             System.out.println(
                     "WARNING: SQLite database could not load.");
@@ -128,7 +132,7 @@ public class MonsterFactory {
                     }
                 }
 
-            } catch (Exception ex) {
+            } catch (final SQLException ex) {
 
                 System.out.println(
                         "Database error. Using fallback monster creation.");
@@ -145,7 +149,7 @@ public class MonsterFactory {
      */
     public Monster createRandom() {
 
-        String name = myMonsterNames.get(
+        final String name = myMonsterNames.get(
                 myRandom.nextInt(myMonsterNames.size()));
 
         return createByName(name);

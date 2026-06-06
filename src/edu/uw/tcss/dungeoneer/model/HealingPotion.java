@@ -45,11 +45,8 @@ public class HealingPotion implements Item {
      * Used for testing purposes.
      *
      * @param theHealAmount the amount of HP this potion heals
-     *
      */
-
     public HealingPotion(final int theHealAmount) {
-
         myHealAmount = theHealAmount;
     }
 
