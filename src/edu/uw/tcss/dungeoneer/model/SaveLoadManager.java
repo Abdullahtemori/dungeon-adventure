@@ -31,6 +31,7 @@ public class SaveLoadManager {
     private SaveLoadManager() {
 
     }
+
     /**
      * Saves the current GameModel to a file at the given path.
      * The entire model(dungeon, hero, inventory,flags) is
@@ -39,14 +40,14 @@ public class SaveLoadManager {
      * The game continues normally because a failed save does not crash.
      *
      * @param theModel the GameModel to save
-     * @param thePath the file path to save to
+     * @param thePath  the file path to save to
      * @return true if save was successful, false if it failed
      */
     public static boolean saveGame(final GameModel theModel,
                                    final String thePath) {
 
         // Guard against null model
-        if(theModel == null) {
+        if (theModel == null) {
             System.err.println("SaveLoadManager: cannot save null model");
             return false;
         }
@@ -67,7 +68,7 @@ public class SaveLoadManager {
         } catch (final IOException e) {
             // Saving failed — inform the player but don't crash
             System.err.println("Failed to save game: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("SaveLoadManager: cause: " + e.getCause());
             return false;
         }
     }
@@ -100,7 +101,7 @@ public class SaveLoadManager {
                 ? DEFAULT_SAVE_PATH : thePath;
 
         // check before trying open
-        if(!saveExists(path)) {
+        if (!saveExists(path)) {
             System.err.println("SaveLoadManager: save file not found: " + path);
             return null;
         }
@@ -118,7 +119,7 @@ public class SaveLoadManager {
             // File not found or corrupted
             System.err.println("Failed to load save file: "
                     + e.getMessage());
-            e.printStackTrace();
+            System.err.println("SaveLoadManager: cause: " + e.getCause());
             return null;
 
         } catch (final ClassNotFoundException e) {
@@ -136,6 +137,7 @@ public class SaveLoadManager {
      * @return the loaded GameModel, or null if loading failed
      */
     public static GameModel loadGame() {
+
         return loadGame(DEFAULT_SAVE_PATH);
     }
 
@@ -192,6 +194,7 @@ public class SaveLoadManager {
      * @return true if deleted, false if file did not exist
      */
     public static boolean deleteSave() {
+
         return deleteSave(DEFAULT_SAVE_PATH);
     }
 

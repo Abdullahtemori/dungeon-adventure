@@ -12,21 +12,10 @@ import java.util.List;
  * SwingView is the graphical view in the MVC pattern.
  * It implements GameView and displays all game information using Java
  * Swing Components inside a JFrame.
- *
  * SwingView also implements PropertyChangeListener (via GameView) so
  * GameModel can notify it automatically when state changes. When propertyChange()
  * is called, SwingView updates the relevant panels without the controller needing
  * to know anything about how the display is structured.
- *
- * Fixes applied in this version:
- *   1. attachListeners() is now called inside setController() so that
- *      navigation button clicks are properly wired to the controller.
- *   2. myLogArea.setFocusable(false) is set inside setController() so
- *      that keyboard controls (WASD / arrow keys) are not stolen by
- *      the log text area when the player interacts with the window.
- *   3. myMapArea is now initialized in the constructor to prevent a
- *      NullPointerException when displayDungeon() is called at game
- *      over or when cheat mode is toggled on.
  *
  * @author daniellabirungi
  * @author Abdullah Temori
@@ -34,31 +23,49 @@ import java.util.List;
  */
 public class SwingView implements GameView {
 
-    /** Minimum window width in pixels. */
+    /**
+     * Minimum window width in pixels.
+     */
     private static final int MIN_WIDTH = 800;
 
-    /** Minimum window height in pixels. */
+    /**
+     * Minimum window height in pixels.
+     */
     private static final int MIN_HEIGHT = 600;
 
-    /** Font size used for hero status labels. */
+    /**
+     * Font size used for hero status labels.
+     */
     private static final int STATUS_FONT_SIZE = 14;
 
-    /** Font size used for the message log and map area. */
+    /**
+     * Font size used for the message log and map area.
+     */
     private static final int LOG_FONT_SIZE = 13;
 
-    /** Number of rows visible in the message log. */
+    /**
+     * Number of rows visible in the message log.
+     */
     private static final int LOG_ROWS = 20;
 
-    /** Number of columns in the message log. */
+    /**
+     * Number of columns in the message log.
+     */
     private static final int LOG_COLS = 60;
 
-    /** Background color for the main window. */
+    /**
+     * Background color for the main window.
+     */
     private static final Color BG_COLOR = new Color(30, 30, 40);
 
-    /** Text color for labels and text areas. */
+    /**
+     * Text color for labels and text areas.
+     */
     private static final Color TEXT_COLOR = new Color(220, 220, 200);
 
-    /** Color for panel borders. */
+    /**
+     * Color for panel borders.
+     */
     private static final Color PANEL_BORDER = new Color(80, 80, 100);
 
     /**
@@ -66,69 +73,111 @@ public class SwingView implements GameView {
      * map when cheat mode is active or the game ends.
      * Initialized in the constructor to prevent NullPointerException.
      */
-    private JTextArea myMapArea;
+    private final JTextArea myMapArea;
 
-    /** The main application window. */
+    /**
+     * The main application window.
+     */
     private final JFrame myFrame;
 
-    /** Scrollable read-only area showing game events and messages. */
+    /**
+     * Scrollable read-only area showing game events and messages.
+     */
     private final JTextArea myLogArea;
 
-    /** Label showing the hero's name and class. */
+    /**
+     * Label showing the hero's name and class.
+     */
     private final JLabel myHeroNameLabel;
 
-    /** CardLayout used to switch between navigation and combat panels. */
+    /**
+     * CardLayout used to switch between navigation and combat panels.
+     */
     private final CardLayout myCardLayout;
 
-    /** Container that holds both the nav panel and the combat panel. */
+    /**
+     * Container that holds both the nav panel and the combat panel.
+     */
     private final JPanel myCardPanel;
 
-    /** The combat panel shown during battles. */
+    /**
+     * The combat panel shown during battles.
+     */
     private CombatPanel myCombatPanel;
 
-    /** Label showing the hero's current hit points. */
+    /**
+     * Label showing the hero's current hit points.
+     */
     private final JLabel myHpLabel;
 
-    /** Label showing the number of healing potions in inventory. */
+    /**
+     * Label showing the number of healing potions in inventory.
+     */
     private final JLabel myPotionLabel;
 
-    /** Label showing the number of vision potions in inventory. */
+    /**
+     * Label showing the number of vision potions in inventory.
+     */
     private final JLabel myVisionLabel;
 
-    /** Label showing the number of bombs in inventory. */
+    /**
+     * Label showing the number of bombs in inventory.
+     */
     private final JLabel myBombLabel;
 
-    /** Label showing which pillars of OO have been collected. */
+    /**
+     * Label showing which pillars of OO have been collected.
+     */
     private final JLabel myPillarLabel;
 
-    /** Label showing the current difficulty level. */
+    /**
+     * Label showing the current difficulty level.
+     */
     private final JLabel myDifficultyLabel;
 
-    /** Navigation button — move North. */
+    /**
+     * Navigation button — move North.
+     */
     private final JButton myNorthBtn;
 
-    /** Navigation button — move South. */
+    /**
+     * Navigation button — move South.
+     */
     private final JButton mySouthBtn;
 
-    /** Navigation button — move East. */
+    /**
+     * Navigation button — move East.
+     */
     private final JButton myEastBtn;
 
-    /** Navigation button — move West. */
+    /**
+     * Navigation button — move West.
+     */
     private final JButton myWestBtn;
 
-    /** Button to use a healing potion outside of combat. */
+    /**
+     * Button to use a healing potion outside of combat.
+     */
     private final JButton myUsePotionBtn;
 
-    /** Button to use a vision potion outside of combat. */
+    /**
+     * Button to use a vision potion outside of combat.
+     */
     private final JButton myUseVisionBtn;
 
-    /** Cheat mode checkbox — field so keyboard shortcut can sync it. */
+    /**
+     * Cheat mode checkbox — field so keyboard shortcut can sync it.
+     */
     private JCheckBoxMenuItem myCheatItem;
 
-    /** Card name for the navigation view. */
+    /**
+     * Card name for the navigation view.
+     */
     private static final String CARD_NAV = "navigation";
 
-    /** Card name for the combat view. */
+    /**
+     * Card name for the combat view.
+     */
     private static final String CARD_COMBAT = "combat";
 
     /**
@@ -143,9 +192,6 @@ public class SwingView implements GameView {
      * Constructs the SwingView by building and wiring all Swing components.
      * The window is not made visible here; call show() after setController()
      * to ensure all listeners are attached before the player can interact.
-     *
-     * Fix: myMapArea is now initialized here to prevent a NullPointerException
-     * in displayDungeon() which can be called at any time after game start.
      */
     public SwingView() {
         // Create main window
@@ -173,32 +219,32 @@ public class SwingView implements GameView {
         myMapArea.setFont(new Font("Monospaced", Font.PLAIN, LOG_FONT_SIZE));
 
         // Create hero status labels
-        myHeroNameLabel   = makeLabel("Hero: ---");
-        myHpLabel         = makeLabel("HP: ---");
-        myPotionLabel     = makeLabel("Potions: 0");
-        myVisionLabel     = makeLabel("Vision: 0");
-        myBombLabel       = makeLabel("Bombs: 0");
-        myPillarLabel     = makeLabel("Pillars: [_][_][_][_]");
+        myHeroNameLabel = makeLabel("Hero: ---");
+        myHpLabel = makeLabel("HP: ---");
+        myPotionLabel = makeLabel("Potions: 0");
+        myVisionLabel = makeLabel("Vision: 0");
+        myBombLabel = makeLabel("Bombs: 0");
+        myPillarLabel = makeLabel("Pillars: [_][_][_][_]");
         myDifficultyLabel = makeLabel("Difficulty: ---");
 
         // Create navigation buttons (disabled by default until a game starts)
-        myNorthBtn     = makeNavButton("North [W/↑]");
-        mySouthBtn     = makeNavButton("South [S/↓]");
-        myEastBtn      = makeNavButton("East [D/→]");
-        myWestBtn      = makeNavButton("West [A/←]");
+        myNorthBtn = makeNavButton("North [W/↑]");
+        mySouthBtn = makeNavButton("South [S/↓]");
+        myEastBtn = makeNavButton("East [D/→]");
+        myWestBtn = makeNavButton("West [A/←]");
         myUsePotionBtn = makeNavButton("Use Potion [H]");
         myUseVisionBtn = makeNavButton("Use Vision [V]");
 
         // Assemble the layout
         myFrame.setJMenuBar(buildMenuBar());
         myFrame.setLayout(new BorderLayout(8, 8));
-        myFrame.add(buildLogPanel(),    BorderLayout.CENTER);
+        myFrame.add(buildLogPanel(), BorderLayout.CENTER);
         myFrame.add(buildStatusPanel(), BorderLayout.WEST);
-        myFrame.add(buildTitleBar(),    BorderLayout.NORTH);
+        myFrame.add(buildTitleBar(), BorderLayout.NORTH);
 
         // Initialize card layout and container
         myCardLayout = new CardLayout();
-        myCardPanel  = new JPanel(myCardLayout);
+        myCardPanel = new JPanel(myCardLayout);
         myCardPanel.setBackground(BG_COLOR);
         myCardPanel.setPreferredSize(new Dimension(160, 0));
 
@@ -267,7 +313,7 @@ public class SwingView implements GameView {
         }
         if (theRoom.hasPit()) {
             sb.append("  [Pit — ").append(theRoom.getPitDamage())
-              .append(" damage!]\n");
+                    .append(" damage!]\n");
         }
         if (theRoom.getHealingPotion() != null) {
             sb.append("  [Healing Potion]\n");
@@ -280,13 +326,13 @@ public class SwingView implements GameView {
         }
         if (theRoom.getPillar() != null) {
             sb.append("  [Pillar of ")
-              .append(theRoom.getPillar().name()).append("]\n");
+                    .append(theRoom.getPillar().name()).append("]\n");
         }
         if (theRoom.hasMonster()) {
             sb.append("  [Monster: ")
-              .append(theRoom.getMonster().getName())
-              .append(" (").append(theRoom.getMonster().getHitPoints())
-              .append(" HP)]\n");
+                    .append(theRoom.getMonster().getName())
+                    .append(" (").append(theRoom.getMonster().getHitPoints())
+                    .append(" HP)]\n");
         }
 
         appendLog(sb.toString());
@@ -390,12 +436,12 @@ public class SwingView implements GameView {
      * makes a selection or closes the dialog (which defaults to ATTACK).
      *
      * @return the HeroAction corresponding to the player's selection;
-     *         never null — defaults to ATTACK if dialog is dismissed
+     * never null — defaults to ATTACK if dialog is dismissed
      */
     @Override
     public HeroAction promptHeroAction() {
         final String[] options = {
-            "Attack", "Special Skill", "Healing Potion", "Bomb"
+                "Attack", "Special Skill", "Healing Potion", "Bomb"
         };
         final int choice = JOptionPane.showOptionDialog(
                 myFrame,
@@ -409,9 +455,9 @@ public class SwingView implements GameView {
         );
 
         return switch (choice) {
-            case 1  -> HeroAction.SPECIAL_SKILL;
-            case 2  -> HeroAction.USE_HEALING_POTION;
-            case 3  -> HeroAction.USE_BOMB;
+            case 1 -> HeroAction.SPECIAL_SKILL;
+            case 2 -> HeroAction.USE_HEALING_POTION;
+            case 3 -> HeroAction.USE_BOMB;
             default -> HeroAction.ATTACK;
         };
     }
@@ -434,13 +480,12 @@ public class SwingView implements GameView {
      * Called automatically by GameModel whenever a tracked property changes.
      * Routes each property change to the appropriate view update so the
      * controller does not need to manually refresh the UI after every action.
-     *
      * Handled properties:
-     *   PROP_GAME_OVER  — appends a GAME OVER banner and disables nav buttons
-     *   PROP_PLAYER_WON — appends a YOU WIN banner and shows a dialog
-     *   PROP_HERO       — refreshes the hero status panel
-     *   PROP_DUNGEON    — intentionally ignored (map only shown on demand)
-     *   PROP_COMBAT     — logs a "combat ended" message when combat clears
+     * PROP_GAME_OVER  — appends a GAME OVER banner and disables nav buttons
+     * PROP_PLAYER_WON — appends a YOU WIN banner and shows a dialog
+     * PROP_HERO       — refreshes the hero status panel
+     * PROP_DUNGEON    — intentionally ignored (map only shown on demand)
+     * PROP_COMBAT     — logs a "combat ended" message when combat clears
      *
      * @param theEvt the property change event fired by GameModel; must not be null
      */
@@ -504,7 +549,6 @@ public class SwingView implements GameView {
 
     /**
      * Builds and returns the menu bar with File and Help menus.
-     *
      * File menu items: New Game, Save Game, Load Game, Exit.
      * Help menu items: Instructions, About, Mute Audio, Cheat Mode.
      *
@@ -710,10 +754,6 @@ public class SwingView implements GameView {
      * Attaches ActionListeners to all navigation and item buttons.
      * Each button forwards its event to the appropriate GameController method.
      * Movement buttons also trigger a move sound effect via AudioManager.
-     *
-     * Fix: This method is now called from setController() so that button
-     * clicks are actually wired up. In the previous version this method
-     * existed but was never called, making all buttons non-functional.
      */
     private void attachListeners() {
         myNorthBtn.addActionListener(e -> {
@@ -741,14 +781,13 @@ public class SwingView implements GameView {
     /**
      * Sets up keyboard shortcuts using InputMap and ActionMap on the
      * root pane with WHEN_IN_FOCUSED_WINDOW scope.
-     *
      * Controls:
-     *   W / Arrow Up    - Move North
-     *   S / Arrow Down  - Move South
-     *   A / Arrow Left  - Move West
-     *   D / Arrow Right - Move East
-     *   H               - Use Healing Potion
-     *   V               - Use Vision Potion
+     * W / Arrow Up    - Move North
+     * S / Arrow Down  - Move South
+     * A / Arrow Left  - Move West
+     * D / Arrow Right - Move East
+     * H               - Use Healing Potion
+     * V               - Use Vision Potion
      */
     private void setupKeyBindings() {
         final javax.swing.InputMap im = myFrame.getRootPane()
@@ -760,8 +799,8 @@ public class SwingView implements GameView {
         // This keeps the repetitive boilerplate out of the method body
 
         // ---- North: W and Up Arrow ----
-        im.put(KeyStroke.getKeyStroke("W"),      "moveNorth");
-        im.put(KeyStroke.getKeyStroke("UP"),     "moveNorth");
+        im.put(KeyStroke.getKeyStroke("W"), "moveNorth");
+        im.put(KeyStroke.getKeyStroke("UP"), "moveNorth");
         am.put("moveNorth", new javax.swing.AbstractAction() {
             @Override
             public void actionPerformed(final java.awt.event.ActionEvent e) {
@@ -773,8 +812,8 @@ public class SwingView implements GameView {
         });
 
         // ---- South: S and Down Arrow ----
-        im.put(KeyStroke.getKeyStroke("S"),      "moveSouth");
-        im.put(KeyStroke.getKeyStroke("DOWN"),   "moveSouth");
+        im.put(KeyStroke.getKeyStroke("S"), "moveSouth");
+        im.put(KeyStroke.getKeyStroke("DOWN"), "moveSouth");
         am.put("moveSouth", new javax.swing.AbstractAction() {
             @Override
             public void actionPerformed(final java.awt.event.ActionEvent e) {
@@ -786,8 +825,8 @@ public class SwingView implements GameView {
         });
 
         // ---- West: A and Left Arrow ----
-        im.put(KeyStroke.getKeyStroke("A"),      "moveWest");
-        im.put(KeyStroke.getKeyStroke("LEFT"),   "moveWest");
+        im.put(KeyStroke.getKeyStroke("A"), "moveWest");
+        im.put(KeyStroke.getKeyStroke("LEFT"), "moveWest");
         am.put("moveWest", new javax.swing.AbstractAction() {
             @Override
             public void actionPerformed(final java.awt.event.ActionEvent e) {
@@ -799,8 +838,8 @@ public class SwingView implements GameView {
         });
 
         // ---- East: D and Right Arrow ----
-        im.put(KeyStroke.getKeyStroke("D"),      "moveEast");
-        im.put(KeyStroke.getKeyStroke("RIGHT"),  "moveEast");
+        im.put(KeyStroke.getKeyStroke("D"), "moveEast");
+        im.put(KeyStroke.getKeyStroke("RIGHT"), "moveEast");
         am.put("moveEast", new javax.swing.AbstractAction() {
             @Override
             public void actionPerformed(final java.awt.event.ActionEvent e) {
@@ -886,7 +925,6 @@ public class SwingView implements GameView {
      * class, and difficulty from the player, then starts a new game via
      * the controller. Clears the game log before starting so previous
      * session output does not carry over.
-     *
      * Returns early without starting a game if the player cancels any dialog.
      */
     private void promptNewGame() {
@@ -901,10 +939,11 @@ public class SwingView implements GameView {
         // Step 2: Hero class
         final String[] classes = {"Warrior", "Priestess", "Thief"};
         final String heroType = (String) JOptionPane.showInputDialog(myFrame,
-                "Choose your hero class:\n"
-                        + "  Warrior   — Crushing Blow (high damage)\n"
-                        + "  Priestess — Heal (restore HP in combat)\n"
-                        + "  Thief     — Surprise Attack (bonus turns)",
+                """
+                        Choose your hero class:
+                          Warrior   — Crushing Blow (high damage)
+                          Priestess — Heal (restore HP in combat)
+                          Thief     — Surprise Attack (bonus turns)""",
                 "Hero Class", JOptionPane.QUESTION_MESSAGE,
                 null, classes, classes[0]);
         if (heroType == null) {
@@ -914,10 +953,11 @@ public class SwingView implements GameView {
         // Step 3: Difficulty
         final String[] diffs = {"EASY", "MEDIUM", "HARD"};
         final String diffStr = (String) JOptionPane.showInputDialog(myFrame,
-                "Choose difficulty:\n"
-                        + "  EASY   — 5x5 dungeon\n"
-                        + "  MEDIUM — 7x7 dungeon\n"
-                        + "  HARD   — 10x10 dungeon, tougher monsters",
+                """
+                        Choose difficulty:
+                          EASY   — 5x5 dungeon
+                          MEDIUM — 7x7 dungeon
+                          HARD   — 10x10 dungeon, tougher monsters""",
                 "Difficulty", JOptionPane.QUESTION_MESSAGE,
                 null, diffs, diffs[1]);
         if (diffStr == null) {
@@ -942,31 +982,40 @@ public class SwingView implements GameView {
      */
     private void showInstructions() {
         final String text =
-                "HOW TO PLAY DUNGEON ADVENTURE\n\n"
-                        + "GOAL: Collect all 4 Pillars of OO and reach the Exit.\n\n"
-                        + "PILLARS: A=Abstraction  E=Encapsulation\n"
-                        + "         I=Inheritance  P=Polymorphism\n\n"
-                        + "KEYBOARD SHORTCUTS:\n"
-                        + "  Move North: W or Up Arrow\n"
-                        + "  Move South: S or Down Arrow\n"
-                        + "  Move West:  A or Left Arrow\n"
-                        + "  Move East:  D or Right Arrow\n"
-                        + "  Use Healing Potion: H\n"
-                        + "  Use Vision Potion:  V\n\n"
-                        + "NAVIGATION:\n"
-                        + "  Click North [W], South [S], West [A], East [D].\n"
-                        + "  Disabled buttons mean a wall blocks that direction.\n\n"
-                        + "ITEMS (picked up automatically on room entry):\n"
-                        + "  H = Healing Potion  - press H or click Use Potion [H]\n"
-                        + "  V = Vision Potion   - press V or click Use Vision [V]\n"
-                        + "  B = Bomb            — use during combat for heavy damage\n\n"
-                        + "COMBAT:\n"
-                        + "  Entering a room with a monster starts combat.\n"
-                        + "  Each round choose: Attack, Special Skill, Potion, or Bomb.\n\n"
-                        + "MENUS:\n"
-                        + "  File > New Game / Save Game / Load Game / Exit\n"
-                        + "  Help > Instructions / About / Mute Audio / Cheat Mode\n\n"
-                        + "CHEAT MODE: Reveals the entire dungeon map (Help menu).";
+                """
+                        HOW TO PLAY DUNGEON ADVENTURE
+                        
+                        GOAL: Collect all 4 Pillars of OO and reach the Exit.
+                        
+                        PILLARS: A=Abstraction  E=Encapsulation
+                                 I=Inheritance  P=Polymorphism
+                        
+                        KEYBOARD SHORTCUTS:
+                          Move North: W or Up Arrow
+                          Move South: S or Down Arrow
+                          Move West:  A or Left Arrow
+                          Move East:  D or Right Arrow
+                          Use Healing Potion: H
+                          Use Vision Potion:  V
+                        
+                        NAVIGATION:
+                          Click North [W], South [S], West [A], East [D].
+                          Disabled buttons mean a wall blocks that direction.
+                        
+                        ITEMS (picked up automatically on room entry):
+                          H = Healing Potion  - press H or click Use Potion [H]
+                          V = Vision Potion   - press V or click Use Vision [V]
+                          B = Bomb            — use during combat for heavy damage
+                        
+                        COMBAT:
+                          Entering a room with a monster starts combat.
+                          Each round choose: Attack, Special Skill, Potion, or Bomb.
+                        
+                        MENUS:
+                          File > New Game / Save Game / Load Game / Exit
+                          Help > Instructions / About / Mute Audio / Cheat Mode
+                        
+                        CHEAT MODE: Reveals the entire dungeon map (Help menu).""";
         JOptionPane.showMessageDialog(myFrame, text,
                 "Instructions", JOptionPane.INFORMATION_MESSAGE);
     }

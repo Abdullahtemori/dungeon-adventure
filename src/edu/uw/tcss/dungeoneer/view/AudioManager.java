@@ -3,7 +3,6 @@ package edu.uw.tcss.dungeoneer.view;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.FloatControl;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 
@@ -15,7 +14,7 @@ import java.io.InputStream;
  * play sounds without holding a reference passed through the constructor
  * chain.
  * Audio files will be place in:
- *   src/edu/tcss/dungeoneer/view/sounds/
+ * src/edu/tcss/dungeoneer/view/sounds/
  * and named exactly as the constants below.
  *
  * @author Daniella Birungi
@@ -41,32 +40,50 @@ public final class AudioManager {
      */
     public static final String MUSIC_COMBAT = "sounds/combat_music.wav";
 
-    /** Sound effect for hero movement between rooms. */
-    public static final String SFX_MOVE     = "sounds/sfx_move.wav";
+    /**
+     * Sound effect for hero movement between rooms.
+     */
+    public static final String SFX_MOVE = "sounds/sfx_move.wav";
 
-    /** Sound effect for picking up an item. */
-    public static final String SFX_PICKUP   = "sounds/sfx_pickup.wav";
+    /**
+     * Sound effect for picking up an item.
+     */
+    public static final String SFX_PICKUP = "sounds/sfx_pickup.wav";
 
-    /** Sound effect for falling into a pit. */
-    public static final String SFX_PIT      = "sounds/sfx_pit.wav";
+    /**
+     * Sound effect for falling into a pit.
+     */
+    public static final String SFX_PIT = "sounds/sfx_pit.wav";
 
-    /** Sound effect for a successful attack hit. */
-    public static final String SFX_HIT      = "sounds/sfx_hit.wav";
+    /**
+     * Sound effect for a successful attack hit.
+     */
+    public static final String SFX_HIT = "sounds/sfx_hit.wav";
 
-    /** Sound effect for a missed attack. */
-    public static final String SFX_MISS     = "sounds/sfx_miss.wav";
+    /**
+     * Sound effect for a missed attack.
+     */
+    public static final String SFX_MISS = "sounds/sfx_miss.wav";
 
-    /** Sound effect for using a bomb. */
-    public static final String SFX_BOMB     = "sounds/sfx_bomb.wav";
+    /**
+     * Sound effect for using a bomb.
+     */
+    public static final String SFX_BOMB = "sounds/sfx_bomb.wav";
 
-    /** Sound effect for hero death. */
-    public static final String SFX_DEATH    = "sounds/sfx_death.wav";
+    /**
+     * Sound effect for hero death.
+     */
+    public static final String SFX_DEATH = "sounds/sfx_death.wav";
 
-    /** Sound effect for defeating a monster. */
-    public static final String SFX_VICTORY  = "sounds/sfx_victory.wav";
+    /**
+     * Sound effect for defeating a monster.
+     */
+    public static final String SFX_VICTORY = "sounds/sfx_victory.wav";
 
-    /** Sound effect for winning the game. */
-    public static final String SFX_WIN      = "sounds/sfx_win.wav";
+    /**
+     * Sound effect for winning the game.
+     */
+    public static final String SFX_WIN = "sounds/sfx_win.wav";
 
     /**
      * The single instance of AudioManager.
@@ -90,7 +107,7 @@ public final class AudioManager {
      * Whether the audio system is available on this machine.
      * Set to false on first failure so we stop retrying.
      */
-    private boolean myAudioAvailable;
+    private final boolean myAudioAvailable;
 
     /**
      * Private constructor.
@@ -167,6 +184,7 @@ public final class AudioManager {
             }
         }
     }
+
     /**
      * Plays a one-shot sound effect from the given file path.
      * The effect plays once and stops automatically.
@@ -177,6 +195,8 @@ public final class AudioManager {
      *
      * @param theSfx the resource path to the .wav file
      */
+    // Clip closed asynchronously via LineListener on STOP
+    @SuppressWarnings("resource")
     public void playSFX(final String theSfx) {
         if (!myAudioAvailable || myMuted || theSfx == null) return;
 

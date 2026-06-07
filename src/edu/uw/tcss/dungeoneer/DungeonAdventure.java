@@ -14,27 +14,29 @@ import java.util.Scanner;
 
 /**
  * Single entry point for the Dungeon Adventure game.
- *
  * Launches either the Swing GUI (default) or the console version
  * depending on a command line flag. The Swing flow is fully driven
  * by the menu inside SwingView, while the console flow uses a
  * simple text menu and a minimal navigation loop that runs until
  * the player wins, loses, or quits.
- *
  * Usage:
- *   java edu.uw.tcss.dungeoneer.DungeonAdventure              -> Swing mode
- *   java edu.uw.tcss.dungeoneer.DungeonAdventure --swing      -> Swing mode
- *   java edu.uw.tcss.dungeoneer.DungeonAdventure --console    -> Console mode
+ * java edu.uw.tcss.dungeoneer.DungeonAdventure              -> Swing mode
+ * java edu.uw.tcss.dungeoneer.DungeonAdventure --swing      -> Swing mode
+ * java edu.uw.tcss.dungeoneer.DungeonAdventure --console    -> Console mode
  *
  * @author Tarik Atasoy
  * @version Iteration 4
  */
 public final class DungeonAdventure {
 
-    /** CLI flag that selects the text-based view. */
+    /**
+     * CLI flag that selects the text-based view.
+     */
     private static final String FLAG_CONSOLE = "--console";
 
-    /** Prevents instantiation of this launcher class. */
+    /**
+     * Prevents instantiation of this launcher class.
+     */
     private DungeonAdventure() {
         // no instances
     }
@@ -199,9 +201,12 @@ public final class DungeonAdventure {
 
         final String choice = theIn.nextLine().trim();
         switch (choice) {
-            case "1": return "Warrior";
-            case "2": return "Priestess";
-            case "3": return "Thief";
+            case "1":
+                return "Warrior";
+            case "2":
+                return "Priestess";
+            case "3":
+                return "Thief";
             default:
                 theView.displayMessage("Invalid hero class.");
                 return null;
@@ -225,9 +230,12 @@ public final class DungeonAdventure {
 
         final String choice = theIn.nextLine().trim();
         switch (choice) {
-            case "1": return Difficulty.EASY;
-            case "2": return Difficulty.MEDIUM;
-            case "3": return Difficulty.HARD;
+            case "1":
+                return Difficulty.EASY;
+            case "2":
+                return Difficulty.MEDIUM;
+            case "3":
+                return Difficulty.HARD;
             default:
                 theView.displayMessage("Invalid difficulty.");
                 return null;
@@ -246,17 +254,17 @@ public final class DungeonAdventure {
      * Each turn: reprint the current room and a short status line,
      * read one command, dispatch to the controller, and let model
      * events drive the win/lose/combat output through the view.
-     *
+     * <p>
      * Commands:
-     *   N/S/E/W  move in a direction
-     *   H        use a healing potion
-     *   V        use a vision potion
-     *   T        reprint hero stats
-     *   M        print the full map (only effective while cheat is on)
-     *   S        save the game to the default file
-     *   L        load the game from the default file
-     *   Q        quit the current game and return to the welcome menu
-     *   XYZZY    hidden cheat toggle (reveals dungeon map)
+     * N/S/E/W  move in a direction
+     * H        use a healing potion
+     * V        use a vision potion
+     * T        reprint hero stats
+     * M        print the full map (only effective while cheat is on)
+     * S        save the game to the default file
+     * L        load the game from the default file
+     * Q        quit the current game and return to the welcome menu
+     * XYZZY    hidden cheat toggle (reveals dungeon map)
      *
      * @param theIn         shared scanner over System.in
      * @param theController controller driving the current game

@@ -13,6 +13,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -22,7 +23,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -203,44 +203,44 @@ public class CombatPanel extends JPanel {
     // ── Hero card widgets ─────────────────────────────────────────────────
  
     /** Label showing the hero's name. */
-    private final JLabel myHeroNameLabel  = makeLabel("", FONT_TITLE, ACCENT_HERO);
+    private final JLabel myHeroNameLabel  = makeLabel(FONT_TITLE, ACCENT_HERO);
  
     /** Label showing the hero's current / max HP as text. */
-    private final JLabel myHeroHpLabel    = makeLabel("", FONT_STAT,  TEXT_PRIMARY);
+    private final JLabel myHeroHpLabel    = makeLabel(FONT_STAT,  TEXT_PRIMARY);
  
     /** Progress bar representing hero HP. */
     private final JProgressBar myHeroHpBar = makeHpBar();
  
     /** Label showing hero class stats (speed, block %). */
-    private final JLabel myHeroStatsLabel = makeLabel("", FONT_STAT,  TEXT_DIM);
+    private final JLabel myHeroStatsLabel = makeLabel(FONT_STAT,  TEXT_DIM);
  
     /** Label showing hero inventory counts. */
-    private final JLabel myHeroInvLabel   = makeLabel("", FONT_STAT,  TEXT_DIM);
+    private final JLabel myHeroInvLabel   = makeLabel(FONT_STAT,  TEXT_DIM);
  
     // ── Monster card widgets ──────────────────────────────────────────────
  
     /** Label showing the monster's name. */
-    private final JLabel myMonNameLabel   = makeLabel("", FONT_TITLE, ACCENT_ENEMY);
+    private final JLabel myMonNameLabel   = makeLabel(FONT_TITLE, ACCENT_ENEMY);
  
     /** Label showing the monster's current HP as text. */
-    private final JLabel myMonHpLabel     = makeLabel("", FONT_STAT,  TEXT_PRIMARY);
+    private final JLabel myMonHpLabel     = makeLabel(FONT_STAT,  TEXT_PRIMARY);
  
     /** Progress bar representing monster HP. */
     private final JProgressBar myMonHpBar  = makeHpBar();
  
     /** Label showing monster stats (speed, heal %). */
-    private final JLabel myMonStatsLabel  = makeLabel("", FONT_STAT,  TEXT_DIM);
+    private final JLabel myMonStatsLabel  = makeLabel(FONT_STAT,  TEXT_DIM);
  
     // ── Action buttons ────────────────────────────────────────────────────
  
     /** Button for the standard attack action. */
-    private final JButton myAttackBtn = makeActionButton("\u2694  Attack");
+    private final JButton myAttackBtn = makeActionButton("⚔  Attack");
  
     /** Button for the hero's special skill. */
-    private final JButton mySkillBtn  = makeActionButton("\u2728  Special Skill");
+    private final JButton mySkillBtn  = makeActionButton("✨  Special Skill");
  
     /** Button for drinking a healing potion. */
-    private final JButton myPotionBtn = makeActionButton("\u9f2a  Use Potion");
+    private final JButton myPotionBtn = makeActionButton("\uD83E\uDDEA  Use Potion");
  
     /** Button for throwing a bomb. */
     private final JButton myBombBtn   = makeActionButton("\uD83D\uDCA3  Use Bomb");
@@ -249,10 +249,7 @@ public class CombatPanel extends JPanel {
  
     /** Non-editable text pane that accumulates combat events. */
     private final JTextPane myLogPane = new JTextPane();
- 
-    /** Scroll wrapper around the log pane. */
-    private final JScrollPane myLogScroll;
- 
+
     // ── State ─────────────────────────────────────────────────────────────
  
     /** Max HP of the current hero — captured when combat starts. */
@@ -282,7 +279,8 @@ public class CombatPanel extends JPanel {
         myLogPane.setFont(FONT_LOG);
         myLogPane.setMargin(new Insets(LOG_MARGIN, LOG_MARGIN,
                 LOG_MARGIN, LOG_MARGIN));
-        myLogScroll = new JScrollPane(myLogPane);
+        // Scroll wrapper around the log pane.
+        JScrollPane myLogScroll = new JScrollPane(myLogPane);
         myLogScroll.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(
                         new Color(60, 60, 80), LOG_BORDER_THICKNESS),
@@ -294,19 +292,19 @@ public class CombatPanel extends JPanel {
         myLogScroll.setVerticalScrollBarPolicy(
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
  
-        myAttackBtn.addActionListener((final ActionEvent e) -> {
+        myAttackBtn.addActionListener((final ActionEvent _) -> {
             setButtonsEnabled(false);
             theController.handleCombatAction(HeroAction.ATTACK);
         });
-        mySkillBtn.addActionListener((final ActionEvent e) -> {
+        mySkillBtn.addActionListener((final ActionEvent _) -> {
             setButtonsEnabled(false);
             theController.handleCombatAction(HeroAction.SPECIAL_SKILL);
         });
-        myPotionBtn.addActionListener((final ActionEvent e) -> {
+        myPotionBtn.addActionListener((final ActionEvent _) -> {
             setButtonsEnabled(false);
             theController.handleCombatAction(HeroAction.USE_HEALING_POTION);
         });
-        myBombBtn.addActionListener((final ActionEvent e) -> {
+        myBombBtn.addActionListener((final ActionEvent _) -> {
             setButtonsEnabled(false);
             theController.handleCombatAction(HeroAction.USE_BOMB);
         });
@@ -335,7 +333,7 @@ public class CombatPanel extends JPanel {
         myMonMaxHp  = theMonster.getHitPoints();
  
         myLogPane.setText("");
-        appendLog("\u2694  Combat begins: "
+        appendLog("⚔  Combat begins: "
                 + theHero.getName() + " vs " + theMonster.getName(),
                 LOG_SYSTEM);
  
@@ -418,7 +416,7 @@ public class CombatPanel extends JPanel {
                 appendLog(actor + " heals for " + amount + " HP.", LOG_HEAL);
                 break;
             case POTION_USED:
-                appendLog(actor + " drinks a healing potion \u2014 +"
+                appendLog(actor + " drinks a healing potion — +"
                         + amount + " HP.", LOG_HEAL);
                 break;
             case BOMB_USED:
@@ -430,10 +428,10 @@ public class CombatPanel extends JPanel {
                 break;
             case COMBAT_END:
                 if (amount == 1) {
-                    appendLog("\uD83C\uDFC6  VICTORY \u2014 " + actor
+                    appendLog("\uD83C\uDFC6  VICTORY \uD83C\uDFC6  " + actor
                             + " stands triumphant!", LOG_SYSTEM);
                 } else {
-                    appendLog("\uD83D\uDC80  DEFEAT \u2014 " + actor
+                    appendLog("\uD83D\uDC80  DEFEAT \uD83D\uDC80 " + actor
                             + " has fallen...", LOG_ENEMY);
                 }
                 setButtonsEnabled(false);
@@ -579,15 +577,13 @@ public class CombatPanel extends JPanel {
      * Creates a styled {@link JLabel} with the given text, font, and
      * foreground colour.
      *
-     * @param theText  initial label text
      * @param theFont  label font
      * @param theColor foreground colour
      * @return the configured label
      */
-    private static JLabel makeLabel(final String theText,
-                                    final Font theFont,
+    private static JLabel makeLabel(final Font theFont,
                                     final Color theColor) {
-        final JLabel lbl = new JLabel(theText);
+        final JLabel lbl = new JLabel("");
         lbl.setFont(theFont);
         lbl.setForeground(theColor);
         lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -725,7 +721,7 @@ public class CombatPanel extends JPanel {
             doc.insertString(doc.getLength(), theText, attrs);
         } catch (final BadLocationException ex) {
             // Location is always end-of-document, so this should never occur.
-            ex.printStackTrace();
+            System.err.println("CombatPanel: log append failed: " + ex.getMessage());
         }
  
         SwingUtilities.invokeLater(

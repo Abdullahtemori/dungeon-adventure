@@ -3,7 +3,6 @@ package edu.uw.tcss.dungeoneer.model;
 /**
  * The difficulty levels for the game. Each level fixes the size of
  * the dungeon grid.
- *
  * Later iterations may also use this enum to scale things like
  * monster strength or item rates. For now it just controls the
  * grid size used by DungeonBuilder.

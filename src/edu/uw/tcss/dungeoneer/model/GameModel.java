@@ -4,18 +4,17 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
  * GameModel is the central data container for the Dungeon Adventure game.
  * It holds all game state including the dungeon layout, the hero, the
  * selected difficulty, and win/lose flags.
- *
  * GameModel is part of the Model layer in the MVC pattern. It does not
  * contain game logic that belongs in GameController. It notifies
  * registered listeners (the View) whenever state changes using the
  * Observer pattern via PropertyChangeSupport.
- *
  * GameModel implements Serializable so the entire game state can be
  * saved to a file and loaded back later.
  *
@@ -27,6 +26,7 @@ public class GameModel implements Serializable {
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -45,7 +45,7 @@ public class GameModel implements Serializable {
      * The difficulty level chosen at the start of the game.
      * Affects dungeon size, monster strength, and item spawn rates.
      */
-    private Difficulty myDifficulty;
+    private final Difficulty myDifficulty;
 
     /**
      * Flag that becomes true when the game ends (win or lose).
@@ -102,8 +102,8 @@ public class GameModel implements Serializable {
      * Constructs a GameModel with the given dungeon, hero, and difficulty.
      * Initializes game flags to their default starting values.
      *
-     * @param theDungeon the generated dungeon for this game session
-     * @param theHero the hero the player selected
+     * @param theDungeon    the generated dungeon for this game session
+     * @param theHero       the hero the player selected
      * @param theDifficulty the difficulty level chosen by the player
      */
     public GameModel(final Dungeon theDungeon,
@@ -147,6 +147,7 @@ public class GameModel implements Serializable {
     public Difficulty getDifficulty() {
         return myDifficulty;
     }
+
     /**
      * Returns whether the game has ended.
      *
@@ -296,9 +297,10 @@ public class GameModel implements Serializable {
      * This method is called automatically by Java during loading.
      *
      * @param theIn the object input stream
-     * @throws IOException if reading fails
+     * @throws IOException            if reading fails
      * @throws ClassNotFoundException if class not found
      */
+    @Serial
     private void readObject(final ObjectInputStream theIn)
             throws IOException, ClassNotFoundException {
         // Read all non-transient fields normally
@@ -315,6 +317,7 @@ public class GameModel implements Serializable {
      *
      * @return this GameModel with myPcs rebuilt
      */
+    @Serial
     private Object readResolve() {
         myPcs = new PropertyChangeSupport(this);
         return this;
