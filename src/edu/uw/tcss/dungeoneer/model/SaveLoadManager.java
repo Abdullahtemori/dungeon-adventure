@@ -80,6 +80,7 @@ public class SaveLoadManager {
      * @param theModel the game model to save
      * @return true if save was successful, false if it failed
      */
+    @SuppressWarnings("unused")
     public static boolean saveGame(final GameModel theModel) {
         return saveGame(theModel, DEFAULT_SAVE_PATH);
     }
@@ -136,6 +137,7 @@ public class SaveLoadManager {
      *
      * @return the loaded GameModel, or null if loading failed
      */
+    @SuppressWarnings("unused")
     public static GameModel loadGame() {
 
         return loadGame(DEFAULT_SAVE_PATH);
@@ -161,6 +163,7 @@ public class SaveLoadManager {
      *
      * @return true if a save file exists, false otherwise
      */
+    @SuppressWarnings("unused")
     public static boolean saveExists() {
         return saveExists(DEFAULT_SAVE_PATH);
     }
@@ -193,6 +196,7 @@ public class SaveLoadManager {
      *
      * @return true if deleted, false if file did not exist
      */
+    @SuppressWarnings("unused")
     public static boolean deleteSave() {
 
         return deleteSave(DEFAULT_SAVE_PATH);

@@ -127,6 +127,7 @@ public class StubView implements GameView {
      *
      * @return list of messages in the order they were received
      */
+    @SuppressWarnings("unused")
     public List<String> getMessages() {
         return List.copyOf(myMessages);
     }
@@ -136,6 +137,7 @@ public class StubView implements GameView {
      *
      * @return list of events in order
      */
+    @SuppressWarnings("unused")
     public List<PropertyChangeEvent> getEvents() {
         return List.copyOf(myEvents);
     }
@@ -154,6 +156,7 @@ public class StubView implements GameView {
      *
      * @param theAction the action to return; must not be null
      */
+    @SuppressWarnings("unused")
     public void setNextAction(final HeroAction theAction) {
         myNextAction = theAction;
     }
@@ -163,6 +166,7 @@ public class StubView implements GameView {
      *
      * @return message count
      */
+    @SuppressWarnings("unused")
     public int getMessageCount() {
         return myMessages.size();
     }

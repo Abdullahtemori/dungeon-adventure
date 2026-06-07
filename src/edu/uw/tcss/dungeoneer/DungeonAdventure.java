@@ -47,7 +47,7 @@ public final class DungeonAdventure {
      *
      * @param theArgs command line arguments; first arg may be a view flag
      */
-    public static void main(final String[] theArgs) {
+    static void main(final String[] theArgs) {
         final boolean consoleMode =
                 theArgs != null && theArgs.length > 0
                         && FLAG_CONSOLE.equalsIgnoreCase(theArgs[0]);
@@ -200,17 +200,15 @@ public final class DungeonAdventure {
         System.out.print("  Selection: ");
 
         final String choice = theIn.nextLine().trim();
-        switch (choice) {
-            case "1":
-                return "Warrior";
-            case "2":
-                return "Priestess";
-            case "3":
-                return "Thief";
-            default:
+        return switch (choice) {
+            case "1" -> "Warrior";
+            case "2" -> "Priestess";
+            case "3" -> "Thief";
+            default -> {
                 theView.displayMessage("Invalid hero class.");
-                return null;
-        }
+                yield null;
+            }
+        };
     }
 
     /**
@@ -229,17 +227,15 @@ public final class DungeonAdventure {
         System.out.print("  Selection: ");
 
         final String choice = theIn.nextLine().trim();
-        switch (choice) {
-            case "1":
-                return Difficulty.EASY;
-            case "2":
-                return Difficulty.MEDIUM;
-            case "3":
-                return Difficulty.HARD;
-            default:
+        return switch (choice) {
+            case "1" -> Difficulty.EASY;
+            case "2" -> Difficulty.MEDIUM;
+            case "3" -> Difficulty.HARD;
+            default -> {
                 theView.displayMessage("Invalid difficulty.");
-                return null;
-        }
+                yield null;
+            }
+        };
     }
 
     /**

@@ -328,6 +328,7 @@ public class CombatPanel extends JPanel {
      * @param theHero    the hero entering combat
      * @param theMonster the monster the hero is fighting
      */
+    @SuppressWarnings("unused")
     public void startCombat(final Hero theHero, final Monster theMonster) {
         myHeroMaxHp = theHero.getHitPoints();
         myMonMaxHp  = theMonster.getHitPoints();
@@ -450,6 +451,7 @@ public class CombatPanel extends JPanel {
      *                  {@link edu.uw.tcss.dungeoneer.model.Combat#executeHeroAction(HeroAction)}
      *                  (ignored if {@code null})
      */
+    @SuppressWarnings("unused")
     public void logEvents(final List<CombatEvent> theEvents) {
         if (theEvents == null) {
             return;
@@ -464,6 +466,7 @@ public class CombatPanel extends JPanel {
      * next turn. Called by the controller after it has finished
      * processing the previous action and refreshing the UI.
      */
+    @SuppressWarnings("unused")
     public void enableActions() {
         setButtonsEnabled(true);
     }

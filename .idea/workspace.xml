@@ -4,21 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="510a188e-bbe5-4e45-b744-140b6974b9b9" name="Changes" comment="Added GameControllerTest.java with 13 unit tests covering startNewGame,handleMove, potions, cheat mode, checkWinLose, and save/load">
-      <change afterPath="$PROJECT_DIR$/test/edu/uw/tcss/dungeoneer/IntegrationTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Bomb.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Bomb.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Difficulty.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Difficulty.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Direction.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Direction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Dungeon.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Dungeon.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/DungeonBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/DungeonBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/GameModel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/GameModel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/HealingPotion.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/HealingPotion.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/MonsterFactory.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/MonsterFactory.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Room.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/SaveLoadManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/SaveLoadManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/dungeon-adventure/edu/uw/tcss/dungeoneer/model/DungeonTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/dungeon-adventure/edu/uw/tcss/dungeoneer/model/DungeonTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/dungeon-adventure/edu/uw/tcss/dungeoneer/model/RoomTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/dungeon-adventure/edu/uw/tcss/dungeoneer/model/RoomTest.class" afterDir="false" />
+    <list default="true" id="510a188e-bbe5-4e45-b744-140b6974b9b9" name="Changes" comment="Added IntegrationTest with 8 end-to-end tests covering win/lose paths,save/load round-trips, PropertyChange events, and cheat mode isolation">
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/DungeonAdventure.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/DungeonAdventure.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/SaveLoadManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/SaveLoadManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/view/AudioManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/view/AudioManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/view/CombatPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/view/CombatPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/edu/uw/tcss/dungeoneer/controller/GameControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/edu/uw/tcss/dungeoneer/controller/GameControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/edu/uw/tcss/dungeoneer/test/StubView.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/edu/uw/tcss/dungeoneer/test/StubView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -434,11 +426,18 @@
       <option name="project" value="LOCAL" />
       <updated>1780816476835</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Added IntegrationTest with 8 end-to-end tests covering win/lose paths,save/load round-trips, PropertyChange events, and cheat mode isolation">
+      <option name="closed" value="true" />
+      <created>1780816529112</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1780816529112</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Intial implementation of Item.java" />
     <MESSAGE value="Intial implementation of HealingPotion.java" />
     <MESSAGE value="Intial implementation of VisionPotion.java" />
     <MESSAGE value="Intial implementation of Bomb.java" />
@@ -463,7 +462,8 @@
     <MESSAGE value="checkstyle error fixes" />
     <MESSAGE value="to test double implementing GameView for headless testing" />
     <MESSAGE value="Added GameControllerTest.java with 13 unit tests covering startNewGame,handleMove, potions, cheat mode, checkWinLose, and save/load" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added GameControllerTest.java with 13 unit tests covering startNewGame,handleMove, potions, cheat mode, checkWinLose, and save/load" />
+    <MESSAGE value="Added IntegrationTest with 8 end-to-end tests covering win/lose paths,save/load round-trips, PropertyChange events, and cheat mode isolation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added IntegrationTest with 8 end-to-end tests covering win/lose paths,save/load round-trips, PropertyChange events, and cheat mode isolation" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/dungeon_adventure$RoomTest.ic" NAME="RoomTest Coverage Results" MODIFIED="1778447805014" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">

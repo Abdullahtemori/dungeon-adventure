@@ -38,6 +38,7 @@ public final class AudioManager {
      * Background music during combat.
      * File: sounds/combat_music.wav
      */
+    @SuppressWarnings("unused")
     public static final String MUSIC_COMBAT = "sounds/combat_music.wav";
 
     /**
@@ -53,6 +54,7 @@ public final class AudioManager {
     /**
      * Sound effect for falling into a pit.
      */
+    @SuppressWarnings("unused")
     public static final String SFX_PIT = "sounds/sfx_pit.wav";
 
     /**
@@ -83,6 +85,7 @@ public final class AudioManager {
     /**
      * Sound effect for winning the game.
      */
+    @SuppressWarnings("unused")
     public static final String SFX_WIN = "sounds/sfx_win.wav";
 
     /**
@@ -228,6 +231,7 @@ public final class AudioManager {
      *
      * @param theEvent the combat event to play a sound for
      */
+    @SuppressWarnings("unused")
     public void playCombatSFX(
             final edu.uw.tcss.dungeoneer.model.CombatEvent theEvent) {
         if (theEvent == null) return;
@@ -300,6 +304,7 @@ public final class AudioManager {
      *
      * @return true if audio is available, false if no sound card found
      */
+    @SuppressWarnings("unused")
     public boolean isAudioAvailable() {
         return myAudioAvailable;
     }

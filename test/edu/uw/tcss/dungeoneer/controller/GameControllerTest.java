@@ -201,6 +201,7 @@ class GameControllerTest {
     @Test
     void testHandleMoveIntoWallDoesNotMove() {
         startEasyGame();
+        @SuppressWarnings("unused")
         final Room startRoom =
                 myController.getModel().getDungeon().getCurrentRoom();
 
