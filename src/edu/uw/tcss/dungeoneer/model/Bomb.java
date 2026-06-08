@@ -33,7 +33,7 @@ public class Bomb implements Item {
     private final int myDamage;
 
     /**
-     * Constructs a Bomb with a randomly generated damaga between
+     * Constructs a Bomb with a randomly generated damage between
      * MIN_DAMAGE and MAX_DAMAGE inclusive.
      */
     public Bomb() {
@@ -45,7 +45,7 @@ public class Bomb implements Item {
      * Constructs a Bomb with a specific damage value.
      * Used for testing purposes.
      *
-     * @param theDamage the amount of damge this bomb deals
+     * @param theDamage the amount of damage this bomb deals
      */
     public Bomb(final int theDamage) {
         myDamage = theDamage;
@@ -73,7 +73,7 @@ public class Bomb implements Item {
     /**
      * A description for this item.
      *
-     * @return descrption of the bomb
+     * @return description of the bomb
      */
     @Override
     public String getDescription() {
