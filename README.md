@@ -192,6 +192,23 @@ dungeon-adventure/
 │   └── UML_final.pdf
 └── README.md
 
+## Sound Files
+File                 |  Plays When
+─────────────────────|──────────────────────────────────────
+menu_music.wav       | Main menu is open
+dungeon_music.wav    | Exploring the dungeon
+combat_music.wav     | In combat
+sfx_hit.wav          | Attack lands
+sfx_miss.wav         | Attack misses
+sfx_bomb.wav         | Bomb is used
+sfx_pickup.wav       | Item picked up/potion used
+sfx_pit.wav          | hero falls into pit
+sfx_death.wav        | hero is defeated
+sfx_victory.wav      | monster is defeated
+sfx_win.wav          | Player wins the game
+
+- Audio mute toggle: Help → Mute Audio (GUI) — no console equivalent.
+
 ## Known Shortcomings
 - The console view does not support in-combat item usage (bombs/potions during a fight
   must be used through the GUI).
