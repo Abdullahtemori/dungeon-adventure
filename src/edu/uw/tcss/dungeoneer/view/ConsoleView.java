@@ -19,11 +19,15 @@ import java.util.List;
  */
 public class ConsoleView implements GameView {
 
-    /** Separator line used between sections of output. */
+    /**
+     * Separator line used between sections of output.
+     */
     private static final String SEPARATOR =
             "========================================";
 
-    /** Shorter separator for minor sections. */
+    /**
+     * Shorter separator for minor sections.
+     */
     private static final String THIN_LINE =
             "----------------------------------------";
 
@@ -39,6 +43,7 @@ public class ConsoleView implements GameView {
     /**
      * Displays the contents of a single room as a 3x3 text grid
      * followed by a description of what the room contains.
+     *
      * @param theRoom the room to display
      */
     @Override

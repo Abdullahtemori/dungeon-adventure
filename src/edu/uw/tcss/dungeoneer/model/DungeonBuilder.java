@@ -15,23 +15,21 @@ import java.util.function.Supplier;
  * (which sets the grid size) and then call build(). A custom grid
  * size can also be supplied with setSize, which overrides the
  * difficulty-derived dimensions.
- *
  * What build() does, in order:
- *   1. Carve a maze of doors with recursive backtracking. The door
- *      graph is a spanning tree, so every room is reachable from
- *      every other room.
- *   2. Mark the entrance and exit in opposite corners.
- *   3. Drop the four Pillars of OO into distinct rooms that are
- *      not the entrance or exit.
- *   4. Sprinkle pits, healing potions, vision potions, and bombs
- *      into the remaining rooms with a small probability each.
- *   5. Populate rooms with monsters drawn from the MonsterFactory.
- *      Pillar rooms, the exit, and rooms next to the exit always
- *      receive a strong monster (Ogre). The entrance never gets
- *      a monster. The spawn rate for normal rooms is per-difficulty
- *      and may be overridden via monsterChance.
- *   6. Place the hero on the entrance.
- *
+ * 1. Carve a maze of doors with recursive backtracking. The door
+ * graph is a spanning tree, so every room is reachable from
+ * every other room.
+ * 2. Mark the entrance and exit in opposite corners.
+ * 3. Drop the four Pillars of OO into distinct rooms that are
+ * not the entrance or exit.
+ * 4. Sprinkle pits, healing potions, vision potions, and bombs
+ * into the remaining rooms with a small probability each.
+ * 5. Populate rooms with monsters drawn from the MonsterFactory.
+ * Pillar rooms, the exit, and rooms next to the exit always
+ * receive a strong monster (Ogre). The entrance never gets
+ * a monster. The spawn rate for normal rooms is per-difficulty
+ * and may be overridden via monsterChance.
+ * 6. Place the hero on the entrance.
  * After population the layout is verified with a BFS traversability
  * check. If the check fails the dungeon is discarded and rebuilt.
  *
@@ -40,20 +38,31 @@ import java.util.function.Supplier;
  */
 public class DungeonBuilder {
 
-    /** Default chance per item type for placement in a normal room. */
+    /**
+     * Default chance per item type for placement in a normal room.
+     */
     private static final double DEFAULT_ITEM_CHANCE = 0.10;
 
-    /** Minimum damage a pit can deal. */
+    /**
+     * Minimum damage a pit can deal.
+     */
     private static final int PIT_MIN_DAMAGE = 1;
 
-    /** Maximum damage a pit can deal. */
+    /**
+     * Maximum damage a pit can deal.
+     */
     private static final int PIT_MAX_DAMAGE = 20;
 
-    /** Sentinel meaning "no custom size set; fall back to difficulty". */
+    /**
+     * Sentinel meaning "no custom size set; fall back to difficulty".
+     */
     private static final int SIZE_UNSET = -1;
 
-    /** Default monster spawn chance for normal rooms, per difficulty. */
+    /**
+     * Default monster spawn chance for normal rooms, per difficulty.
+     */
     private static final Map<Difficulty, Double> DEFAULT_MONSTER_CHANCE;
+
     static {
         DEFAULT_MONSTER_CHANCE = new EnumMap<>(Difficulty.class);
         DEFAULT_MONSTER_CHANCE.put(Difficulty.EASY, 0.15);
@@ -61,16 +70,24 @@ public class DungeonBuilder {
         DEFAULT_MONSTER_CHANCE.put(Difficulty.HARD, 0.35);
     }
 
-    /** Difficulty for the next dungeon. */
+    /**
+     * Difficulty for the next dungeon.
+     */
     private Difficulty myDifficulty = Difficulty.MEDIUM;
 
-    /** Custom row count, or SIZE_UNSET to use the difficulty value. */
+    /**
+     * Custom row count, or SIZE_UNSET to use the difficulty value.
+     */
     private int myCustomRows = SIZE_UNSET;
 
-    /** Custom column count, or SIZE_UNSET to use the difficulty value. */
+    /**
+     * Custom column count, or SIZE_UNSET to use the difficulty value.
+     */
     private int myCustomCols = SIZE_UNSET;
 
-    /** Probability for each item type in a normal room. */
+    /**
+     * Probability for each item type in a normal room.
+     */
     private double myItemChance = DEFAULT_ITEM_CHANCE;
 
     /**
@@ -99,7 +116,9 @@ public class DungeonBuilder {
      */
     private MonsterFactory myMonsterFactory;
 
-    /** Random source. Can be swapped out so tests stay deterministic. */
+    /**
+     * Random source. Can be swapped out so tests stay deterministic.
+     */
     private Random myRandom = new Random();
 
     /**
@@ -245,14 +264,13 @@ public class DungeonBuilder {
 
     /**
      * Populates the given dungeon with monsters. Rules:
-     *   - The entrance room never gets a monster.
-     *   - Every pillar room gets a strong (Ogre) guardian.
-     *   - The exit room and every room orthogonally adjacent to the
-     *     exit get a strong guardian.
-     *   - All other rooms have a monster placed with probability
-     *     equal to the effective monster chance (per difficulty or
-     *     the explicit override). Those use MonsterFactory.createRandom().
-     *
+     * - The entrance room never gets a monster.
+     * - Every pillar room gets a strong (Ogre) guardian.
+     * - The exit room and every room orthogonally adjacent to the
+     * exit get a strong guardian.
+     * - All other rooms have a monster placed with probability
+     * equal to the effective monster chance (per difficulty or
+     * the explicit override). Those use MonsterFactory.createRandom().
      * Public so external callers (e.g. a legacy MonsterPlacer
      * wrapper) can repopulate an existing dungeon without going
      * through a full build().
@@ -328,10 +346,10 @@ public class DungeonBuilder {
      * (theTargetRow, theTargetCol) (i.e. shares an edge, not the
      * same cell).
      *
-     * @param theRow        source row
-     * @param theCol        source column
-     * @param theTargetRow  target row
-     * @param theTargetCol  target column
+     * @param theRow       source row
+     * @param theCol       source column
+     * @param theTargetRow target row
+     * @param theTargetCol target column
      * @return true if the two cells are orthogonal neighbours
      */
     private static boolean isOrthogonallyAdjacent(final int theRow,
@@ -358,7 +376,7 @@ public class DungeonBuilder {
         final Deque<int[]> stack = new ArrayDeque<>();
         final int startRow = myRandom.nextInt(rows);
         final int startCol = myRandom.nextInt(cols);
-        stack.push(new int[] {startRow, startCol});
+        stack.push(new int[]{startRow, startCol});
         visited[startRow][startCol] = true;
 
         while (!stack.isEmpty()) {
@@ -388,7 +406,7 @@ public class DungeonBuilder {
                 theDungeon.getRoom(nr, nc).setDoor(chosen.opposite(), true);
 
                 visited[nr][nc] = true;
-                stack.push(new int[] {nr, nc});
+                stack.push(new int[]{nr, nc});
             }
         }
     }

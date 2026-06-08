@@ -4,9 +4,42 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="510a188e-bbe5-4e45-b744-140b6974b9b9" name="Changes" comment="supressing unused import warnings">
+    <list default="true" id="510a188e-bbe5-4e45-b744-140b6974b9b9" name="Changes" comment="grammar correction to Bomb.java">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Bomb.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Bomb.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Difficulty.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Difficulty.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Direction.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Direction.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Dungeon.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Dungeon.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/DungeonBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/DungeonBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/DungeonCharacter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/DungeonCharacter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Gremlin.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Gremlin.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Hero.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Hero.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Monster.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Monster.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/MonsterFactory.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/MonsterFactory.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Ogre.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Ogre.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Priestess.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Priestess.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/Room.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/SaveLoadManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/dungeon-adventure/edu/uw/tcss/dungeoneer/model/SaveLoadManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Combat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Combat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/CombatEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/CombatEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Difficulty.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Difficulty.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Direction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Direction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Dungeon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Dungeon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/DungeonBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/DungeonBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/DungeonCharacter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/DungeonCharacter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Gremlin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Gremlin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Hero.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Hero.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/HeroAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/HeroAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/HeroFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/HeroFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Monster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Monster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/MonsterFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/MonsterFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Ogre.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Ogre.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Priestess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Priestess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Room.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Skeleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Skeleton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Thief.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Thief.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Warrior.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/model/Warrior.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/view/CombatPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/view/CombatPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/view/ConsoleView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/uw/tcss/dungeoneer/view/ConsoleView.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,63 +142,6 @@
     <key name="CreateTestDialog.RecentsKey">
       <recent name="edu.uw.tcss.dungeoneer.model" />
     </key>
-  </component>
-  <component name="RunManager" selected="JUnit.SaveLoadManagerTest.testLoadGameDebug">
-    <configuration name="SaveLoadManagerTest.testLoadGameDebug" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dungeon-adventure" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="edu.uw.tcss.dungeoneer.view.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="edu.uw.tcss.dungeoneer.model" />
-      <option name="MAIN_CLASS_NAME" value="edu.uw.tcss.dungeoneer.model.SaveLoadManagerTest" />
-      <option name="METHOD_NAME" value="testLoadGameDebug" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="SaveLoadManagerTest.testLoadGameReturnsModel" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dungeon-adventure" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="edu.uw.tcss.dungeoneer.view.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="edu.uw.tcss.dungeoneer.model" />
-      <option name="MAIN_CLASS_NAME" value="edu.uw.tcss.dungeoneer.model.SaveLoadManagerTest" />
-      <option name="METHOD_NAME" value="testLoadGameReturnsModel" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="SaveLoadManagerTest.testSaveGameDebug" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="dungeon-adventure" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="edu.uw.tcss.dungeoneer.view.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="edu.uw.tcss.dungeoneer.model" />
-      <option name="MAIN_CLASS_NAME" value="edu.uw.tcss.dungeoneer.model.SaveLoadManagerTest" />
-      <option name="METHOD_NAME" value="testSaveGameDebug" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="JUnit.SaveLoadManagerTest.testLoadGameDebug" />
-        <item itemvalue="JUnit.SaveLoadManagerTest.testSaveGameDebug" />
-        <item itemvalue="JUnit.SaveLoadManagerTest.testLoadGameReturnsModel" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -438,11 +414,18 @@
       <option name="project" value="LOCAL" />
       <updated>1780816901444</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="grammar correction to Bomb.java">
+      <option name="closed" value="true" />
+      <created>1780936833158</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1780936833158</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Intial implementation of VisionPotion.java" />
     <MESSAGE value="Intial implementation of Bomb.java" />
     <MESSAGE value="Intial implementation of Pillar.java" />
     <MESSAGE value="Intial implementation of InventoryTest.java" />
@@ -467,7 +450,8 @@
     <MESSAGE value="Added GameControllerTest.java with 13 unit tests covering startNewGame,handleMove, potions, cheat mode, checkWinLose, and save/load" />
     <MESSAGE value="Added IntegrationTest with 8 end-to-end tests covering win/lose paths,save/load round-trips, PropertyChange events, and cheat mode isolation" />
     <MESSAGE value="supressing unused import warnings" />
-    <option name="LAST_COMMIT_MESSAGE" value="supressing unused import warnings" />
+    <MESSAGE value="grammar correction to Bomb.java" />
+    <option name="LAST_COMMIT_MESSAGE" value="grammar correction to Bomb.java" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/dungeon_adventure$RoomTest.ic" NAME="RoomTest Coverage Results" MODIFIED="1778447805014" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">

@@ -1,4 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
+
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -10,32 +12,41 @@ import java.io.Serializable;
  */
 public abstract class Monster extends DungeonCharacter implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Maximum HP this monster can ever have (set at construction). */
+    /**
+     * Maximum HP this monster can ever have (set at construction).
+     */
     private final int myMaxHitPoints;
 
-    /** Probability that this monster heals after being hit. */
-    private double myChanceToHeal;
+    /**
+     * Probability that this monster heals after being hit.
+     */
+    private final double myChanceToHeal;
 
-    /** Minimum HP restored when healing. */
-    private int myMinHeal;
+    /**
+     * Minimum HP restored when healing.
+     */
+    private final int myMinHeal;
 
-    /** Maximum HP restored when healing. */
-    private int myMaxHeal;
+    /**
+     * Maximum HP restored when healing.
+     */
+    private final int myMaxHeal;
 
     /**
      * Constructs a Monster with all required stats.
      *
-     * @param theName         monster name
-     * @param theHP           starting hit points
-     * @param theMinDmg       minimum damage
-     * @param theMaxDmg       maximum damage
-     * @param theSpeed        attack speed
-     * @param theChanceToHit  chance to hit (0.0–1.0)
-     * @param theHealChance   chance to heal after being hit (0.0–1.0)
-     * @param theMinHeal      minimum heal amount
-     * @param theMaxHeal      maximum heal amount
+     * @param theName        monster name
+     * @param theHP          starting hit points
+     * @param theMinDmg      minimum damage
+     * @param theMaxDmg      maximum damage
+     * @param theSpeed       attack speed
+     * @param theChanceToHit chance to hit (0.0–1.0)
+     * @param theHealChance  chance to heal after being hit (0.0–1.0)
+     * @param theMinHeal     minimum heal amount
+     * @param theMaxHeal     maximum heal amount
      */
     protected Monster(final String theName, final int theHP,
                       final int theMinDmg, final int theMaxDmg,
@@ -45,8 +56,8 @@ public abstract class Monster extends DungeonCharacter implements Serializable {
         super(theName, theHP, theMinDmg, theMaxDmg, theSpeed, theChanceToHit);
         myMaxHitPoints = theHP;
         myChanceToHeal = theHealChance;
-        myMinHeal      = theMinHeal;
-        myMaxHeal      = theMaxHeal;
+        myMinHeal = theMinHeal;
+        myMaxHeal = theMaxHeal;
     }
 
     /**
@@ -72,17 +83,33 @@ public abstract class Monster extends DungeonCharacter implements Serializable {
         return null;
     }
 
-    /** @return the maximum HP this monster was created with */
-    public int getMaxHitPoints() { return myMaxHitPoints; }
+    /**
+     * @return the maximum HP this monster was created with
+     */
+    public int getMaxHitPoints() {
+        return myMaxHitPoints;
+    }
 
-    /** @return chance to heal */
-    public double getChanceToHeal() { return myChanceToHeal; }
+    /**
+     * @return chance to heal
+     */
+    public double getChanceToHeal() {
+        return myChanceToHeal;
+    }
 
-    /** @return minimum heal amount */
-    public int getMinHeal() { return myMinHeal; }
+    /**
+     * @return minimum heal amount
+     */
+    public int getMinHeal() {
+        return myMinHeal;
+    }
 
-    /** @return maximum heal amount */
-    public int getMaxHeal() { return myMaxHeal; }
+    /**
+     * @return maximum heal amount
+     */
+    public int getMaxHeal() {
+        return myMaxHeal;
+    }
 
     @Override
     public String toString() {

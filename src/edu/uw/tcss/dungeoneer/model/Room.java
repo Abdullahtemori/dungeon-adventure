@@ -1,5 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
@@ -9,7 +10,6 @@ import java.util.Map;
  * which of its four walls have doors, whether it is the entrance or
  * exit, whether it holds a pit, and any items or a monster currently
  * inside it.
- *
  * The item fields and the pickUpItems method match what Hero's
  * inventory methods expect.
  *
@@ -22,42 +22,67 @@ public class Room implements Serializable {
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Row index of this room in the dungeon grid. */
+    /**
+     * Row index of this room in the dungeon grid.
+     */
     private final int myRow;
 
-    /** Column index of this room in the dungeon grid. */
+    /**
+     * Column index of this room in the dungeon grid.
+     */
     private final int myCol;
 
-    /** Doors keyed by direction. true = open door, false = wall. */
+    /**
+     * Doors keyed by direction. true = open door, false = wall.
+     */
     private final Map<Direction, Boolean> myDoors;
 
-    /** True if this room is the dungeon entrance. */
+    /**
+     * True if this room is the dungeon entrance.
+     */
     private boolean myHasEntrance;
 
-    /** True if this room is the dungeon exit. */
+    /**
+     * True if this room is the dungeon exit.
+     */
     private boolean myHasExit;
 
-    /** True if this room contains a pit. */
+    /**
+     * True if this room contains a pit.
+     */
     private boolean myHasPit;
 
-    /** Damage dealt by the pit in this room (0 if no pit). */
+    /**
+     * Damage dealt by the pit in this room (0 if no pit).
+     */
     private int myPitDamage;
 
-    /** Healing potion in the room, or null. */
+    /**
+     * Healing potion in the room, or null.
+     */
     private HealingPotion myHealingPotion;
 
-    /** Vision potion in the room, or null. */
+    /**
+     * Vision potion in the room, or null.
+     */
     private VisionPotion myVisionPotion;
 
-    /** Bomb in the room, or null. */
+    /**
+     * Bomb in the room, or null.
+     */
     private Bomb myBomb;
 
-    /** Pillar in the room, or null. */
+    /**
+     * Pillar in the room, or null.
+     */
     private Pillar myPillar;
 
-    /** Monster in the room, or null. */
+    /**
+     * Monster in the room, or null.
+     */
     private Monster myMonster;
 
     /**
@@ -306,7 +331,6 @@ public class Room implements Serializable {
      * Checks the room for any collectible items and transfers them
      * to the hero's inventory. Once an item is picked up, it is
      * removed from the room so it cannot be collected again.
-     *
      * Items that can be picked up:
      * HealingPotion: added to hero's healing potion count
      * VisionPotion: added to hero's vision potion count
