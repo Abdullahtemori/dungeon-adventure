@@ -75,10 +75,12 @@ public abstract class Monster extends DungeonCharacter implements Serializable {
         if (isAlive() && Math.random() < myChanceToHeal) {
             final int amount = myMinHeal
                     + (int) (Math.random() * (myMaxHeal - myMinHeal + 1));
-            final int newHP = Math.min(getHitPoints() + amount, myMaxHitPoints);
+            final int oldHP = getHitPoints();
+            final int newHP = Math.min(oldHP + amount, myMaxHitPoints);
             setHitPoints(newHP);
+            final int actualHeal = newHP - oldHP;
             return new CombatEvent(CombatEvent.Type.MONSTER_HEAL,
-                    getName(), getName(), amount);
+                    getName(), getName(), actualHeal);
         }
         return null;
     }

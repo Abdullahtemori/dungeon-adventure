@@ -95,10 +95,10 @@ Exit room to win. Watch you HP (if it hits 0, the game ends)
 
 ### Hero Classes
 
-| Hero      | HP  | Special Skill   | Description                                            |
-|-----------|-----|-----------------|--------------------------------------------------------|
-| Warrior   | 125 | Crushing Blow   | 40% chance to deal 75-175 damage in one hit            |
-| Priestess | 75  | Heal            | Always restores 20-50 HP to themselves during combat   |
+| Hero      | HP  | Special Skill   | Description                                             |
+|-----------|-----|-----------------|---------------------------------------------------------|
+| Warrior   | 125 | Crushing Blow   | 40% chance to deal 75-175 damage in one hit             |
+| Priestess | 75  | Heal            | Always restores 20-50 HP to themselves during combat    |
 | Warrior   | 75  | Surprise Attack | 40% two attacks, 20% caught (no attack), 40% one attack |
 
 ### Monster Classes
@@ -111,11 +111,11 @@ Exit room to win. Watch you HP (if it hits 0, the game ends)
 
 ### Items
 
-| Item           | Effect                                                                |
-|----------------|-----------------------------------------------------------------------|
-| Healing Potion | Restores HP when used from inventory                                  |
-| Vision Potion  | Reveals contents of the 8 surrounding rooms                           |
-| Bomb           | Deals heavy damage to a monster in combat                             |
+| Item           | Effect                                                                       |
+|----------------|------------------------------------------------------------------------------|
+| Healing Potion | Restores HP when used from inventory                                         |
+| Vision Potion  | Reveals contents of the 8 surrounding rooms                                  |
+| Bomb           | Deals heavy damage to a monster in combat                                    |
 | Pillars of OO  | Collect all 4 (Abstraction, Encapsulation, Inheritance, Polymorphism) to win |
 
 - Rooms may also contain pits that deal damage when entered.
@@ -125,26 +125,26 @@ Exit room to win. Watch you HP (if it hits 0, the game ends)
 ### GUI Controls
 You can use the on-screen buttons, WASD and the arrow keys for all movement
 
-| Menu | Options                                  |
-|------|------------------------------------------|
-| File | New Game, Save Game, Load Game, Exit     |
+| Menu | Options                                     |
+|------|---------------------------------------------|
+| File | New Game, Save Game, Load Game, Exit        |
 | Help | Instructions, About, Mute Audio, Cheat mode |
 
 - Combat buttons appear automatically when a monster is encountered
 
 ### Console Controls
 
-| Key     | Action                                |
-|---------|---------------------------------------|
-| N/S/E/W | Move North / South / East / West      |
-| H       | Use a Healing Potion                  |
-| V       | Use a Vision Potion                   |
-| T       | Display hero stats                    |
+| Key     | Action                                     |
+|---------|--------------------------------------------|
+| N/S/E/W | Move North / South / East / West           |
+| H       | Use a Healing Potion                       |
+| V       | Use a Vision Potion                        |
+| T       | Display hero stats                         |
 | M       | Display full dungeon map (cheat mode only) |
-| SAVE    | Save game to default file             |
-| LOAD    | Load game from default file           |
-| Q       | Quit to main menu                     |
-| XYZZY   | Toggle cheat mode (hidden)            |
+| SAVE    | Save game to default file                  |
+| LOAD    | Load game from default file                |
+| Q       | Quit to main menu                          |
+| XYZZY   | Toggle cheat mode (hidden)                 |
 
 ## Save & Load
 - GUI: File → Save Game / File → Load Game
@@ -173,12 +173,12 @@ set up and tear down state. No test relies on another test's output.
 
 ## Test Coverage
 
-| Package    | Test Files                                                            |
-|------------|-----------------------------------------------------------------------|
+| Package    | Test Files                                                                                                                                                                                                                                        |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | model      | CombatTest, DungeonBuilderTest, DungeonTest, GameModelTest, HeroTest, ItemTest, ItemIntegrationTest, MonsterTest, RoomTest, SaveLoadManagerTest, BombTest, HealingPotionTest, VisionPotionTest, PillarTest, WinLoseConditionTest, IntegrationTest |
-| controller | GameControllerTest                                                    |
-| (root)     | IntegrationTest                                                       |
-| test       | StubView (test helper, not a test class)                             |
+| controller | GameControllerTest                                                                                                                                                                                                                                |
+| (root)     | IntegrationTest                                                                                                                                                                                                                                   |
+| test       | StubView (test helper, not a test class)                                                                                                                                                                                                          |
 
 ## Project Structure
 
@@ -247,6 +247,10 @@ dungeon-adventure/
   the game continues silently in that case.
 - Save files from a previous version of the game may not load correctly if
   the class structure has changed since they were created.
+- Combat.getHeroAttacksThisRound() uses Math.max(heroAttacks, monsterAttacks) 
+  which is logically wrong, but with the current hero speeds (4/5/6) and monster 
+  speeds (2/3/5) it accidentally produces the correct result every time. If a 
+  future monster with speed 8+ is added, heroes would get free extra swings.
 
 ## Extra Credit Items
 - Full audio system (AudioManager) with background music, combat music,

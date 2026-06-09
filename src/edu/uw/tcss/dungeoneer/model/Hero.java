@@ -45,6 +45,10 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
      * Set of pillars the hero has collected.
      */
     private final Set<Pillar> myPillarsFound;
+    /**
+     * the maximum number of hit points
+     */
+    private final int myMaxHitPoints;
 
     /**
      * Constructs a Hero with all required stats.
@@ -63,7 +67,7 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
                    final double theChanceToBlock) {
         super(theName, theHP, theMinDmg, theMaxDmg, theSpeed, theChanceToHit);
         myChanceToBlock = theChanceToBlock;
-
+        myMaxHitPoints = theHP;
         myHealingPotions = 0;
         myVisionPotions = 0;
         myBombs = 0;
@@ -95,6 +99,13 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
      */
     public double getChanceToBlock() {
         return myChanceToBlock;
+    }
+
+    /**
+     * @return the max hit points value
+     */
+    public int getMaxHitPoints() {
+        return myMaxHitPoints;
     }
 
     /**
@@ -209,6 +220,14 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
         final int damage = bomb.getDamage();
         theTarget.setHitPoints(theTarget.getHitPoints() - damage);
         return damage;
+    }
+
+    /**
+     * set hit points to cap at max
+     */
+    @Override
+    public void setHitPoints(final int theHP) {
+        super.setHitPoints(Math.min(theHP, myMaxHitPoints));
     }
 
     /**

@@ -72,7 +72,9 @@ public class Thief extends Hero implements Serializable {
         if (roll < SUCCESS_CHANCE) {
             // Surprise Attack succeeded: thief gets two attacks this round.
             events.add(attack(theOpponent));
-            events.add(attack(theOpponent));
+            if (theOpponent.isAlive()) {
+                events.add(attack(theOpponent));
+            }
         } else if (roll < SUCCESS_CHANCE + CAUGHT_CHANCE) {
             // Thief was caught — no attack at all.
             events.add(new CombatEvent(CombatEvent.Type.SPECIAL_CAUGHT,
