@@ -1,5 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -8,7 +9,8 @@ import java.io.Serializable;
  * All concrete character types (Hero subclasses and Monster subclasses)
  * extend this class and inherit its attack logic and stat accessors.
  *
- * @author Person 1, Abdullah Temori
+ * @author Abdullah Temori
+ * @author Daniella Birungi
  * @version Iteration 4
  */
 public abstract class DungeonCharacter implements Serializable {
@@ -17,25 +19,38 @@ public abstract class DungeonCharacter implements Serializable {
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    /** The character's name. */
-    private String myName;
+    /**
+     * The character's name.
+     */
+    private final String myName;
 
-    /** The character's current hit points. */
+    /**
+     * The character's current hit points.
+     */
     private int myHitPoints;
 
-    /** Minimum damage this character can deal per attack. */
-    private int myMinDamage;
+    /**
+     * Minimum damage this character can deal per attack.
+     */
+    private final int myMinDamage;
 
-    /** Maximum damage this character can deal per attack. */
-    private int myMaxDamage;
+    /**
+     * Maximum damage this character can deal per attack.
+     */
+    private final int myMaxDamage;
 
-    /** Attack speed (higher value means faster). */
-    private int myAttackSpeed;
+    /**
+     * Attack speed (higher value means faster).
+     */
+    private final int myAttackSpeed;
 
-    /** Probability of landing an attack (0.0 to 1.0). */
-    private double myChanceToHit;
+    /**
+     * Probability of landing an attack (0.0 to 1.0).
+     */
+    private final double myChanceToHit;
 
     /**
      * Constructs a DungeonCharacter with the given stats.
@@ -51,10 +66,10 @@ public abstract class DungeonCharacter implements Serializable {
                                final int theMinDmg, final int theMaxDmg,
                                final int theSpeed,
                                final double theChanceToHit) {
-        myName       = theName;
-        myHitPoints  = theHP;
-        myMinDamage  = theMinDmg;
-        myMaxDamage  = theMaxDmg;
+        myName = theName;
+        myHitPoints = theHP;
+        myMinDamage = theMinDmg;
+        myMaxDamage = theMaxDmg;
         myAttackSpeed = theSpeed;
         myChanceToHit = theChanceToHit;
     }
@@ -64,14 +79,13 @@ public abstract class DungeonCharacter implements Serializable {
      * random damage in [minDamage, maxDamage] is applied to the opponent.
      * Returns a CombatEvent describing what happened so the view can
      * render it; the model itself does no I/O.
-     *
      * Note: this method does not check the opponent's block chance.
      * Block resolution is handled by the Combat orchestrator before
      * calling this method, since only Heroes can block.
      *
      * @param theOpponent the character being attacked; must not be null
      * @return a CombatEvent of type ATTACK_HIT if the attack landed,
-     *         or ATTACK_MISS if it did not
+     * or ATTACK_MISS if it did not
      */
     public CombatEvent attack(final DungeonCharacter theOpponent) {
         if (Math.random() < myChanceToHit) {

@@ -1,12 +1,12 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
  * Skeleton monster — balanced stats with a moderate heal chance.
  * A mid-tier threat: faster and more accurate than an Ogre, but
  * less durable than one.
- *
  * Stats:
  *   HP: 100 | Speed: 3 | Hit Chance: 80% | Damage: 30–50
  *   Heal Chance: 30% | Heal: 30–50
@@ -20,6 +20,7 @@ public class Skeleton extends Monster implements Serializable {
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

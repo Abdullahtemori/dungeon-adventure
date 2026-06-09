@@ -25,9 +25,9 @@ public class HeroFactory {
                 + theType.substring(1).toLowerCase();
 
         return switch (normalized) {
-            case "Warrior"   -> new Warrior(theName);
+            case "Warrior" -> new Warrior(theName);
             case "Priestess" -> new Priestess(theName);
-            case "Thief"     -> new Thief(theName);
+            case "Thief" -> new Thief(theName);
             default -> throw new IllegalArgumentException(
                     "Unknown hero type: \"" + theType
                             + "\". Valid types: Warrior, Priestess, Thief"

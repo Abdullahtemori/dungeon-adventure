@@ -9,22 +9,34 @@ package edu.uw.tcss.dungeoneer.model;
  */
 public enum Direction {
 
-    /** North (decreases the row index). */
+    /**
+     * North (decreases the row index).
+     */
     NORTH(-1, 0),
 
-    /** South (increases the row index). */
+    /**
+     * South (increases the row index).
+     */
     SOUTH(1, 0),
 
-    /** East (increases the column index). */
+    /**
+     * East (increases the column index).
+     */
     EAST(0, 1),
 
-    /** West (decreases the column index). */
+    /**
+     * West (decreases the column index).
+     */
     WEST(0, -1);
 
-    /** Row offset applied when moving in this direction. */
+    /**
+     * Row offset applied when moving in this direction.
+     */
     private final int myRowOffset;
 
-    /** Column offset applied when moving in this direction. */
+    /**
+     * Column offset applied when moving in this direction.
+     */
     private final int myColOffset;
 
     /**

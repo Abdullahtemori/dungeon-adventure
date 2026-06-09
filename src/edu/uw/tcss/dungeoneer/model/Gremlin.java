@@ -1,15 +1,15 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
  * Gremlin monster — the fastest monster, heals frequently, and deals
  * light damage. Its high heal chance (40 %) makes it deceptively
  * durable despite its low HP pool.
- *
  * Stats:
- *   HP: 70 | Speed: 5 | Hit Chance: 80% | Damage: 15–30
- *   Heal Chance: 40% | Heal: 20–40
+ * HP: 70 | Speed: 5 | Hit Chance: 80% | Damage: 15–30
+ * Heal Chance: 40% | Heal: 20–40
  *
  * @author Person 1, Abdullah Temori
  * @version Iteration 4
@@ -20,6 +20,7 @@ public class Gremlin extends Monster implements Serializable {
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

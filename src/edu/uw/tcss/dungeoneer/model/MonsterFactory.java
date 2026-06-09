@@ -18,6 +18,7 @@ import java.util.Random;
  * instead of crashing.
  *
  * @author atemori
+ * @author daniellabirungi
  * @version Iteration 4
  */
 public class MonsterFactory {
@@ -160,6 +161,7 @@ public class MonsterFactory {
      *
      * @return true if DB works
      */
+    @SuppressWarnings("unused")
     public boolean isDatabaseAvailable() {
         return myDbAvailable;
     }
@@ -180,9 +182,8 @@ public class MonsterFactory {
 
             case "Skeleton" -> new Skeleton();
 
-            default ->
-                    throw new IllegalArgumentException(
-                            "Unknown monster: " + theName);
+            default -> throw new IllegalArgumentException(
+                    "Unknown monster: " + theName);
         };
     }
 }

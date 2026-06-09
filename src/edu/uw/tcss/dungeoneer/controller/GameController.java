@@ -9,30 +9,38 @@ import edu.uw.tcss.dungeoneer.view.GameView;
  * that input into model operations, then tells the View to update.
  * GameController NEVER holds game state directly. All state lives
  * in GameModel. GameController only reads from and writes to the model.
- *
+ * <p>
  * Fix applied in this version:
- *   handleUseHealingPotion() now correctly applies the healed HP amount
- *   to the hero's hit points when used outside of combat. Previously
- *   Hero.useHealingPotion() returned the heal amount but never applied
- *   it, and the controller also failed to call setHitPoints(), meaning
- *   potions used in navigation mode had no actual effect on the hero's HP.
+ * handleUseHealingPotion() now correctly applies the healed HP amount
+ * to the hero's hit points when used outside of combat. Previously
+ * Hero.useHealingPotion() returned the heal amount but never applied
+ * it, and the controller also failed to call setHitPoints(), meaning
+ * potions used in navigation mode had no actual effect on the hero's HP.
  *
  * @author Daniella Birungi
- * @author Abdullah Temori 
+ * @author Abdullah Temori
  * @version Iteration 4 (bugfix)
  */
 public class GameController {
 
-    /** The game model holding all state. */
+    /**
+     * The game model holding all state.
+     */
     private GameModel myModel;
 
-    /** The view used to display information to the player. */
+    /**
+     * The view used to display information to the player.
+     */
     private final GameView myView;
 
-    /** Whether cheat mode is active (shows entire dungeon after each move). */
+    /**
+     * Whether cheat mode is active (shows entire dungeon after each move).
+     */
     private boolean myCheatMode;
 
-    /** Whether a game is currently in progress. */
+    /**
+     * Whether a game is currently in progress.
+     */
     private boolean myRunning;
 
     /**
@@ -50,15 +58,15 @@ public class GameController {
 
     /**
      * Starts a new game with the given hero name, class, and difficulty.
-     *
+     * <p>
      * Steps performed in order:
-     *   1. Build the dungeon using DungeonBuilder with the chosen difficulty.
-     *   2. Create the hero using HeroFactory with the chosen class and name.
-     *   3. Create a new GameModel containing the dungeon, hero, and difficulty.
-     *   4. Register the view as a PropertyChangeListener on the model so it
-     *      updates automatically whenever model state changes.
-     *   5. Apply room-entry effects at the entrance (item pickup, pit check).
-     *   6. Display the starting room and hero stats.
+     * 1. Build the dungeon using DungeonBuilder with the chosen difficulty.
+     * 2. Create the hero using HeroFactory with the chosen class and name.
+     * 3. Create a new GameModel containing the dungeon, hero, and difficulty.
+     * 4. Register the view as a PropertyChangeListener on the model so it
+     * updates automatically whenever model state changes.
+     * 5. Apply room-entry effects at the entrance (item pickup, pit check).
+     * 6. Display the starting room and hero stats.
      *
      * @param theName       the hero's name entered by the player; must not be blank
      * @param theHeroType   the hero class: "Warrior", "Priestess", or "Thief"
@@ -148,13 +156,13 @@ public class GameController {
 
     /**
      * Handles the player choosing to move in a direction.
-     *
+     * <p>
      * Steps performed in order:
-     *   1. Attempt to move the hero in the dungeon grid.
-     *   2. If the move failed (wall), inform the player and return.
-     *   3. Apply room-entry effects in the new room.
-     *   4. Check win and lose conditions.
-     *   5. Display the new room; in cheat mode also display the full dungeon.
+     * 1. Attempt to move the hero in the dungeon grid.
+     * 2. If the move failed (wall), inform the player and return.
+     * 3. Apply room-entry effects in the new room.
+     * 4. Check win and lose conditions.
+     * 5. Display the new room; in cheat mode also display the full dungeon.
      *
      * @param theDir the direction to move (must not be null)
      */
@@ -184,12 +192,12 @@ public class GameController {
 
     /**
      * Applies all automatic effects when the hero enters a room.
-     *
+     * <p>
      * Effects applied in order:
-     *   1. All collectible items (potions, bombs, pillars) are picked up
-     *      and removed from the room. The view is notified of each pickup.
-     *   2. If the room has a pit, the hero loses HP and the view is notified.
-     *   3. If the room contains a monster, combat begins immediately.
+     * 1. All collectible items (potions, bombs, pillars) are picked up
+     * and removed from the room. The view is notified of each pickup.
+     * 2. If the room has a pit, the hero loses HP and the view is notified.
+     * 3. If the room contains a monster, combat begins immediately.
      *
      * @param theRoom the room the hero just entered; must not be null
      */
@@ -197,10 +205,10 @@ public class GameController {
         final Hero hero = myModel.getHero();
 
         // Snapshot inventory counts before pickup to detect changes
-        final int potionsBefore  = hero.getHealingPotions();
-        final int visionsBefore  = hero.getVisionPotions();
-        final int bombsBefore    = hero.getBombs();
-        final int pillarsBefore  = hero.getPillarsFound().size();
+        final int potionsBefore = hero.getHealingPotions();
+        final int visionsBefore = hero.getVisionPotions();
+        final int bombsBefore = hero.getBombs();
+        final int pillarsBefore = hero.getPillarsFound().size();
 
         // Pick up all items; items are removed from the room on pickup
         theRoom.pickUpItems(hero);
@@ -288,11 +296,11 @@ public class GameController {
     /**
      * Handles turn-based combat between the hero and a monster.
      * Called automatically when the hero enters a room containing a monster.
-     *
+     * <p>
      * Each round the view prompts the player for an action, the Combat engine
      * processes it, and the resulting CombatEvents are sent back to the view
      * for display. Combat continues until one side reaches 0 HP.
-     *
+     * <p>
      * On hero victory: the monster is removed from the room.
      * On hero defeat: the game is flagged as over.
      *
@@ -348,7 +356,6 @@ public class GameController {
         }
 
         final Combat combat = myModel.getActiveCombat();
-        final Hero hero = myModel.getHero();
 
         final java.util.List<CombatEvent> events =
                 combat.executeHeroAction(theAction);
@@ -373,13 +380,13 @@ public class GameController {
 
     /**
      * Checks whether the game has ended after a room entry or combat.
-     *
+     * <p>
      * Lose condition: hero HP is 0 or below.
-     *   — Displays the full dungeon map, sets game-over flags, stops the loop.
-     *
+     * — Displays the full dungeon map, sets game-over flags, stops the loop.
+     * <p>
      * Win condition: hero has all 4 pillars AND is standing in the exit room.
-     *   — Displays a congratulations message and the full dungeon map,
-     *     sets the win and game-over flags, stops the loop.
+     * — Displays a congratulations message and the full dungeon map,
+     * sets the win and game-over flags, stops the loop.
      *
      * @return true if the game has ended (win or loss), false if still running
      */
@@ -448,7 +455,7 @@ public class GameController {
      * Used by the console game loop to decide whether to keep running.
      *
      * @return true if a game is active, false if no game has started
-     *         or the game has ended
+     * or the game has ended
      */
     public boolean isRunning() {
         return myRunning;

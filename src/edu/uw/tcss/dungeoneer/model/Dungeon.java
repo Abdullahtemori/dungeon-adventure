@@ -1,5 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import java.util.Set;
  * A 2D grid of Room objects that makes up the dungeon. The dungeon
  * also remembers the hero's current position and offers helper
  * methods for movement and traversability checks.
- *
  * This class only stores the layout. Random generation of the maze,
  * items, pillars, entrance, and exit lives in DungeonBuilder.
  *
@@ -25,24 +25,37 @@ public class Dungeon implements Serializable {
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Number of text rows used to draw a single room in the map. */
+    /**
+     * Number of text rows used to draw a single room in the map.
+     */
     private static final int ROOM_TEXT_HEIGHT = 3;
 
-    /** The grid of rooms. */
+    /**
+     * The grid of rooms.
+     */
     private final Room[][] myRooms;
 
-    /** Number of rows in the grid. */
+    /**
+     * Number of rows in the grid.
+     */
     private final int myRows;
 
-    /** Number of columns in the grid. */
+    /**
+     * Number of columns in the grid.
+     */
     private final int myCols;
 
-    /** Hero's current row, or -1 if not yet placed. */
+    /**
+     * Hero's current row, or -1 if not yet placed.
+     */
     private int myHeroRow;
 
-    /** Hero's current column, or -1 if not yet placed. */
+    /**
+     * Hero's current column, or -1 if not yet placed.
+     */
     private int myHeroCol;
 
     /**

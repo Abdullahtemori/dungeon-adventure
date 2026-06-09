@@ -1,5 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +9,8 @@ import java.util.List;
 /**
  * Warrior hero — high HP and damage output, with a powerful Crushing Blow
  * special skill that has a 40 % chance to deal massive damage in one swing.
- *
  * Stats:
  *   HP: 125 | Speed: 4 | Hit Chance: 80% | Damage: 35–60 | Block: 20%
- *
  * Special Skill — Crushing Blow:
  *   40% chance to deal 75–175 damage; otherwise the attempt fails.
  *
@@ -24,6 +23,7 @@ public class Warrior extends Hero implements Serializable {
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** Minimum damage dealt by a successful Crushing Blow. */

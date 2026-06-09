@@ -6,17 +6,44 @@ import edu.uw.tcss.dungeoneer.model.Hero;
 import edu.uw.tcss.dungeoneer.model.HeroAction;
 import edu.uw.tcss.dungeoneer.model.Monster;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 /**
- * CombatPanel is the Swing component that displays the active combat
- * screen between the hero and a monster.
+ * Swing component that displays the active combat screen between the
+ * hero and a monster.
  *
- * Layout (top to bottom):
+ * <p>Layout (top to bottom):</p>
+ * <pre>
  *   ┌─────────────────────────────────┐
  *   │  Hero pane  │  Monster pane     │  ← combatants row
  *   ├─────────────────────────────────┤
@@ -24,127 +51,328 @@ import java.awt.event.ActionEvent;
  *   ├─────────────────────────────────┤
  *   │        Combat Log (scroll)      │  ← scrollable event log
  *   └─────────────────────────────────┘
+ * </pre>
  *
- * Usage:
- *   GameController already holds references to the model. Pass it into
- *   the constructor so the four action buttons can delegate to it:
- *
- *     CombatPanel panel = new CombatPanel(controller);
- *     panel.startCombat(hero, monster);   // call when combat begins
- *     // after each round the controller calls panel.refresh(hero, monster)
- *     // and panel.logEvents(roundEvents)
+ * <p>Usage: the {@link GameController} already holds references to the
+ * model. Pass it into the constructor so the four action buttons can
+ * delegate to it:</p>
+ * <pre>
+ *   CombatPanel panel = new CombatPanel(controller);
+ *   panel.startCombat(hero, monster);   // call when combat begins
+ *   // after each round the controller calls panel.refresh(hero, monster)
+ *   // and panel.logEvents(roundEvents)
+ * </pre>
  *
  * @author Abdullah Temori
- * @version Iteration 4
+ * @version Iteration 6
  */
 public class CombatPanel extends JPanel {
 
     // ── Layout constants ─────────────────────────────────────────────────
 
-    /** Width of the entire panel in pixels. */
+    /**
+     * Width of the entire panel in pixels.
+     */
     private static final int PANEL_W = 760;
 
-    /** Height of the entire panel in pixels. */
+    /**
+     * Height of the entire panel in pixels.
+     */
     private static final int PANEL_H = 540;
 
-    /** Preferred height of the combatant row at the top. */
+    /**
+     * Preferred height of the combatant row at the top.
+     */
     private static final int COMBATANT_ROW_H = 180;
 
-    /** Preferred height of the action button row. */
+    /**
+     * Preferred height of the action button row.
+     */
     private static final int BUTTON_ROW_H = 60;
 
-    /** HP bar width in pixels. */
+    /**
+     * HP bar width in pixels.
+     */
     private static final int HP_BAR_W = 200;
 
-    /** HP bar height in pixels. */
+    /**
+     * HP bar height in pixels.
+     */
     private static final int HP_BAR_H = 18;
 
-    /** Padding inside each card. */
+    /**
+     * Padding inside each card.
+     */
     private static final int CARD_PAD = 12;
 
-    /** Maximum HP value used for the hero bar (safe default if hero has no max). */
+    /**
+     * Maximum HP value used for the hero bar (safe default if hero has no max).
+     */
     private static final int DEFAULT_MAX_HP = 200;
+
+    /**
+     * HP percentage threshold above which the bar is shown green.
+     */
+    private static final double HP_PCT_GREEN = 0.50;
+
+    /**
+     * HP percentage threshold above which the bar is shown yellow.
+     */
+    private static final double HP_PCT_YELLOW = 0.25;
+
+    /**
+     * Multiplier used to convert a 0.0–1.0 probability to a percentage.
+     */
+    private static final int PCT_MULTIPLIER = 100;
+
+    /**
+     * Log border line thickness in pixels.
+     */
+    private static final int LOG_BORDER_THICKNESS = 1;
+
+    /**
+     * Vertical strut height between the HP bar and stat labels.
+     */
+    private static final int STRUT_LARGE = 6;
+
+    /**
+     * Vertical strut height between name and HP labels.
+     */
+    private static final int STRUT_SMALL = 4;
+
+    /**
+     * Vertical strut height between HP label and HP bar.
+     */
+    private static final int STRUT_TINY = 3;
+
+    /**
+     * Vertical strut height between stat labels.
+     */
+    private static final int STRUT_TWO = 2;
+
+    /**
+     * Log margin in pixels on all four sides.
+     */
+    private static final int LOG_MARGIN = 8;
+
+    /**
+     * Gap in pixels between cards in the combatant row.
+     */
+    private static final int CARD_GAP = 8;
+
+    /**
+     * Gap in pixels between buttons in the button row.
+     */
+    private static final int BTN_GAP = 8;
+
+    /**
+     * Top border accent thickness in pixels for a combatant card.
+     */
+    private static final int CARD_ACCENT_THICKNESS = 3;
 
     // ── Colours ──────────────────────────────────────────────────────────
 
-    private static final Color BG_DARK       = new Color(28,  28,  38);
-    private static final Color BG_CARD       = new Color(40,  40,  55);
-    private static final Color BG_LOG        = new Color(20,  20,  30);
-    private static final Color ACCENT_HERO   = new Color(80, 160, 255);
-    private static final Color ACCENT_ENEMY  = new Color(220, 70,  70);
-    private static final Color HP_GREEN      = new Color(60, 200, 100);
-    private static final Color HP_YELLOW     = new Color(240, 195, 50);
-    private static final Color HP_RED        = new Color(220, 60,  60);
-    private static final Color BTN_NORMAL    = new Color(55,  55,  75);
-    private static final Color BTN_HOVER     = new Color(75,  75, 100);
-    private static final Color BTN_DISABLED  = new Color(38,  38,  50);
-    private static final Color TEXT_PRIMARY  = new Color(230, 230, 240);
-    private static final Color TEXT_DIM      = new Color(130, 130, 150);
-    private static final Color LOG_HERO      = new Color(100, 180, 255);
-    private static final Color LOG_ENEMY     = new Color(240, 100, 100);
-    private static final Color LOG_HEAL      = new Color(80,  210, 120);
-    private static final Color LOG_SYSTEM    = new Color(200, 180, 100);
+    /**
+     * Dark background colour for the main panel.
+     */
+    private static final Color BG_DARK = new Color(28, 28, 38);
+
+    /**
+     * Background colour for combatant stat cards.
+     */
+    private static final Color BG_CARD = new Color(40, 40, 55);
+
+    /**
+     * Background colour for the combat log pane.
+     */
+    private static final Color BG_LOG = new Color(20, 20, 30);
+
+    /**
+     * Background colour for the HP bar track.
+     */
+    private static final Color BG_HP_TRACK = new Color(50, 50, 65);
+
+    /**
+     * Accent colour used on hero-related widgets.
+     */
+    private static final Color ACCENT_HERO = new Color(80, 160, 255);
+
+    /**
+     * Accent colour used on enemy-related widgets.
+     */
+    private static final Color ACCENT_ENEMY = new Color(220, 70, 70);
+
+    /**
+     * HP bar colour when health is above {@link #HP_PCT_GREEN}.
+     */
+    private static final Color HP_GREEN = new Color(60, 200, 100);
+
+    /**
+     * HP bar colour when health is between {@link #HP_PCT_YELLOW} and {@link #HP_PCT_GREEN}.
+     */
+    private static final Color HP_YELLOW = new Color(240, 195, 50);
+
+    /**
+     * HP bar colour when health is at or below {@link #HP_PCT_YELLOW}.
+     */
+    private static final Color HP_RED = new Color(220, 60, 60);
+
+    /**
+     * Default background colour for enabled action buttons.
+     */
+    private static final Color BTN_NORMAL = new Color(55, 55, 75);
+
+    /**
+     * Background colour for an action button while the mouse hovers over it.
+     */
+    private static final Color BTN_HOVER = new Color(75, 75, 100);
+
+    /**
+     * Background colour for a disabled (inventory-empty) action button.
+     */
+    private static final Color BTN_DISABLED = new Color(38, 38, 50);
+
+    /**
+     * Primary foreground colour for most text labels.
+     */
+    private static final Color TEXT_PRIMARY = new Color(230, 230, 240);
+
+    /**
+     * Dimmed foreground colour for secondary stat labels.
+     */
+    private static final Color TEXT_DIM = new Color(130, 130, 150);
+
+    /**
+     * Log text colour for hero actions.
+     */
+    private static final Color LOG_HERO = new Color(100, 180, 255);
+
+    /**
+     * Log text colour for enemy actions.
+     */
+    private static final Color LOG_ENEMY = new Color(240, 100, 100);
+
+    /**
+     * Log text colour for healing events.
+     */
+    private static final Color LOG_HEAL = new Color(80, 210, 120);
+
+    /**
+     * Log text colour for system / round-boundary messages.
+     */
+    private static final Color LOG_SYSTEM = new Color(200, 180, 100);
 
     // ── Fonts ────────────────────────────────────────────────────────────
 
-    private static final Font FONT_TITLE  = new Font("SansSerif", Font.BOLD,  15);
-    private static final Font FONT_STAT   = new Font("Monospaced", Font.PLAIN, 12);
-    private static final Font FONT_BTN    = new Font("SansSerif", Font.BOLD,  13);
-    private static final Font FONT_LOG    = new Font("Monospaced", Font.PLAIN, 12);
+    /**
+     * Bold title font used for character names.
+     */
+    private static final Font FONT_TITLE = new Font("SansSerif", Font.BOLD, 15);
+
+    /**
+     * Monospaced font used for stat values.
+     */
+    private static final Font FONT_STAT = new Font("Monospaced", Font.PLAIN, 12);
+
+    /**
+     * Bold sans-serif font used for action button labels.
+     */
+    private static final Font FONT_BTN = new Font("SansSerif", Font.BOLD, 13);
+
+    /**
+     * Monospaced font used for combat log entries.
+     */
+    private static final Font FONT_LOG = new Font("Monospaced", Font.PLAIN, 12);
 
     // ── Hero card widgets ─────────────────────────────────────────────────
 
-    /** Label showing the hero's name. */
-    private final JLabel myHeroNameLabel   = makeLabel("", FONT_TITLE, ACCENT_HERO);
+    /**
+     * Label showing the hero's name.
+     */
+    private final JLabel myHeroNameLabel = makeLabel(FONT_TITLE, ACCENT_HERO);
 
-    /** Label showing the hero's current / max HP as text. */
-    private final JLabel myHeroHpLabel     = makeLabel("", FONT_STAT, TEXT_PRIMARY);
+    /**
+     * Label showing the hero's current / max HP as text.
+     */
+    private final JLabel myHeroHpLabel = makeLabel(FONT_STAT, TEXT_PRIMARY);
 
-    /** Progress bar representing hero HP. */
+    /**
+     * Progress bar representing hero HP.
+     */
     private final JProgressBar myHeroHpBar = makeHpBar();
 
-    /** Label showing hero class stats (speed, block %). */
-    private final JLabel myHeroStatsLabel  = makeLabel("", FONT_STAT, TEXT_DIM);
+    /**
+     * Label showing hero class stats (speed, block %).
+     */
+    private final JLabel myHeroStatsLabel = makeLabel(FONT_STAT, TEXT_DIM);
 
-    /** Label showing hero inventory counts. */
-    private final JLabel myHeroInvLabel    = makeLabel("", FONT_STAT, TEXT_DIM);
+    /**
+     * Label showing hero inventory counts.
+     */
+    private final JLabel myHeroInvLabel = makeLabel(FONT_STAT, TEXT_DIM);
 
     // ── Monster card widgets ──────────────────────────────────────────────
 
-    /** Label showing the monster's name. */
-    private final JLabel myMonNameLabel    = makeLabel("", FONT_TITLE, ACCENT_ENEMY);
+    /**
+     * Label showing the monster's name.
+     */
+    private final JLabel myMonNameLabel = makeLabel(FONT_TITLE, ACCENT_ENEMY);
 
-    /** Label showing the monster's current HP as text. */
-    private final JLabel myMonHpLabel      = makeLabel("", FONT_STAT, TEXT_PRIMARY);
+    /**
+     * Label showing the monster's current HP as text.
+     */
+    private final JLabel myMonHpLabel = makeLabel(FONT_STAT, TEXT_PRIMARY);
 
-    /** Progress bar representing monster HP. */
-    private final JProgressBar myMonHpBar  = makeHpBar();
+    /**
+     * Progress bar representing monster HP.
+     */
+    private final JProgressBar myMonHpBar = makeHpBar();
 
-    /** Label showing monster stats (speed, heal %). */
-    private final JLabel myMonStatsLabel   = makeLabel("", FONT_STAT, TEXT_DIM);
+    /**
+     * Label showing monster stats (speed, heal %).
+     */
+    private final JLabel myMonStatsLabel = makeLabel(FONT_STAT, TEXT_DIM);
 
     // ── Action buttons ────────────────────────────────────────────────────
 
-    private final JButton myAttackBtn  = makeActionButton("⚔  Attack");
-    private final JButton mySkillBtn   = makeActionButton("✨  Special Skill");
-    private final JButton myPotionBtn  = makeActionButton("🧪  Use Potion");
-    private final JButton myBombBtn    = makeActionButton("💣  Use Bomb");
+    /**
+     * Button for the standard attack action.
+     */
+    private final JButton myAttackBtn = makeActionButton("⚔  Attack");
+
+    /**
+     * Button for the hero's special skill.
+     */
+    private final JButton mySkillBtn = makeActionButton("✨  Special Skill");
+
+    /**
+     * Button for drinking a healing potion.
+     */
+    private final JButton myPotionBtn = makeActionButton("\uD83E\uDDEA  Use Potion");
+
+    /**
+     * Button for throwing a bomb.
+     */
+    private final JButton myBombBtn = makeActionButton("\uD83D\uDCA3  Use Bomb");
 
     // ── Combat log ────────────────────────────────────────────────────────
 
-    /** Non-editable text pane that accumulates combat events. */
-    private final JTextPane myLogPane  = new JTextPane();
-
-    /** Scroll wrapper around the log pane. */
-    private final JScrollPane myLogScroll;
+    /**
+     * Non-editable text pane that accumulates combat events.
+     */
+    private final JTextPane myLogPane = new JTextPane();
 
     // ── State ─────────────────────────────────────────────────────────────
 
-    /** Max HP of the current hero — captured when combat starts. */
+    /**
+     * Max HP of the current hero — captured when combat starts.
+     */
     private int myHeroMaxHp = DEFAULT_MAX_HP;
 
-    /** Max HP of the current monster — captured when combat starts. */
-    private int myMonMaxHp  = DEFAULT_MAX_HP;
+    /**
+     * Max HP of the current monster — captured when combat starts.
+     */
+    private int myMonMaxHp = DEFAULT_MAX_HP;
 
     // ── Constructor ───────────────────────────────────────────────────────
 
@@ -161,15 +389,17 @@ public class CombatPanel extends JPanel {
         setBackground(BG_DARK);
         setPreferredSize(new Dimension(PANEL_W, PANEL_H));
 
-        // ── Build log pane (needed first so buttons can write to it)
         myLogPane.setEditable(false);
         myLogPane.setBackground(BG_LOG);
         myLogPane.setForeground(TEXT_PRIMARY);
         myLogPane.setFont(FONT_LOG);
-        myLogPane.setMargin(new Insets(8, 8, 8, 8));
-        myLogScroll = new JScrollPane(myLogPane);
+        myLogPane.setMargin(new Insets(LOG_MARGIN, LOG_MARGIN,
+                LOG_MARGIN, LOG_MARGIN));
+        // Scroll wrapper around the log pane.
+        JScrollPane myLogScroll = new JScrollPane(myLogPane);
         myLogScroll.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(60, 60, 80), 1),
+                BorderFactory.createLineBorder(
+                        new Color(60, 60, 80), LOG_BORDER_THICKNESS),
                 " Combat Log ",
                 TitledBorder.LEFT, TitledBorder.TOP,
                 FONT_STAT, TEXT_DIM));
@@ -178,50 +408,51 @@ public class CombatPanel extends JPanel {
         myLogScroll.setVerticalScrollBarPolicy(
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // ── Wire action listeners ────────────────────────────────────────
-        myAttackBtn.addActionListener((ActionEvent e) -> {
+        myAttackBtn.addActionListener((final ActionEvent _) -> {
             setButtonsEnabled(false);
             theController.handleCombatAction(HeroAction.ATTACK);
         });
-        mySkillBtn.addActionListener((ActionEvent e) -> {
+        mySkillBtn.addActionListener((final ActionEvent _) -> {
             setButtonsEnabled(false);
             theController.handleCombatAction(HeroAction.SPECIAL_SKILL);
         });
-        myPotionBtn.addActionListener((ActionEvent e) -> {
+        myPotionBtn.addActionListener((final ActionEvent _) -> {
             setButtonsEnabled(false);
             theController.handleCombatAction(HeroAction.USE_HEALING_POTION);
         });
-        myBombBtn.addActionListener((ActionEvent e) -> {
+        myBombBtn.addActionListener((final ActionEvent _) -> {
             setButtonsEnabled(false);
             theController.handleCombatAction(HeroAction.USE_BOMB);
         });
 
-        // ── Assemble layout ──────────────────────────────────────────────
         add(buildCombatantRow(), BorderLayout.NORTH);
-        add(buildButtonRow(),    BorderLayout.CENTER);
-        add(myLogScroll,         BorderLayout.SOUTH);
+        add(buildButtonRow(), BorderLayout.CENTER);
+        add(myLogScroll, BorderLayout.SOUTH);
 
-        // Fix log height so combatants + buttons keep their space
         myLogScroll.setPreferredSize(
-                new Dimension(PANEL_W, PANEL_H - COMBATANT_ROW_H - BUTTON_ROW_H));
+                new Dimension(PANEL_W,
+                        PANEL_H - COMBATANT_ROW_H - BUTTON_ROW_H));
     }
 
     // ── Public API ────────────────────────────────────────────────────────
 
     /**
      * Initialises the panel for a new combat encounter.
-     * Call this when GameModel fires PROP_COMBAT with a non-null value.
+     * Call this when {@code GameModel} fires {@code PROP_COMBAT} with a
+     * non-null value.
      *
      * @param theHero    the hero entering combat
      * @param theMonster the monster the hero is fighting
      */
+    @SuppressWarnings("unused")
     public void startCombat(final Hero theHero, final Monster theMonster) {
-        myHeroMaxHp = theHero.getHitPoints();   // hero enters at current HP
-        myMonMaxHp  = theMonster.getHitPoints(); // monster enters at current HP
+        myHeroMaxHp = theHero.getHitPoints();
+        myMonMaxHp = theMonster.getHitPoints();
 
         myLogPane.setText("");
         appendLog("⚔  Combat begins: "
-                + theHero.getName() + " vs " + theMonster.getName(), LOG_SYSTEM);
+                        + theHero.getName() + " vs " + theMonster.getName(),
+                LOG_SYSTEM);
 
         refresh(theHero, theMonster);
         setButtonsEnabled(true);
@@ -229,14 +460,14 @@ public class CombatPanel extends JPanel {
 
     /**
      * Refreshes all stat displays after a combat round.
-     * Call this from the controller (or SwingView's propertyChange)
-     * after every call to Combat.executeHeroAction().
+     * Call this from the controller (or SwingView's
+     * {@code propertyChange}) after every call to
+     * {@link edu.uw.tcss.dungeoneer.model.Combat#executeHeroAction(HeroAction)}.
      *
      * @param theHero    the hero (updated HP / inventory)
      * @param theMonster the monster (updated HP)
      */
     public void refresh(final Hero theHero, final Monster theMonster) {
-        // ── Hero card ────────────────────────────────────────────────────
         myHeroNameLabel.setText(theHero.getName());
 
         final int heroHp = Math.max(0, theHero.getHitPoints());
@@ -245,14 +476,13 @@ public class CombatPanel extends JPanel {
 
         myHeroStatsLabel.setText(
                 "Speed: " + theHero.getAttackSpeed()
-                + "   Block: " + pct(theHero.getChanceToBlock()));
+                        + "   Block: " + pct(theHero.getChanceToBlock()));
 
         myHeroInvLabel.setText(
-                "🧪 " + theHero.getHealingPotions()
-                + "   💣 " + theHero.getBombs()
-                + "   👁 " + theHero.getVisionPotions());
+                "\uD83E\uDDEA " + theHero.getHealingPotions()
+                        + "   \uD83D\uDCA3 " + theHero.getBombs()
+                        + "   \uD83D\uDC41 " + theHero.getVisionPotions());
 
-        // ── Monster card ─────────────────────────────────────────────────
         myMonNameLabel.setText(theMonster.getName());
 
         final int monHp = Math.max(0, theMonster.getHitPoints());
@@ -261,9 +491,8 @@ public class CombatPanel extends JPanel {
 
         myMonStatsLabel.setText(
                 "Speed: " + theMonster.getAttackSpeed()
-                + "   Heal: " + pct(theMonster.getChanceToHeal()));
+                        + "   Heal: " + pct(theMonster.getChanceToHeal()));
 
-        // ── Inventory-dependent button state ─────────────────────────────
         myPotionBtn.setEnabled(theHero.getHealingPotions() > 0);
         myBombBtn.setEnabled(theHero.getBombs() > 0);
         styleInventoryButton(myPotionBtn);
@@ -273,19 +502,19 @@ public class CombatPanel extends JPanel {
     }
 
     /**
-     * Appends a single CombatEvent to the scrollable log.
-     * Translates the event type into a human-readable coloured line,
-     * matching the output of ConsoleView.displayCombatEvent().
+     * Appends a single {@link CombatEvent} to the scrollable log.
+     * Translates the event type into a human-readable coloured line
+     * matching the output of {@code ConsoleView.displayCombatEvent()}.
      *
-     * @param theEvent the event to log
+     * @param theEvent the event to log (ignored if {@code null})
      */
     public void logEvent(final CombatEvent theEvent) {
         if (theEvent == null) {
             return;
         }
-        final String actor  = theEvent.getActor();
+        final String actor = theEvent.getActor();
         final String target = theEvent.getTarget();
-        final int    amount = theEvent.getAmount();
+        final int amount = theEvent.getAmount();
 
         switch (theEvent.getType()) {
             case ATTACK_HIT:
@@ -308,7 +537,7 @@ public class CombatPanel extends JPanel {
                         + amount + " HP.", LOG_HEAL);
                 break;
             case BOMB_USED:
-                appendLog("💥 BOOM!  " + actor + " bombs " + target
+                appendLog("\uD83D\uDCA5 BOOM!  " + actor + " bombs " + target
                         + " for " + amount + " damage!", LOG_ENEMY);
                 break;
             case ITEM_UNAVAILABLE:
@@ -316,10 +545,10 @@ public class CombatPanel extends JPanel {
                 break;
             case COMBAT_END:
                 if (amount == 1) {
-                    appendLog("🏆  VICTORY — " + actor
+                    appendLog("\uD83C\uDFC6  VICTORY \uD83C\uDFC6  " + actor
                             + " stands triumphant!", LOG_SYSTEM);
                 } else {
-                    appendLog("💀  DEFEAT — " + actor
+                    appendLog("\uD83D\uDC80  DEFEAT \uD83D\uDC80 " + actor
                             + " has fallen...", LOG_ENEMY);
                 }
                 setButtonsEnabled(false);
@@ -334,9 +563,12 @@ public class CombatPanel extends JPanel {
     /**
      * Convenience method: logs an entire round's event list in order.
      *
-     * @param theEvents the list returned by Combat.executeHeroAction()
+     * @param theEvents the list returned by
+     *                  {@link edu.uw.tcss.dungeoneer.model.Combat#executeHeroAction(HeroAction)}
+     *                  (ignored if {@code null})
      */
-    public void logEvents(final java.util.List<CombatEvent> theEvents) {
+    @SuppressWarnings("unused")
+    public void logEvents(final List<CombatEvent> theEvents) {
         if (theEvents == null) {
             return;
         }
@@ -346,10 +578,11 @@ public class CombatPanel extends JPanel {
     }
 
     /**
-     * Re-enables the four action buttons so the player can take
-     * the next turn. Called by the controller after it has finished
+     * Re-enables the four action buttons so the player can take the
+     * next turn. Called by the controller after it has finished
      * processing the previous action and refreshing the UI.
      */
+    @SuppressWarnings("unused")
     public void enableActions() {
         setButtonsEnabled(true);
     }
@@ -363,9 +596,9 @@ public class CombatPanel extends JPanel {
      * @return the assembled combatant row panel
      */
     private JPanel buildCombatantRow() {
-        final JPanel row = new JPanel(new GridLayout(1, 2, 8, 0));
+        final JPanel row = new JPanel(new GridLayout(1, 2, CARD_GAP, 0));
         row.setBackground(BG_DARK);
-        row.setBorder(new EmptyBorder(10, 10, 6, 10));
+        row.setBorder(new EmptyBorder(10, 10, STRUT_LARGE, 10));
         row.setPreferredSize(new Dimension(PANEL_W, COMBATANT_ROW_H));
 
         row.add(buildHeroCard());
@@ -382,9 +615,9 @@ public class CombatPanel extends JPanel {
         final JPanel card = makeCard(ACCENT_HERO);
 
         card.add(myHeroNameLabel);
-        card.add(Box.createVerticalStrut(4));
+        card.add(Box.createVerticalStrut(STRUT_SMALL));
         card.add(myHeroHpLabel);
-        card.add(Box.createVerticalStrut(3));
+        card.add(Box.createVerticalStrut(STRUT_TINY));
 
         final JPanel barWrap = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         barWrap.setOpaque(false);
@@ -392,9 +625,9 @@ public class CombatPanel extends JPanel {
         barWrap.add(myHeroHpBar);
         card.add(barWrap);
 
-        card.add(Box.createVerticalStrut(6));
+        card.add(Box.createVerticalStrut(STRUT_LARGE));
         card.add(myHeroStatsLabel);
-        card.add(Box.createVerticalStrut(2));
+        card.add(Box.createVerticalStrut(STRUT_TWO));
         card.add(myHeroInvLabel);
         return card;
     }
@@ -408,9 +641,9 @@ public class CombatPanel extends JPanel {
         final JPanel card = makeCard(ACCENT_ENEMY);
 
         card.add(myMonNameLabel);
-        card.add(Box.createVerticalStrut(4));
+        card.add(Box.createVerticalStrut(STRUT_SMALL));
         card.add(myMonHpLabel);
-        card.add(Box.createVerticalStrut(3));
+        card.add(Box.createVerticalStrut(STRUT_TINY));
 
         final JPanel barWrap = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         barWrap.setOpaque(false);
@@ -418,7 +651,7 @@ public class CombatPanel extends JPanel {
         barWrap.add(myMonHpBar);
         card.add(barWrap);
 
-        card.add(Box.createVerticalStrut(6));
+        card.add(Box.createVerticalStrut(STRUT_LARGE));
         card.add(myMonStatsLabel);
         return card;
     }
@@ -429,9 +662,9 @@ public class CombatPanel extends JPanel {
      * @return the assembled button panel
      */
     private JPanel buildButtonRow() {
-        final JPanel row = new JPanel(new GridLayout(1, 4, 8, 0));
+        final JPanel row = new JPanel(new GridLayout(1, 4, BTN_GAP, 0));
         row.setBackground(BG_DARK);
-        row.setBorder(new EmptyBorder(4, 10, 6, 10));
+        row.setBorder(new EmptyBorder(STRUT_SMALL, 10, STRUT_LARGE, 10));
         row.setPreferredSize(new Dimension(PANEL_W, BUTTON_ROW_H));
 
         row.add(myAttackBtn);
@@ -442,10 +675,10 @@ public class CombatPanel extends JPanel {
     }
 
     /**
-     * Creates a dark card panel with a coloured top border accent and
-     * a BoxLayout so stat labels stack vertically.
+     * Creates a dark card panel with a coloured top border accent and a
+     * {@link BoxLayout} so stat labels stack vertically.
      *
-     * @param theAccent colour used for the left/top accent border
+     * @param theAccent colour used for the top accent border
      * @return the styled card panel
      */
     private static JPanel makeCard(final Color theAccent) {
@@ -453,23 +686,23 @@ public class CombatPanel extends JPanel {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBackground(BG_CARD);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(3, 0, 0, 0, theAccent),
+                BorderFactory.createMatteBorder(
+                        CARD_ACCENT_THICKNESS, 0, 0, 0, theAccent),
                 new EmptyBorder(CARD_PAD, CARD_PAD, CARD_PAD, CARD_PAD)));
         return card;
     }
 
     /**
-     * Creates a styled JLabel with the given text, font, and foreground.
+     * Creates a styled {@link JLabel} with the given text, font, and
+     * foreground colour.
      *
-     * @param theText  initial text
      * @param theFont  label font
      * @param theColor foreground colour
      * @return the configured label
      */
-    private static JLabel makeLabel(final String theText,
-                                    final Font theFont,
+    private static JLabel makeLabel(final Font theFont,
                                     final Color theColor) {
-        final JLabel lbl = new JLabel(theText);
+        final JLabel lbl = new JLabel("");
         lbl.setFont(theFont);
         lbl.setForeground(theColor);
         lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -477,7 +710,7 @@ public class CombatPanel extends JPanel {
     }
 
     /**
-     * Creates a styled HP progress bar (no text, rounded).
+     * Creates a styled HP progress bar with no text and a rounded look.
      *
      * @return the configured progress bar
      */
@@ -485,7 +718,7 @@ public class CombatPanel extends JPanel {
         final JProgressBar bar = new JProgressBar(0, DEFAULT_MAX_HP);
         bar.setValue(DEFAULT_MAX_HP);
         bar.setStringPainted(false);
-        bar.setBackground(new Color(50, 50, 65));
+        bar.setBackground(BG_HP_TRACK);
         bar.setForeground(HP_GREEN);
         bar.setBorderPainted(false);
         bar.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -493,9 +726,9 @@ public class CombatPanel extends JPanel {
     }
 
     /**
-     * Creates a dark themed action button with hover effect.
+     * Creates a dark-themed action button with a hover highlight effect.
      *
-     * @param theLabel button text
+     * @param theLabel button text (may include emoji)
      * @return the configured button
      */
     private static JButton makeActionButton(final String theLabel) {
@@ -507,15 +740,16 @@ public class CombatPanel extends JPanel {
         btn.setBorderPainted(false);
         btn.setOpaque(true);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+        btn.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(final java.awt.event.MouseEvent e) {
+            public void mouseEntered(final MouseEvent theEvent) {
                 if (btn.isEnabled()) {
                     btn.setBackground(BTN_HOVER);
                 }
             }
+
             @Override
-            public void mouseExited(final java.awt.event.MouseEvent e) {
+            public void mouseExited(final MouseEvent theEvent) {
                 if (btn.isEnabled()) {
                     btn.setBackground(BTN_NORMAL);
                 }
@@ -525,12 +759,14 @@ public class CombatPanel extends JPanel {
     }
 
     /**
-     * Updates a HP bar's max, value, and colour based on the percentage
-     * of HP remaining. Green above 50 %, yellow 25–50 %, red below 25 %.
+     * Updates an HP bar's maximum, current value, and colour based on
+     * the percentage of HP remaining. The bar is green above
+     * {@link #HP_PCT_GREEN}, yellow between {@link #HP_PCT_YELLOW} and
+     * {@link #HP_PCT_GREEN}, and red at or below {@link #HP_PCT_YELLOW}.
      *
-     * @param theBar    the bar to update
-     * @param theCurrent current HP
-     * @param theMax    maximum HP
+     * @param theBar     the bar to update
+     * @param theCurrent current HP value
+     * @param theMax     maximum HP value
      */
     private static void updateBar(final JProgressBar theBar,
                                   final int theCurrent,
@@ -539,9 +775,9 @@ public class CombatPanel extends JPanel {
         theBar.setValue(Math.max(0, theCurrent));
 
         final double pct = (double) theCurrent / Math.max(1, theMax);
-        if (pct > 0.50) {
+        if (pct > HP_PCT_GREEN) {
             theBar.setForeground(HP_GREEN);
-        } else if (pct > 0.25) {
+        } else if (pct > HP_PCT_YELLOW) {
             theBar.setForeground(HP_YELLOW);
         } else {
             theBar.setForeground(HP_RED);
@@ -549,33 +785,31 @@ public class CombatPanel extends JPanel {
     }
 
     /**
-     * Enables or disables all four action buttons at once.
-     * Inventory buttons are re-evaluated against current stock before
-     * being enabled so an empty slot is never accidentally active.
+     * Enables or disables all four action buttons at once. Inventory
+     * buttons are re-evaluated by the next {@link #refresh(Hero, Monster)}
+     * call, so they are only force-disabled here when {@code theEnabled}
+     * is {@code false}.
      *
-     * @param theEnabled true to enable, false to disable
+     * @param theEnabled {@code true} to enable the buttons,
+     *                   {@code false} to disable them
      */
     private void setButtonsEnabled(final boolean theEnabled) {
         myAttackBtn.setEnabled(theEnabled);
         mySkillBtn.setEnabled(theEnabled);
-        // Potion / bomb stay disabled if they were already greyed due
-        // to empty inventory (their enabled state is managed by refresh).
         if (!theEnabled) {
             myPotionBtn.setEnabled(false);
             myBombBtn.setEnabled(false);
         }
-        // When re-enabling, inventory state is handled by the next refresh()
-        // call, so we only flip them on if theEnabled == true AND the buttons
-        // are already flagged enabled from the last refresh.
         styleInventoryButton(myPotionBtn);
         styleInventoryButton(myBombBtn);
     }
 
     /**
-     * Adjusts an inventory button's visual appearance to match whether it
-     * is currently enabled (item available) or disabled (inventory empty).
+     * Adjusts an inventory button's visual appearance to reflect whether
+     * it is currently enabled (item available) or disabled (inventory
+     * empty).
      *
-     * @param theBtn the potion or bomb button
+     * @param theBtn the potion or bomb button to style
      */
     private static void styleInventoryButton(final JButton theBtn) {
         if (theBtn.isEnabled()) {
@@ -588,41 +822,40 @@ public class CombatPanel extends JPanel {
     }
 
     /**
-     * Appends a coloured line to the combat log and auto-scrolls to
-     * the bottom. Uses an AttributeSet so each event type gets its own
-     * colour without the log needing HTML rendering.
+     * Appends a coloured line to the combat log and auto-scrolls to the
+     * bottom. Uses a {@link SimpleAttributeSet} so each event type gets
+     * its own colour without requiring HTML rendering.
      *
      * @param theText  message to append
      * @param theColor foreground colour for this line
      */
     private void appendLog(final String theText, final Color theColor) {
-        final javax.swing.text.StyledDocument doc = myLogPane.getStyledDocument();
-        final javax.swing.text.SimpleAttributeSet attrs =
-                new javax.swing.text.SimpleAttributeSet();
-        javax.swing.text.StyleConstants.setForeground(attrs, theColor);
+        final StyledDocument doc = myLogPane.getStyledDocument();
+        final SimpleAttributeSet attrs = new SimpleAttributeSet();
+        StyleConstants.setForeground(attrs, theColor);
 
         try {
             if (doc.getLength() > 0) {
                 doc.insertString(doc.getLength(), "\n", attrs);
             }
             doc.insertString(doc.getLength(), theText, attrs);
-        } catch (final javax.swing.text.BadLocationException ex) {
-            // Should never happen — location is always end-of-document.
-            ex.printStackTrace();
+        } catch (final BadLocationException ex) {
+            // Location is always end-of-document, so this should never occur.
+            System.err.println("CombatPanel: log append failed: " + ex.getMessage());
         }
 
-        // Auto-scroll to bottom after each append
-        SwingUtilities.invokeLater(() ->
-                myLogPane.setCaretPosition(doc.getLength()));
+        SwingUtilities.invokeLater(
+                () -> myLogPane.setCaretPosition(doc.getLength()));
     }
 
     /**
-     * Formats a double chance (0.0–1.0) as a percentage string.
+     * Formats a double chance in the range 0.0–1.0 as a percentage
+     * string (e.g. {@code 0.4} → {@code "40%"}).
      *
-     * @param theChance the probability value
-     * @return e.g. "40%"
+     * @param theChance the probability value (0.0–1.0)
+     * @return the formatted percentage string
      */
     private static String pct(final double theChance) {
-        return (int) Math.round(theChance * 100) + "%";
+        return (int) Math.round(theChance * PCT_MULTIPLIER) + "%";
     }
 }

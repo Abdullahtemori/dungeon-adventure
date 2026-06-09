@@ -1,5 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +10,6 @@ import java.util.Set;
  * Heroes can block attacks and have a unique special skill.
  *
  * @author Person 1, Daniella Birungi
- 
  * @version Iteration 1
  */
 public abstract class Hero extends DungeonCharacter implements Serializable {
@@ -18,32 +18,43 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Probability that this hero blocks an incoming attack (0.0–1.0). */
-    private double myChanceToBlock;
+    /**
+     * Probability that this hero blocks an incoming attack (0.0–1.0).
+     */
+    private final double myChanceToBlock;
 
-     /** Number of healing potions in the hero's inventory. */
+    /**
+     * Number of healing potions in the hero's inventory.
+     */
     private int myHealingPotions;
 
-    /** Number of vision potions in the hero's inventory. */
+    /**
+     * Number of vision potions in the hero's inventory.
+     */
     private int myVisionPotions;
 
-    /** Number of bombs in the hero's inventory. */
+    /**
+     * Number of bombs in the hero's inventory.
+     */
     private int myBombs;
 
-    /** Set of pillars the hero has collected. */
-    private Set<Pillar> myPillarsFound;
+    /**
+     * Set of pillars the hero has collected.
+     */
+    private final Set<Pillar> myPillarsFound;
 
     /**
      * Constructs a Hero with all required stats.
      *
-     * @param theName         hero's name
-     * @param theHP           starting hit points
-     * @param theMinDmg       minimum damage
-     * @param theMaxDmg       maximum damage
-     * @param theSpeed        attack speed
-     * @param theChanceToHit  chance to hit (0.0–1.0)
+     * @param theName          hero's name
+     * @param theHP            starting hit points
+     * @param theMinDmg        minimum damage
+     * @param theMaxDmg        maximum damage
+     * @param theSpeed         attack speed
+     * @param theChanceToHit   chance to hit (0.0–1.0)
      * @param theChanceToBlock chance to block (0.0–1.0)
      */
     protected Hero(final String theName, final int theHP,
@@ -79,40 +90,44 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
         return Math.random() < myChanceToBlock;
     }
 
-    /** @return the chance to block value */
-    public double getChanceToBlock() { return myChanceToBlock; }
+    /**
+     * @return the chance to block value
+     */
+    public double getChanceToBlock() {
+        return myChanceToBlock;
+    }
 
     /**
      * Returns the number of healing potions in the hero's inventory.
      *
-     *@return healing potion count
+     * @return healing potion count
      */
     public int getHealingPotions() {
         return myHealingPotions;
     }
 
-     /**
+    /**
      * Returns the number of vision potions in the hero's inventory.
      *
-     *@return vision potion count
+     * @return vision potion count
      */
     public int getVisionPotions() {
         return myVisionPotions;
     }
 
-     /**
+    /**
      * Returns the number of bombs in the hero's inventory.
      *
-     *@return bomb count
+     * @return bomb count
      */
     public int getBombs() {
         return myBombs;
     }
-    
+
     /**
      * Returns the set of pillars the hero has collected.
      *
-     *@return set of collected pillars
+     * @return set of collected pillars
      */
     public Set<Pillar> getPillarsFound() {
         return myPillarsFound;
@@ -155,8 +170,8 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
      *
      * @return HP healed, or 0 if no potions available
      */
-    public int useHealingPotion(){
-        if (myHealingPotions <= 0){
+    public int useHealingPotion() {
+        if (myHealingPotions <= 0) {
             return 0;
         }
         myHealingPotions--;
@@ -170,8 +185,8 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
      *
      * @return true if potion was used, false if none left
      */
-    public boolean useVisionPotion(){
-        if (myVisionPotions <= 0){
+    public boolean useVisionPotion() {
+        if (myVisionPotions <= 0) {
             return false;
         }
         myVisionPotions--;
@@ -185,16 +200,17 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
      * @param theTarget the monster to bomb
      * @return damage dealt, or 0 if no bombs are left
      */
-    public int useBomb(final Monster theTarget){
-        if (myBombs <= 0){
+    public int useBomb(final Monster theTarget) {
+        if (myBombs <= 0) {
             return 0;
         }
         myBombs--;
         final Bomb bomb = new Bomb();
-        final int  damage = bomb.getDamage();
+        final int damage = bomb.getDamage();
         theTarget.setHitPoints(theTarget.getHitPoints() - damage);
         return damage;
     }
+
     /**
      * Returns hero info as a string.
      *
@@ -202,12 +218,12 @@ public abstract class Hero extends DungeonCharacter implements Serializable {
      */
     @Override
     public String toString() {
-        return super.toString() 
-            + " | Block Chance: " + myChanceToBlock
-            + " | Healing Potions: " + myHealingPotions
-            + " | Vision Potions: " + myVisionPotions
-            + " | Bombs: " + myBombs
-            + " | Pillars Found: " + myPillarsFound;
-        
+        return super.toString()
+                + " | Block Chance: " + myChanceToBlock
+                + " | Healing Potions: " + myHealingPotions
+                + " | Vision Potions: " + myVisionPotions
+                + " | Bombs: " + myBombs
+                + " | Pillars Found: " + myPillarsFound;
+
     }
 }

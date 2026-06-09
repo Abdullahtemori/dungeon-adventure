@@ -1,5 +1,6 @@
 package edu.uw.tcss.dungeoneer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,14 +9,12 @@ import java.util.List;
 /**
  * Thief hero — fastest attacker with a high block chance and a
  * Surprise Attack special skill that can land two hits in one turn.
- *
  * Stats:
- *   HP: 75 | Speed: 6 | Hit Chance: 80% | Damage: 20–40 | Block: 40%
- *
+ * HP: 75 | Speed: 6 | Hit Chance: 80% | Damage: 20–40 | Block: 40%
  * Special Skill — Surprise Attack:
- *   40% → success: two normal attacks this round
- *   20% → caught: no attack at all (SPECIAL_CAUGHT event)
- *   40% → fallback: one normal attack
+ * 40% → success: two normal attacks this round
+ * 20% → caught: no attack at all (SPECIAL_CAUGHT event)
+ * 40% → fallback: one normal attack
  *
  * @author Person 1, Abdullah Temori
  * @version Iteration 4
@@ -26,12 +25,17 @@ public class Thief extends Hero implements Serializable {
      * Serial Version UID required for safe serialization.
      * If the class structure changes this number should be updated.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Probability that the surprise attack fully succeeds (double hit). */
+    /**
+     * Probability that the surprise attack fully succeeds (double hit).
+     */
     private static final double SUCCESS_CHANCE = 0.4;
 
-    /** Probability that the thief is caught (no attack this round). */
+    /**
+     * Probability that the thief is caught (no attack this round).
+     */
     private static final double CAUGHT_CHANCE = 0.2;
 
     /**
@@ -57,8 +61,8 @@ public class Thief extends Hero implements Serializable {
      *
      * @param theOpponent the target of the surprise attack; must not be null
      * @return an unmodifiable list of CombatEvents produced this turn;
-     *         contains one SPECIAL_CAUGHT event if the thief was caught,
-     *         or one or two attack events otherwise
+     * contains one SPECIAL_CAUGHT event if the thief was caught,
+     * or one or two attack events otherwise
      */
     @Override
     public List<CombatEvent> specialSkill(final DungeonCharacter theOpponent) {
