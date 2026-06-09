@@ -89,5 +89,15 @@ public interface GameView extends PropertyChangeListener {
      */
     void displayCombatEvent(edu.uw.tcss.dungeoneer.model.CombatEvent theEvent);
 
+    /**
+     * Notifies the view whether cheat mode is currently active so it can
+     * show or hide any cheat-only display (such as the full dungeon map).
+     * Views that have no cheat display may ignore this call.
+     *
+     * @param theCheatOn true if cheat mode is now on, false otherwise
+     */
+    default void setCheatMode(final boolean theCheatOn) {
+        // Optional: views without a cheat display do nothing.
+    }
 
 }
