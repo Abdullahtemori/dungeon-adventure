@@ -76,6 +76,12 @@ public class SwingView implements GameView {
     private final JTextArea myMapArea;
 
     /**
+     * Scroll pane wrapping the map area. Hidden during normal play and
+     * only made visible while cheat mode is on or the game has ended.
+     */
+    private JScrollPane myMapScroll;
+
+    /**
      * The main application window.
      */
     private final JFrame myFrame;
@@ -351,8 +357,95 @@ public class SwingView implements GameView {
      */
     @Override
     public void displayDungeon(final Dungeon theDungeon) {
-        SwingUtilities.invokeLater(() ->
-                myMapArea.setText(theDungeon.toString()));
+        final String map = buildReadableMap(theDungeon);
+        SwingUtilities.invokeLater(() -> {
+            final boolean wasHidden =
+                    myMapScroll == null || !myMapScroll.isVisible();
+            // Remember where the user had scrolled the map so updating
+            // its text on each move does not jump back to the top.
+            int prevScroll = 0;
+            if (myMapScroll != null && !wasHidden) {
+                prevScroll =
+                        myMapScroll.getVerticalScrollBar().getValue();
+            }
+            final int restoreScroll = prevScroll;
+
+            myMapArea.setText(map);
+
+            if (myMapScroll != null) {
+                myMapScroll.setVisible(true);
+                myFrame.revalidate();
+                myFrame.repaint();
+                // On first reveal start at the top; afterwards keep the
+                // user's scroll position so they don't lose their place.
+                final int target = wasHidden ? 0 : restoreScroll;
+                SwingUtilities.invokeLater(() ->
+                        myMapScroll.getVerticalScrollBar()
+                                   .setValue(target));
+            }
+        });
+    }
+
+    /**
+     * Shows or hides the cheat map panel to match the current cheat
+     * state. Called by the controller whenever cheat mode is toggled,
+     * so the panel's visibility no longer depends on which action the
+     * player happened to take last.
+     *
+     * @param theCheatOn true if cheat mode is now on, false otherwise
+     */
+    @Override
+    public void setCheatMode(final boolean theCheatOn) {
+        SwingUtilities.invokeLater(() -> {
+            if (myMapScroll != null) {
+                myMapScroll.setVisible(theCheatOn);
+                // Revalidate the whole frame so showing/hiding the panel
+                // takes effect right away rather than after a delay.
+                myFrame.revalidate();
+                myFrame.repaint();
+            }
+        });
+    }
+
+    /**
+     * Builds a human-readable version of the full dungeon map. The
+     * hero's current room is marked with '@' so the player can see
+     * where they are, and a legend explaining every symbol is placed
+     * above the grid.
+     *
+     * @param theDungeon the dungeon to render; must not be null
+     * @return a legend followed by the marked-up dungeon grid
+     */
+    private String buildReadableMap(final Dungeon theDungeon) {
+        final String nl = System.lineSeparator();
+        final String[] lines = theDungeon.toString().split("\\R");
+
+        // Mark the hero's current room center with '@'.
+        final int heroRow = theDungeon.getHeroRow();
+        final int heroCol = theDungeon.getHeroCol();
+        if (heroRow >= 0 && heroCol >= 0) {
+            final int lineIdx = heroRow * 3 + 1;
+            final int colIdx = heroCol * 3 + 1;
+            if (lineIdx < lines.length && colIdx < lines[lineIdx].length()) {
+                final StringBuilder row = new StringBuilder(lines[lineIdx]);
+                row.setCharAt(colIdx, '@');
+                lines[lineIdx] = row.toString();
+            }
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("LEGEND:  @ = You    i = Entrance    O = Exit").append(nl);
+        sb.append("A E I P = Pillars of OO    H = Healing    "
+                + "V = Vision    B = Bomb").append(nl);
+        sb.append("X = Pit    M = Multiple items    (blank) = empty room")
+          .append(nl);
+        sb.append("Doors:  - open N/S    | open E/W    * = wall").append(nl);
+        sb.append("------------------------------------------------")
+          .append(nl);
+        for (final String line : lines) {
+            sb.append(line).append(nl);
+        }
+        return sb.toString();
     }
 
     /**
@@ -667,6 +760,20 @@ public class SwingView implements GameView {
         scroll.setVerticalScrollBarPolicy(
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         panel.add(scroll, BorderLayout.CENTER);
+
+        // Dedicated map area shown below the log. Hidden during normal
+        // play and only revealed by displayDungeon() when cheat mode is
+        // active or the game ends.
+        myMapScroll = new JScrollPane(myMapArea);
+        myMapScroll.setPreferredSize(new Dimension(0, 240));
+        myMapScroll.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(PANEL_BORDER),
+                "Dungeon Map (Cheat / Game Over)",
+                0, 0,
+                new Font("SansSerif", Font.BOLD, 12),
+                TEXT_COLOR));
+        myMapScroll.setVisible(false);
+        panel.add(myMapScroll, BorderLayout.SOUTH);
         return panel;
     }
 

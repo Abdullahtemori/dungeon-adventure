@@ -78,14 +78,32 @@ public class GameController {
         // reset cheat mode for the new game
         myCheatMode = false;
         myView.displayMessage("cheat Mode reset for New game");
+        myView.setCheatMode(false);
         // Step 1: Build the dungeon
-        final Dungeon dungeon = new DungeonBuilder()
-                .setDifficulty(theDifficulty)
-                .build();
+        final DungeonBuilder builder = new DungeonBuilder()
+                .setDifficulty(theDifficulty);
+
+        // On EASY, make the run beginner-friendly: the pillar, exit, and
+        // exit-adjacent guardian rooms use a weaker Gremlin (70 HP) instead
+        // of an Ogre (200 HP), and fewer random monsters spawn in normal
+        // rooms. MEDIUM and HARD keep their default tougher tuning.
+        if (theDifficulty == Difficulty.EASY) {
+            builder.strongMonsterSupplier(Gremlin::new)
+                   .monsterChance(0.08);
+        }
+
+        final Dungeon dungeon = builder.build();
 
         // Step 2: Create the hero
         final HeroFactory heroFactory = new HeroFactory();
         final Hero hero = heroFactory.createHero(theHeroType, theName);
+
+        // On EASY, give the hero a large health pool so beginners can
+        // comfortably survive fights and reach the exit. MEDIUM and HARD
+        // keep the hero's normal class HP.
+        if (theDifficulty == Difficulty.EASY) {
+            hero.setHitPoints(500);
+        }
 
         // Step 3: Create the model
         myModel = new GameModel(dungeon, hero, theDifficulty);
@@ -434,6 +452,7 @@ public class GameController {
     public void toggleCheatMode() {
         myCheatMode = !myCheatMode;
         myView.displayMessage("Cheat mode " + (myCheatMode ? "ON" : "OFF"));
+        myView.setCheatMode(myCheatMode);
 
         if (myCheatMode && myModel != null) {
             myView.displayDungeon(myModel.getDungeon());
